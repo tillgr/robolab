@@ -30,10 +30,8 @@ def run():
 
     print(f"color: {cs.value()}")
 
-    rm.run_timed(speed_sp=50, time_sp=6000)
-    lm.run_timed(speed_sp=100, time_sp=6000)
-
-    time.sleep(6)
+    robot = LineFollower()
+    # robot.drive()
 
 # DO NOT EDIT
 if __name__ == '__main__':
