@@ -21,8 +21,8 @@ class LineFollower:
         ultrasonicSensor.mode = 'US-DIST-CM'
 
         # motors
-        rightMotor = ev3.LargeMotor(ev3.OUTPUT_C)
-        leftMotor = ev3.LargeMotor(ev3.OUTPUT_B)
+        rightMotor = ev3.LargeMotor('outC')
+        leftMotor = ev3.LargeMotor('outB')
 
         assert rightMotor.connected
         assert leftMotor.connected
