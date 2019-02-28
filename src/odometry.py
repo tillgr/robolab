@@ -15,15 +15,12 @@ class LineFollower:
 
         # sensors
         colorSensor = ev3.ColorSensor()
-        lightSensor = ev3.LightSensor()
         ultrasonicSensor = ev3.UltrasonicSensor()
 
         assert colorSensor.connected
-        assert lightSensor.connected
         assert ultrasonicSensor.connected
 
-        colorSensor.mode = 'COL-COLOR'
-        lightSensor.mode = 'REFLECT'
+        colorSensor.mode = 'COL-REFLECT'
         ultrasonicSensor.mode = 'US-DIST-CM'
 
         # motors
@@ -45,7 +42,7 @@ class LineFollower:
         time = 500
 
         while not stop:
-            lightValue = lightSensor.value()
+            lightValue = colorSensor.value()
             error = lightValue - offset
             integral += error
             derivative = error - lastError
