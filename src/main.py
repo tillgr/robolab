@@ -23,8 +23,8 @@ def run():
     rightMotor = ev3.LargeMotor('outC')
     leftMotor = ev3.LargeMotor('outB')
 
-    rightMotor.run_timed(time_sp=6000, speed_sp=+150)
-    leftMotor.run_timed(time_sp=6000, speed_sp=-150)
+    rightMotor.run_timed(time_sp=6000, speed_sp=500)
+    leftMotor.run_timed(time_sp=6000, speed_sp=500)
 
 
 # DO NOT EDIT
