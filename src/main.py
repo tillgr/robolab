@@ -20,8 +20,11 @@ def run():
     # the execution of all code shall be started from within this function
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER
     print("Hello World, it works!")
-    robot = LineFollower()
-    robot.drive()
+    rightMotor = ev3.LargeMotor('outC')
+    leftMotor = ev3.LargeMotor('outB')
+
+    rightMotor.run_timed(time_sp=600, speed_sp=+150, stop_action="hold")
+    leftMotor.run_timed(time_sp=600, speed_sp=-150, stop_action="hold")
 
 
 # DO NOT EDIT
