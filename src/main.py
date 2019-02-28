@@ -5,6 +5,7 @@ import uuid
 import paho.mqtt.client as mqtt
 from planet import Direction, Planet
 from communication import Communication
+from odometry import LineFollower
 
 client = None  # DO NOT EDIT
 
@@ -19,6 +20,8 @@ def run():
     # the execution of all code shall be started from within this function
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER
     print("Hello World!")
+    robot = LineFollower()
+    robot.drive()
 
 
 # DO NOT EDIT
