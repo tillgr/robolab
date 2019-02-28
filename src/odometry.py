@@ -58,6 +58,7 @@ class LineFollower:
 
         rightMotor.run_timed(time_sp=600)
         leftMotor.run_timed(time_sp=600)
+        print("odometry works")
 
 
 class Odometry():
