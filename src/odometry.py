@@ -7,9 +7,6 @@ import ev3dev.ev3 as ev3
 
 
 class LineFollower:
-    def __init__(self):
-        stop = False
-
     def drive(self):
         stop = True
 
