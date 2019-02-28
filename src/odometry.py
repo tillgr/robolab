@@ -53,8 +53,8 @@ class LineFollower:
 
             lastError = error
 
-        rightMotor.run_timed(time_sp=600)
-        leftMotor.run_timed(time_sp=600)
+        rightMotor.run_timed(time_sp=600, speed_sp=+150, stop_action="hold")
+        leftMotor.run_timed(time_sp=600, speed_sp=-150, stop_action="hold")
         print("odometry works")
 
 
