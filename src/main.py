@@ -24,12 +24,16 @@ def run():
     rm = ev3.LargeMotor('outC')
     lm = ev3.LargeMotor('outB')
     cs = ev3.ColorSensor()
-    cs.mode = 'COL-COLOR'
+    cs.mode = 'COL-REFLECT'
 
     assert rm.connected
 
-    print("Hello World!")
+    print(f"color: {cs.value()}")
 
+    rm.run_timed(speed_sp=50, time_sp=6000)
+    lm.run_timed(speed_sp=100, time_sp=6000)
+
+    time.sleep(6)
 
 # DO NOT EDIT
 if __name__ == '__main__':
