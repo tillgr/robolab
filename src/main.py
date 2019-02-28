@@ -6,6 +6,7 @@ import paho.mqtt.client as mqtt
 from planet import Direction, Planet
 from communication import Communication
 from odometry import LineFollower
+import time
 
 client = None  # DO NOT EDIT
 
@@ -20,12 +21,15 @@ def run():
     # the execution of all code shall be started from within this function
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER
 
-    rightMotor = ev3.LargeMotor('outC')
-    leftMotor = ev3.LargeMotor('outB')
+    rm = ev3.LargeMotor('outC')
+    lm = ev3.LargeMotor('outB')
     cs = ev3.ColorSensor()
     cs.mode = 'COL-COLOR'
-    print("Hello World, it works!")
-    print(cs.value())
+
+    assert rm.connected
+
+    print("Hello World!")
+
 
 # DO NOT EDIT
 if __name__ == '__main__':

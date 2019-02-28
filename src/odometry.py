@@ -4,6 +4,7 @@
 # 				establish value exchange with main driving class via getters and setters
 
 import ev3dev.ev3 as ev3
+import time
 
 
 class LineFollower:
