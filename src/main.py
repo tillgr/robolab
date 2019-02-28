@@ -19,13 +19,13 @@ def run():
 
     # the execution of all code shall be started from within this function
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER
-    print("Hello World, it works!")
+
     rightMotor = ev3.LargeMotor('outC')
     leftMotor = ev3.LargeMotor('outB')
-
-    rightMotor.run_timed(time_sp=60000, speed_sp=50)
-    leftMotor.run_timed(time_sp=60000, speed_sp=50)
-
+    cs = ev3.ColorSensor()
+    cs.mode = 'COL-COLOR'
+    print("Hello World, it works!")
+    print(cs.value())
 
 # DO NOT EDIT
 if __name__ == '__main__':
