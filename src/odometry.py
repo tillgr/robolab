@@ -56,8 +56,8 @@ class LineFollower:
 
             lastError = error
 
-        rightMotor.run_timed(time_sp = 600)
-        leftMotor.run_timed(time_sp = 600)
+        rightMotor.run_timed(time_sp=600)
+        leftMotor.run_timed(time_sp=600)
 
 
 class Odometry():
