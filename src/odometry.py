@@ -24,6 +24,7 @@ class LineFollower:
 
         colorSensor.mode = 'COL-COLOR'
         lightSensor.mode = 'REFLECT'
+        ultrasonicSensor.mode = 'US-DIST-CM'
 
         # motors
         rightMotor = ev3.LargeMotor(ev3.OUTPUT_C)
@@ -41,6 +42,8 @@ class LineFollower:
         lastError = 0
         derivative = 0
 
+        time = 500
+
         while not stop:
             lightValue = lightSensor.value()
             error = lightValue - offset
@@ -51,7 +54,8 @@ class LineFollower:
             powerLeft = tp + turn
             powerRight = tp - turn
 
-
+            leftMotor.run_timed(time_sp=time, speed_sp=powerLeft, stop_action="coast")
+            rightMotor.run_timed(time_sp=time, speed_sp=powerRight, stop_action="coast")
 
             lastError = error
 
