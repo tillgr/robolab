@@ -19,7 +19,7 @@ def run():
 
     # the execution of all code shall be started from within this function
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER
-    print("Hello World!")
+    print("Hello World, it works!")
     robot = LineFollower()
     robot.drive()
 
