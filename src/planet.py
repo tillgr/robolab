@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 
 from enum import IntEnum, unique
-from typing import List, Optional, Tuple, Dict
-
+from typing import List, Optional, Tuple, Dict, Any
 
 # IMPORTANT NOTE: DO NOT IMPORT THE ev3dev.ev3 MODULE IN THIS FILE
 
+planetKarte: List[Any] = []
+planetPaths: Dict = []
+paths: Dict = []
+
 @unique
-class Direction(IntEnum):
+class Direction(IntEnum):           #Richtung
     """ Directions in degrees """
     NORTH = 0
     EAST = 90
@@ -16,7 +19,7 @@ class Direction(IntEnum):
 
 
 # simple alias, no magic here
-Weight = int
+Weight = int                        #gewicht der kanten
 """ 
     Weight of a given path (received from the server)
     value:  -1 if broken path 
@@ -25,17 +28,22 @@ Weight = int
 """
 
 
-class Planet:
+class Planet:           #Karte
     """
     Contains the representation of the map and provides certain functions to manipulate it according to the specifications
     """
+
+
 
     def __init__(self):
         """ Initializes the data structure """
         self.target = None
 
-    def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
+    def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],         #Koordinaten, Hin/Rückrichtung
                  weight: int):
+
+        planetKarte.append([start, target])
+
         """
          Adds a bidirectional path defined between the start and end coordinates to the map and assigns the weight to it
         example:
@@ -48,6 +56,18 @@ class Planet:
         pass
 
     def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
+
+        for i in range(1, planetKarte.len()):       #vergleicht Elemente (Knoten) der Liste planetPaths (a, b)
+            a = planetKarte[i][1]
+            for j in range(i+1, planetKarte.len()):
+                b = planetKarte[j][1]
+                w = planetKarte[j][3]               #w ist wichtung der kanten
+
+                if a == b:                      #bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
+                    {**planetPaths, a[1][1]: {**paths, a[1][2]: [b[1][1], b[1][2], w]}}
+
+
+
         """
         Returns all paths
         example:
@@ -67,8 +87,7 @@ class Planet:
         """
         pass
 
-    def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Optional[
-        List[Tuple[Tuple[int, int], Direction]]]:
+    def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Optional[List[Tuple[Tuple[int, int], Direction]]]:
         """
         Returns a shortest path between two nodes
         examples:
