@@ -41,7 +41,7 @@ class LineFollower:
 
         t = 500
 
-        while dist > 5:
+        while not stop:
             lightValue = colorSensor.value()
             print(f"lightValue: {lightValue}")
             error = lightValue - offset

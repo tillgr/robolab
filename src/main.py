@@ -25,13 +25,17 @@ def run():
     lm = ev3.LargeMotor('outB')
     cs = ev3.ColorSensor()
     cs.mode = 'COL-REFLECT'
+    us = ev3.UltrasonicSensor()
+    us.mode = 'US-DIST-CM'
 
     assert rm.connected
 
     print(f"color: {cs.value()}")
+    print(f"dist: {us.value()//10}")
 
     robot = LineFollower()
     # robot.drive()
+
 
 # DO NOT EDIT
 if __name__ == '__main__':
