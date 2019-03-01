@@ -24,7 +24,7 @@ def run():
     rm = ev3.LargeMotor('outC')
     lm = ev3.LargeMotor('outB')
     cs = ev3.ColorSensor()
-    cs.mode = 'COL-REFLECT'
+    cs.mode = 'COL-COLOR'
     us = ev3.UltrasonicSensor()
     us.mode = 'US-DIST-CM'
 
@@ -32,6 +32,13 @@ def run():
 
     print(f"color: {cs.value()}")
     print(f"dist: {us.value()//10}")
+
+
+
+    t = 3250
+    #lm.run_timed(time_sp=t, speed_sp=100, stop_action="coast")
+    #rm.run_timed(time_sp=t, speed_sp=-100, stop_action="coast")
+    #time.sleep(t/1000)
 
     robot = LineFollower()
     robot.drive()
