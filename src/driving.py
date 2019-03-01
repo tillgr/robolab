@@ -1,5 +1,6 @@
 import ev3dev.ev3 as ev3
 import time
+import operator
 
 
 class LineFollower:
@@ -20,6 +21,9 @@ class LineFollower:
     # variables (n=0, e=90,...)
     direction = 0
 
+    red = (135, 60, 15)
+    blue = (30, 150, 100)
+
     # obstacle detection
     def obstacle(self):
         self.ultrasonicSensor.mode = 'US-DIST-CM'
@@ -37,10 +41,15 @@ class LineFollower:
 
     # vertex detection
     def vertex(self):
-        self.colorSensor.mode = 'COL-COLOR'
+        self.colorSensor.mode = 'RGB-RAW'
 
-        if self.colorSensor.value() == 2 or self.colorSensor.value() == 5:
-            print(f"color: {self.colorSensor.value()}")
+        color = self.colorSensor.bin_data('hhh')
+
+        if (color[0] in range(self.red[0]-30, self.red[0]+30)) and (color[1] in range(self.red[1]-30, self.red[1]+30)) and (color[2] in range(self.red[2]-30, self.red[2]+30)):
+            print(f"color: {self.colorSensor.bin_data('hhh')}")
+            return True
+        elif (color[0] in range(self.blue[0]-30, self.blue[0]+30)) and (color[1] in range(self.blue[1]-30, self.blue[1]+30)) and (color[2] in range(self.blue[2]-30, self.blue[2]+30)):
+            print(f"color: {self.colorSensor.bin_data('hhh')}")
             return True
         else:
             return False
@@ -50,14 +59,14 @@ class LineFollower:
         ki = 10  # ki*100 -> 1
         kd = 10  # kd*100 -> 100
         offset = 37
-        tp = 60
+        tp = 80
         integral = 0
         lastError = 0
         derivative = 0
 
         t = 500
 
-        while not self.obstacle():
+        while not self.vertex() and not self.obstacle():
             self.colorSensor.mode = 'COL-REFLECT'
             lightValue = self.colorSensor.value()
             print(f"lightValue: {lightValue}")

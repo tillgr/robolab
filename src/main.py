@@ -39,10 +39,8 @@ def run():
     #time.sleep(t/1000)
 
     robot = LineFollower()
-    #robot.drive()
+    robot.drive()
 
-    x = cs.bin_data('hhh')
-    print(x[0])
 
 # DO NOT EDIT
 if __name__ == '__main__':
