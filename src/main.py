@@ -5,7 +5,7 @@ import uuid
 import paho.mqtt.client as mqtt
 from planet import Direction, Planet
 from communication import Communication
-from odometry import LineFollower
+from driving import LineFollower
 import time
 
 client = None  # DO NOT EDIT
@@ -34,7 +34,7 @@ def run():
     print(f"dist: {us.value()//10}")
 
     robot = LineFollower()
-    # robot.drive()
+    robot.drive()
 
 
 # DO NOT EDIT
