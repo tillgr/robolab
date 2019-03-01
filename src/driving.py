@@ -3,19 +3,22 @@ import time
 
 
 class LineFollower:
-    #sensors
+    # sensors
     ultrasonicSensor = ev3.UltrasonicSensor()
     colorSensor = ev3.ColorSensor()
 
     assert ultrasonicSensor.connected
     assert colorSensor.connected
 
-    #motors
+    # motors
     leftMotor = ev3.LargeMotor('outB')
     rightMotor = ev3.LargeMotor('outC')
 
     assert leftMotor.connected
     assert rightMotor.connected
+
+    # variables (n=0, e=90,...)
+    direction = 0
 
     # obstacle detection
     def obstacle(self):
@@ -23,9 +26,10 @@ class LineFollower:
 
         dist = self.ultrasonicSensor.value() // 10
 
-        if dist < 5:
+        if dist < 15:
+            ev3.Sound.speak("found an obstacle")
             self.leftMotor.run_timed(time_sp=3250, speed_sp=100, stop_action="coast")
-            self.rightMotor.run_timed(time_sp=3250, speed_sp=100, stop_action="coast")
+            self.rightMotor.run_timed(time_sp=3250, speed_sp=-100, stop_action="coast")
             time.sleep(3.25)
             return True
         else:
@@ -42,8 +46,8 @@ class LineFollower:
             return False
 
     def drive(self):
-        kp = 100   # kp*100 -> 10
-        ki = 10    # ki*100 -> 1
+        kp = 100  # kp*100 -> 10
+        ki = 10  # ki*100 -> 1
         kd = 10  # kd*100 -> 100
         offset = 37
         tp = 60

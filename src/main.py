@@ -24,13 +24,11 @@ def run():
     rm = ev3.LargeMotor('outC')
     lm = ev3.LargeMotor('outB')
     cs = ev3.ColorSensor()
-    cs.mode = 'COL-COLOR'
+    cs.mode = 'RGB-RAW'
     us = ev3.UltrasonicSensor()
     us.mode = 'US-DIST-CM'
 
-    assert rm.connected
-
-    print(f"color: {cs.value()}")
+    print(f"color: {cs.bin_data('hhh')}")
     print(f"dist: {us.value()//10}")
 
 
@@ -41,8 +39,10 @@ def run():
     #time.sleep(t/1000)
 
     robot = LineFollower()
-    robot.drive()
+    #robot.drive()
 
+    x = cs.bin_data('hhh')
+    print(x[0])
 
 # DO NOT EDIT
 if __name__ == '__main__':
