@@ -3,7 +3,7 @@ import time
 import operator
 
 
-class LineFollower:
+class LineFollower():
     # sensors
     ultrasonicSensor = ev3.UltrasonicSensor()
     colorSensor = ev3.ColorSensor()
@@ -19,7 +19,7 @@ class LineFollower:
     assert rightMotor.connected
 
     # variables (n=0, e=90,...)
-    direction = 0
+    direction = 0   # start direction always NORTH
 
     red = (135, 60, 15)
     blue = (30, 150, 100)
@@ -53,6 +53,8 @@ class LineFollower:
             return True
         else:
             return False
+
+    # vertex exploration
 
     def drive(self):
         kp = 100  # kp*100 -> 10

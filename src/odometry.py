@@ -4,24 +4,32 @@
 # 				establish value exchange with main driving class via getters and setters
 import math
 
-class Odometry():
+
+class Odometry:
     r = 2.5         # Radius Räder
     a = 0           # Radabstand
-    dx = 0          # Streckendifferenz
-    dy = 0
+    dX = 0          # Streckendifferenz
+    dY = 0
     dl = 0          # zurückgelegte Strecke des linken Rads
     dr = 0
     s = 0           # zurückgelegte Strecke
-    #gamma = Blickrichtung
+    gamma = 0       # Blickrichtung
 
-    def position(self, gamma):
+    def position(self, gamma, Xs, Ys):
+        self.gamma = gamma
+
+        # for loop to iterate through list
         alpha = (self.dl + self.dr)/self.a
         s = (self.dr + self.dl)/alpha * math.sin(alpha/2)
 
-        dx = - math.sin(gamma + (alpha/2)) * s
-        dy = math.cos(gamma + (alpha/2)) * s
+        dX = - math.sin(gamma + (alpha/2)) * s
+        dY = math.cos(gamma + (alpha/2)) * s
 
         gamma += alpha
 
-        # take list of [gamma, dl, dr]s and start position
-        # return calculated position
+
+        Xe = Xs + dX
+        Ye = Ys + dY
+
+        # take list of [dl, dr]s, start position and
+        # return calculated position and direction
