@@ -65,8 +65,22 @@ class Planet:  # Karte
                 d = self.planetKarte[j][1][0]
                 w = self.planetKarte[j][2]  # w ist wichtung der kanten
 
-                if a == b or c == d or a == d or c == b:  # bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
-                    {**self.planetPaths, a: {**self.paths, self.planetKarte[i][0][1]: [b, self.planetKarte[i][1][1], w]}}
+                if a == b:  # bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
+                    self.planetPaths[a] = self.paths
+                    self.paths[self.planetKarte[i][0][1]] = [b, self.planetKarte[j][1][1], w]
+
+                if c == d:
+                    self.planetPaths[c] = self.paths
+                    self.paths[self.planetKarte[i][0][1]] = [d, self.planetKarte[j][1][1], w]
+
+                if a == d:
+                    self.planetPaths[a] = self.paths
+                    self.paths[self.planetKarte[i][0][1]] = [d, self.planetKarte[j][1][1], w]
+
+                if c == b:
+                    self.planetPaths[c] = self.paths
+                    self.paths[self.planetKarte[i][0][1]] = [b, self.planetKarte[j][1][1], w]
+
 
         """
         Returns all paths
@@ -90,7 +104,7 @@ class Planet:  # Karte
         pass
 
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Optional[
-        List[Tuple[Tuple[int, int], Direction]]]:
+        List[Tuple[Tuple[int, int], Direction]]]: #ausgabewert
 
 
         """
