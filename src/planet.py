@@ -33,6 +33,7 @@ class Planet:  # Karte
         """ Initializes the data structure """
         self.planetKarte = []
         self.planetPaths = {}
+        self.paths = {}
         self.target = None
 
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
@@ -53,6 +54,8 @@ class Planet:  # Karte
         pass
 
     def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
+        ''' [[((0, 0), < Direction.NORTH: 0 >), ((0, 1), < Direction.SOUTH: 180 >), 1]
+            [((0, 0), <Direction.EAST: 90>), ((1, 0), <Direction.WEST: 270>), 1]'''
 
         for i in range(0, len(self.planetKarte)):  # vergleicht Elemente (Knoten) der Liste planetPaths (a, b)
             a = self.planetKarte[i][0][0]
@@ -62,10 +65,10 @@ class Planet:  # Karte
                 d = self.planetKarte[j][1][0]
                 w = self.planetKarte[j][2]  # w ist wichtung der kanten
 
-                if a == b or c == d:  # bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
-                    '''{**planetPaths, a: {**paths, self.planetKarte[i][0][1]: [b, self.planetKarte[i][1][1], w]}}'''
-                    paths = {self.planetKarte[i][0][1]: [b, self.planetKarte[i][1][1], w]}
-                    self.planetPaths = {a: paths}
+                if a == b or c == d or a == d or c == b:  # bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
+                    {**self.planetPaths, a: {**self.paths, self.planetKarte[i][0][1]: [b, self.planetKarte[i][1][1], w]}}
+                    #paths = {self.planetKarte[i][0][1]: [b, self.planetKarte[i][1][1], w]}
+                    #self.planetPaths = {a: paths}
 
 
         """

@@ -91,7 +91,7 @@ class YourFirstTestPlanet(unittest.TestCase):
 
     def test_get_paths(self):
         self.planet.get_paths()
-        print(self.planet.planetPaths)
+        #print(self.planet.planetPaths)
 
     '''
     def test_integrity(self):
