@@ -3,6 +3,7 @@
 from enum import IntEnum, unique
 from typing import List, Optional, Tuple, Dict, Any
 
+
 # IMPORTANT NOTE: DO NOT IMPORT THE ev3dev.ev3 MODULE IN THIS FILE
 
 @unique
@@ -34,6 +35,7 @@ class Planet:  # Karte
         self.planetKarte = []
         self.planetPaths = {}
         self.paths = {}
+        self.shp_tab = {}  # shortest path tabelle dict
         self.target = None
 
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
@@ -57,7 +59,7 @@ class Planet:  # Karte
         ''' [[((0, 0), < Direction.NORTH: 0 >), ((0, 1), < Direction.SOUTH: 180 >), 1]
             [((0, 0), <Direction.EAST: 90>), ((1, 0), <Direction.WEST: 270>), 1]'''
 
-        for i in range(0, len(self.planetKarte)):  # vergleicht Elemente (Knoten) der Liste planetPaths (a, b)
+        for i in range(0, len(self.planetKarte)-1):  # vergleicht Elemente (Knoten) der Liste planetPaths (a, b)
             a = self.planetKarte[i][0][0]
             c = self.planetKarte[i][1][0]
             for j in range(1, len(self.planetKarte)):
@@ -65,7 +67,7 @@ class Planet:  # Karte
                 d = self.planetKarte[j][1][0]
                 w = self.planetKarte[j][2]  # w ist wichtung der kanten
 
-                if a == b:  #bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
+                if a == b:  # bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
                     self.planetPaths[a] = self.paths
                     self.paths[self.planetKarte[i][0][1]] = [b, self.planetKarte[j][1][1], w]
 
@@ -103,13 +105,22 @@ class Planet:  # Karte
         pass
 
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Optional[
-        List[Tuple[Tuple[int, int], Direction]]]: #ausgabewert
+        List[Tuple[Tuple[int, int], Direction]]]:  # ausgabewert
 
         s = start
         t = target
-        for i in range(0, len(self.planetPaths.get(s))):
-            rk = self.planetPaths.get(s)[i][1][0]
-            
+        rk = []  # liste randknoten
+
+        # TODO nochmal konzept, wie man dijkstra manuell macht, wir brauchen auch noch direction
+        while not len(self.shp_tab) == len(self.planetPaths):   # solange länge der tabelle ungleich anzahl aller punkte ist
+            for i in range(0, len(self.planetPaths.get(s))):
+                p = self.planetPaths.get(s)[i][1][0]  # knoten
+                w = self.planetPaths.get(s)[i][1][3]  # wichtung
+                rk.append([p, w, s])  # liste mit knoten, wichtung, startknoten
+
+            self.shp_tab = {s, rk}
+            s = min(rk[1])  # minimum der liste rk vom zweiten element des tupels #TODO stimmt das so [1]?
+
         """
         Returns a shortest path between two nodes
         examples:
