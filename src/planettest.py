@@ -77,7 +77,7 @@ class YourFirstTestPlanet(unittest.TestCase):
         self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 3)
 
 
-    '''def test_add_paths(self):
+    def test_add_paths(self):
         self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
         self.planet.add_path(((0, 0), Direction.WEST), ((0, 1), Direction.WEST), 2)
         self.planet.add_path(((0, 0), Direction.EAST), ((1, 0), Direction.WEST), 1)
@@ -87,20 +87,20 @@ class YourFirstTestPlanet(unittest.TestCase):
         self.planet.add_path(((0, 3), Direction.NORTH), ((0, 3), Direction.WEST), 2)
         self.planet.add_path(((0, 3), Direction.EAST), ((2, 2), Direction.NORTH), 3)
         self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 3)
+        print(self.planet.planetKarte)
 
     def test_get_paths(self):
-        self.planet.get_paths(planetKarte)
-
+        self.planet.get_paths()
+        print(self.planet.planetPaths)
 
     '''
     def test_integrity(self):
         # were all paths added correctly to the planet
         # check if add_path() works by using get_paths()
-        print(self.planet.get_paths())
-        print(self.planet.add_path())
+        
         self.fail('implement me!')
 
-    '''
+    
     def test_empty_planet(self):
         self.assertIsNone(self.planet.shortest_path((0, 0), (1, 2)))
         self.fail('implement me!')
