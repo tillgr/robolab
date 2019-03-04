@@ -7,6 +7,7 @@ from planet import Direction, Planet
 from communication import Communication
 from driving import LineFollower
 import time
+import odometry
 
 client = None  # DO NOT EDIT
 
@@ -20,23 +21,51 @@ def run():
 
     # the execution of all code shall be started from within this function
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER
+    gs = ev3.GyroSensor()
+    gs.mode = "GYRO-RATE"
+    gs.mode = "GYRO-ANG"
 
     rm = ev3.LargeMotor('outC')
     lm = ev3.LargeMotor('outB')
-    cs = ev3.ColorSensor()
-    cs.mode = 'RGB-RAW'
-    us = ev3.UltrasonicSensor()
-    us.mode = 'US-DIST-CM'
 
-    print(f"color: {cs.bin_data('hhh')}")
-    print(f"dist: {us.value()//10}")
+    dist = 0
+    pl = lm.position
+    pr = rm.position
+
+    print(f"position right: {rm.position}")
+
+    '''
+    for i in range(1):
+        print(f"position left: {lm.position}")
+        print(f"position right: {rm.position}")
+
+        dist += rm.position - pr
+
+        pr = rm.position
+
+    print(f"dist: {dist}")
+    print(f"dist: {0.038 * dist}")
+    
+
+    lm.command = 'run-direct'
+    rm.command = 'run-direct'
+
+    lm.duty_cycle_sp = 30
+    rm.duty_cycle_sp = -30
+
+    time.sleep(1.6)
+    lm.stop()
+    rm.stop()
+    '''
+    lm.command = 'run-direct'
+    rm.command = 'run-direct'
 
 
 
-    t = 3250
-    #lm.run_timed(time_sp=t, speed_sp=100, stop_action="coast")
-    #rm.run_timed(time_sp=t, speed_sp=-100, stop_action="coast")
-    #time.sleep(t/1000)
+    lm.stop()
+    rm.stop()
+
+
 
     robot = LineFollower()
     robot.drive()

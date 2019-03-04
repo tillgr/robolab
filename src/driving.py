@@ -1,15 +1,18 @@
+#!/usr/bin/env python3
+
 import ev3dev.ev3 as ev3
 import time
-import operator
+import odometry
 
-
-class LineFollower():
+class LineFollower:
     # sensors
     ultrasonicSensor = ev3.UltrasonicSensor()
     colorSensor = ev3.ColorSensor()
+    gyroSensor = ev3.GyroSensor()
 
     assert ultrasonicSensor.connected
     assert colorSensor.connected
+    assert gyroSensor.connected
 
     # motors
     leftMotor = ev3.LargeMotor('outB')
@@ -21,25 +24,63 @@ class LineFollower():
     # variables (n=0, e=90,...)
     direction = 0   # start direction always NORTH
 
+    integral = 0
+    lastError = 0
+    derivative = 0
+
     listDistances = list()
 
     red = (135, 60, 15)
     blue = (30, 150, 100)
 
+    # turn
+    def turn(self, deg, direction):
+        self.gyroSensor.mode = 'GYRO-RATE'
+        self.gyroSensor.mode = 'GYRO-ANG'
+        self.leftMotor.command = 'run-direct'
+        self.rightMotor.command = 'run-direct'
+
+        if direction == "right":
+            while self.gyroSensor.value() < deg:
+                self.leftMotor.duty_cycle_sp = 20
+                self.rightMotor.duty_cycle_sp = -20
+        else:
+            while abs(self.gyroSensor.value()) < deg:
+                self.leftMotor.duty_cycle_sp = -20
+                self.rightMotor.duty_cycle_sp = 20
+
+        self.leftMotor.stop()
+        self.rightMotor.stop()
+
     # obstacle detection
     def obstacle(self):
         self.ultrasonicSensor.mode = 'US-DIST-CM'
+        self.colorSensor.mode = 'COL-REFLECT'
 
         dist = self.ultrasonicSensor.value() // 10
 
-        if dist < 15:
-            ev3.Sound.speak("found an obstacle")
-            self.leftMotor.run_timed(time_sp=3250, speed_sp=100, stop_action="coast")
-            self.rightMotor.run_timed(time_sp=3250, speed_sp=-100, stop_action="coast")
-            time.sleep(3.25)
-            return True
-        else:
-            return False
+        if dist < 8:
+            # ev3.Sound.speak("found an obstacle")
+            self.lastError = 0
+            self.integral = 0
+            self.derivative = 0
+
+            self.turn(90, "right")
+            self.leftMotor.command = 'run-direct'
+            self.rightMotor.command = 'run-direct'
+
+            self.leftMotor.duty_cycle_sp = 20
+            self.rightMotor.duty_cycle_sp = 20
+            time.sleep(0.8)
+
+            while self.colorSensor.value() not in range(30, 44):
+                self.leftMotor.duty_cycle_sp = 20
+                self.rightMotor.duty_cycle_sp = -20
+            self.leftMotor.stop()
+            self.rightMotor.stop()
+            self.leftMotor.duty_cycle_sp = 0
+            self.rightMotor.duty_cycle_sp = 0
+            print("turned")
 
     # vertex detection
     def vertex(self):
@@ -57,20 +98,51 @@ class LineFollower():
             return False
 
     # vertex exploration
+    def explore(self, direction):
+        self.leftMotor.command = 'run-direct'
+        self.rightMotor.command = 'run-direct'
+
+        self.leftMotor.duty_cycle_sp = 20
+        self.rightMotor.duty_cycle_sp = 20
+        time.sleep(1.1)
+
+        self.leftMotor.stop()
+        self.rightMotor.stop()
+
+        self.turn(90, "left")
+        if self.colorSensor.value() > 37:
+            print(f"path, direction: {(direction - 90)%360}")
+
+        self.turn(90, "right")
+        if self.colorSensor.value() > 37:
+            print(f"path, direction: {direction % 360}")
+
+        self.turn(90, "right")
+        if self.colorSensor.value() > 37:
+            print(f"path, direction: {(direction + 90) % 360}")
 
     def drive(self):
-        kp = 100  # kp*100 -> 10
-        ki = 10  # ki*100 -> 1
-        kd = 100  # kd*100 -> 100
+        kp = 30  # kp*100 -> 10
+        ki = 1  # ki*100 -> 1
+        kd = 10  # kd*100 -> 100
         offset = 37
-        tp = 90
-        integral = 0
-        lastError = 0
-        derivative = 0
+        tp = 20
+
+        positionLeft = self.leftMotor.position
+        positionRight = self.rightMotor.position
 
         t = 500
+        i = 0
 
-        while not self.vertex() and not self.obstacle():
+        self.gyroSensor.mode = 'GYRO-RATE'
+        self.gyroSensor.mode = 'GYRO-ANG'
+
+        while not self.vertex():
+
+
+            self.leftMotor.command = 'run-direct'
+            self.rightMotor.command = 'run-direct'
+
             print(f"position left: {self.leftMotor.position}")
             print(f"position right: {self.rightMotor.position}")
 
@@ -78,14 +150,14 @@ class LineFollower():
             lightValue = self.colorSensor.value()
             print(f"lightValue: {lightValue}")
             error = lightValue - offset
-            print(f"error: {error}")
-            integral += error
-            print(f"integral: {integral}")
-            derivative = error - lastError
-            print(f"derivative: {derivative}")
-            turn = (kp * error) + (ki * integral) + (kd * derivative)
+            #print(f"error: {error}")
+            self.integral += error
+            #print(f"integral: {integral}")
+            derivative = error - self.lastError
+            #print(f"derivative: {derivative}")
+            turn = (kp * error) + (ki * self.integral) + (kd * self.derivative)
             turn /= 100
-            print(f"turn: {turn}")
+            #print(f"turn: {turn}")
             powerLeft = tp + turn
             powerRight = tp - turn
 
@@ -102,14 +174,29 @@ class LineFollower():
             print(f"powerLeft: {powerLeft}")
             print(f"powerRight: {powerRight}")
 
-            self.leftMotor.run_timed(time_sp=500, speed_sp=powerLeft, stop_action="coast")
-            self.rightMotor.run_timed(time_sp=500, speed_sp=powerRight, stop_action="coast")
-            time.sleep(0.3)
+            self.leftMotor.duty_cycle_sp = powerLeft
+            self.rightMotor.duty_cycle_sp = powerRight
 
             lastError = error
 
-            dl = 0
-            dr = 0
-            self.listDistances.append((dl, dr))
+            dl = 0.13 * (self.leftMotor.position - positionLeft)
+            dr = 0.13 * (self.rightMotor.position - positionRight)
 
+            positionLeft = self.leftMotor.position
+            positionRight = self.rightMotor.position
+
+            #self.listDistances.append((dl, dr))
+            if i % 5 == 0:
+                self.listDistances.append(self.gyroSensor.value())
+                self.gyroSensor.mode = 'GYRO-RATE'
+                self.gyroSensor.mode = 'GYRO-ANG'
+
+            self.obstacle()
+            i += 1
+
+        self.leftMotor.stop()
+        self.rightMotor.stop()
+
+        calc = odometry.Odometry()
+        calc.position(0, 11, 4, self.listDistances)
         return self.listDistances

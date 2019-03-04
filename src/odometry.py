@@ -19,10 +19,11 @@ class Odometry:
         self.gamma = gamma
 
         for i in listDistances:
-            self.dl = list(i)[0]
-            self.dr = list(i)[1]
+            #self.dl = list(i)[0]
+            #self.dr = list(i)[1]
 
-            alpha = (self.dl + self.dr)/self.a
+            #alpha = (self.dl + self.dr)/self.a
+            alpha = listDistances(i)
             s = (self.dr + self.dl)/alpha * math.sin(alpha/2)
 
             self.dX += - math.sin(gamma + (alpha/2)) * s
@@ -33,6 +34,9 @@ class Odometry:
 
         Xe = Xs + self.dX
         Ye = Ys + self.dY
+
+        print(f"x: {Xe}")
+        print(f"y: {Ye}")
 
         # take list of [dl, dr]s, start position and
         # return calculated position and direction
