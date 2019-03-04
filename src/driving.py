@@ -8,9 +8,11 @@ class LineFollower:
     # sensors
     ultrasonicSensor = ev3.UltrasonicSensor()
     colorSensor = ev3.ColorSensor()
+    gyroSensor = ev3.GyroSensor()
 
     assert ultrasonicSensor.connected
     assert colorSensor.connected
+    assert gyroSensor.connected
 
     # motors
     leftMotor = ev3.LargeMotor('outB')
@@ -31,6 +33,20 @@ class LineFollower:
     red = (135, 60, 15)
     blue = (30, 150, 100)
 
+    # turn
+    def turn(self, deg):
+        self.gyroSensor.mode = 'GYRO-RATE'
+        self.gyroSensor.mode = 'GYRO-ANG'
+        self.leftMotor.command = 'run-direct'
+        self.rightMotor.command = 'run-direct'
+
+        while self.gyroSensor.value() < deg:
+            self.leftMotor.duty_cycle_sp = 20
+            self.rightMotor.duty_cycle_sp = -20
+
+        self.leftMotor.stop()
+        self.rightMotor.stop()
+
     # obstacle detection
     def obstacle(self):
         self.ultrasonicSensor.mode = 'US-DIST-CM'
@@ -44,14 +60,14 @@ class LineFollower:
             self.integral = 0
             self.derivative = 0
 
-            self.leftMotor.run_timed(time_sp=1000, speed_sp=100, stop_action="coast")
-            self.rightMotor.run_timed(time_sp=1000, speed_sp=-100, stop_action="coast")
-            time.sleep(0.9)
-            self.leftMotor.run_timed(time_sp=500, speed_sp=100, stop_action="coast")
-            self.rightMotor.run_timed(time_sp=500, speed_sp=100, stop_action="coast")
-            time.sleep(0.4)
+            self.turn(90)
             self.leftMotor.command = 'run-direct'
             self.rightMotor.command = 'run-direct'
+
+            self.leftMotor.duty_cycle_sp = 20
+            self.rightMotor.duty_cycle_sp = 20
+            time.sleep(0.8)
+
             while self.colorSensor.value() not in range(30, 44):
                 self.leftMotor.duty_cycle_sp = 20
                 self.rightMotor.duty_cycle_sp = -20
@@ -83,8 +99,7 @@ class LineFollower:
         ki = 1  # ki*100 -> 1
         kd = 10  # kd*100 -> 100
         offset = 37
-        tp = 30
-
+        tp = 20
 
         positionLeft = self.leftMotor.position
         positionRight = self.rightMotor.position
@@ -100,7 +115,7 @@ class LineFollower:
 
             self.colorSensor.mode = 'COL-REFLECT'
             lightValue = self.colorSensor.value()
-            #print(f"lightValue: {lightValue}")
+            print(f"lightValue: {lightValue}")
             error = lightValue - offset
             #print(f"error: {error}")
             self.integral += error
@@ -128,10 +143,6 @@ class LineFollower:
 
             self.leftMotor.duty_cycle_sp = powerLeft
             self.rightMotor.duty_cycle_sp = powerRight
-
-            #self.leftMotor.run_timed(time_sp=500, speed_sp=powerLeft, stop_action="coast")
-            #self.rightMotor.run_timed(time_sp=500, speed_sp=powerRight, stop_action="coast")
-            #time.sleep(0.1)
 
             lastError = error
 

@@ -24,17 +24,7 @@ def run():
 
     rm = ev3.LargeMotor('outC')
     lm = ev3.LargeMotor('outB')
-    cs = ev3.ColorSensor()
-    cs.mode = 'RGB-RAW'
-    us = ev3.UltrasonicSensor()
-    us.mode = 'US-DIST-CM'
 
-    print(f"color: {cs.bin_data('hhh')}")
-    print(f"dist: {us.value()//10}")
-
-
-
-    t = 200
     dist = 0
     pl = lm.position
     pr = rm.position
@@ -43,9 +33,6 @@ def run():
 
     '''
     for i in range(1):
-        lm.run_timed(time_sp=t, speed_sp=100, stop_action="coast")
-        rm.run_timed(time_sp=t, speed_sp=100, stop_action="coast")
-        time.sleep(t/1000)
         print(f"position left: {lm.position}")
         print(f"position right: {rm.position}")
 
@@ -60,10 +47,10 @@ def run():
     lm.command = 'run-direct'
     rm.command = 'run-direct'
 
-    lm.duty_cycle_sp = 50
-    rm.duty_cycle_sp = 50
+    lm.duty_cycle_sp = 30
+    rm.duty_cycle_sp = -30
 
-    time.sleep(1)
+    time.sleep(1.6)
     lm.stop()
     rm.stop()
     '''
