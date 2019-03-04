@@ -65,7 +65,7 @@ def run():
     lm.stop()
     rm.stop()
 
-    print(gs.value())
+
 
     robot = LineFollower()
     robot.drive()

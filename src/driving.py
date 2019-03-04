@@ -2,7 +2,7 @@
 
 import ev3dev.ev3 as ev3
 import time
-
+import odometry
 
 class LineFollower:
     # sensors
@@ -132,8 +132,14 @@ class LineFollower:
         positionRight = self.rightMotor.position
 
         t = 500
+        i = 0
+
+        self.gyroSensor.mode = 'GYRO-RATE'
+        self.gyroSensor.mode = 'GYRO-ANG'
 
         while not self.vertex():
+
+
             self.leftMotor.command = 'run-direct'
             self.rightMotor.command = 'run-direct'
 
@@ -179,10 +185,18 @@ class LineFollower:
             positionLeft = self.leftMotor.position
             positionRight = self.rightMotor.position
 
-            self.listDistances.append((dl, dr))
+            #self.listDistances.append((dl, dr))
+            if i % 5 == 0:
+                self.listDistances.append(self.gyroSensor.value())
+                self.gyroSensor.mode = 'GYRO-RATE'
+                self.gyroSensor.mode = 'GYRO-ANG'
+
             self.obstacle()
+            i += 1
 
         self.leftMotor.stop()
         self.rightMotor.stop()
-        self.explore(90)
+
+        calc = odometry.Odometry()
+        calc.position(0, 11, 4, self.listDistances)
         return self.listDistances
