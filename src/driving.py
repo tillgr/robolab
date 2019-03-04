@@ -1,9 +1,10 @@
+#!/usr/bin/env python3
+
 import ev3dev.ev3 as ev3
 import time
-import operator
 
 
-class LineFollower():
+class LineFollower:
     # sensors
     ultrasonicSensor = ev3.UltrasonicSensor()
     colorSensor = ev3.ColorSensor()
@@ -29,17 +30,19 @@ class LineFollower():
     # obstacle detection
     def obstacle(self):
         self.ultrasonicSensor.mode = 'US-DIST-CM'
+        self.colorSensor.mode = 'COL-REFLECT'
 
         dist = self.ultrasonicSensor.value() // 10
 
         if dist < 15:
-            ev3.Sound.speak("found an obstacle")
-            self.leftMotor.run_timed(time_sp=3250, speed_sp=100, stop_action="coast")
-            self.rightMotor.run_timed(time_sp=3250, speed_sp=-100, stop_action="coast")
-            time.sleep(3.25)
-            return True
-        else:
-            return False
+            # ev3.Sound.speak("found an obstacle")
+            self.leftMotor.run_timed(time_sp=1000, speed_sp=100, stop_action="coast")
+            self.rightMotor.run_timed(time_sp=1000, speed_sp=-100, stop_action="coast")
+            time.sleep(0.9)
+            while self.colorSensor.value() not in range(30, 44):
+                self.leftMotor.run_timed(time_sp=300, speed_sp=100, stop_action="coast")
+                self.rightMotor.run_timed(time_sp=300, speed_sp=-100, stop_action="coast")
+                time.sleep(0.1)
 
     # vertex detection
     def vertex(self):
@@ -70,7 +73,7 @@ class LineFollower():
 
         t = 500
 
-        while not self.vertex() and not self.obstacle():
+        while not self.vertex():
             print(f"position left: {self.leftMotor.position}")
             print(f"position right: {self.rightMotor.position}")
 
@@ -111,5 +114,6 @@ class LineFollower():
             dl = 0
             dr = 0
             self.listDistances.append((dl, dr))
+            self.obstacle()
 
         return self.listDistances

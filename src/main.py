@@ -7,6 +7,7 @@ from planet import Direction, Planet
 from communication import Communication
 from driving import LineFollower
 import time
+import odometry
 
 client = None  # DO NOT EDIT
 
