@@ -21,6 +21,8 @@ class LineFollower():
     # variables (n=0, e=90,...)
     direction = 0   # start direction always NORTH
 
+    listDistances = list()
+
     red = (135, 60, 15)
     blue = (30, 150, 100)
 
@@ -59,9 +61,9 @@ class LineFollower():
     def drive(self):
         kp = 100  # kp*100 -> 10
         ki = 10  # ki*100 -> 1
-        kd = 10  # kd*100 -> 100
+        kd = 100  # kd*100 -> 100
         offset = 37
-        tp = 80
+        tp = 90
         integral = 0
         lastError = 0
         derivative = 0
@@ -69,6 +71,9 @@ class LineFollower():
         t = 500
 
         while not self.vertex() and not self.obstacle():
+            print(f"position left: {self.leftMotor.position}")
+            print(f"position right: {self.rightMotor.position}")
+
             self.colorSensor.mode = 'COL-REFLECT'
             lightValue = self.colorSensor.value()
             print(f"lightValue: {lightValue}")
@@ -99,6 +104,12 @@ class LineFollower():
 
             self.leftMotor.run_timed(time_sp=500, speed_sp=powerLeft, stop_action="coast")
             self.rightMotor.run_timed(time_sp=500, speed_sp=powerRight, stop_action="coast")
-            time.sleep(0.2)
+            time.sleep(0.3)
 
             lastError = error
+
+            dl = 0
+            dr = 0
+            self.listDistances.append((dl, dr))
+
+        return self.listDistances
