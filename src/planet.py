@@ -67,9 +67,6 @@ class Planet:  # Karte
 
                 if a == b or c == d or a == d or c == b:  # bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
                     {**self.planetPaths, a: {**self.paths, self.planetKarte[i][0][1]: [b, self.planetKarte[i][1][1], w]}}
-                    #paths = {self.planetKarte[i][0][1]: [b, self.planetKarte[i][1][1], w]}
-                    #self.planetPaths = {a: paths}
-
 
         """
         Returns all paths
@@ -88,10 +85,14 @@ class Planet:  # Karte
             }
         :return: Dict
         """
+        return self.planetPaths
+
         pass
 
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Optional[
         List[Tuple[Tuple[int, int], Direction]]]:
+
+
         """
         Returns a shortest path between two nodes
         examples:
