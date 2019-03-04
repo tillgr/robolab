@@ -65,7 +65,7 @@ class Planet:  # Karte
                 d = self.planetKarte[j][1][0]
                 w = self.planetKarte[j][2]  # w ist wichtung der kanten
 
-                if a == b:  # bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
+                if a == b:  #bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
                     self.planetPaths[a] = self.paths
                     self.paths[self.planetKarte[i][0][1]] = [b, self.planetKarte[j][1][1], w]
 
@@ -80,7 +80,6 @@ class Planet:  # Karte
                 if c == b:
                     self.planetPaths[c] = self.paths
                     self.paths[self.planetKarte[i][0][1]] = [b, self.planetKarte[j][1][1], w]
-
 
         """
         Returns all paths
@@ -106,7 +105,11 @@ class Planet:  # Karte
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Optional[
         List[Tuple[Tuple[int, int], Direction]]]: #ausgabewert
 
-
+        s = start
+        t = target
+        for i in range(0, len(self.planetPaths.get(s))):
+            rk = self.planetPaths.get(s)[i][1][0]
+            
         """
         Returns a shortest path between two nodes
         examples:
