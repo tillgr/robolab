@@ -42,6 +42,7 @@ class Planet:           #Karte
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],         #Koordinaten, Hin/Rückrichtung
                  weight: int):
 
+
         planetKarte.append([start, target])
 
         """
@@ -53,18 +54,23 @@ class Planet:           #Karte
         :param weight: Integer
         :return: void
         """
+        print(planetKarte)
         pass
 
     def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
 
-        for i in range(1, planetKarte.len()):       #vergleicht Elemente (Knoten) der Liste planetPaths (a, b)
+        for i in range(0, len(planetKarte)):       #vergleicht Elemente (Knoten) der Liste planetPaths (a, b)
             a = planetKarte[i][1]
-            for j in range(i+1, planetKarte.len()):
+            for j in range(i+1, len(planetKarte)):
                 b = planetKarte[j][1]
                 w = planetKarte[j][3]               #w ist wichtung der kanten
 
                 if a == b:                      #bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
                     {**planetPaths, a[1][1]: {**paths, a[1][2]: [b[1][1], b[1][2], w]}}
+
+        return planetPaths
+
+        print(planetPaths)
 
 
 

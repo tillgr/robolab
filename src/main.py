@@ -3,6 +3,7 @@
 import ev3dev.ev3 as ev3
 import uuid
 import paho.mqtt.client as mqtt
+import time
 from planet import Direction, Planet
 from communication import Communication
 from odometry import LineFollower
@@ -22,6 +23,15 @@ def run():
 
     rightMotor = ev3.LargeMotor('outC')
     leftMotor = ev3.LargeMotor('outB')
+    leftMotor.duty_cycle_sp = 80
+
+    start = time.time()
+
+    while time.time()-start < 10:
+        continue
+
+    leftMotor.stop()
+
     cs = ev3.ColorSensor()
     cs.mode = 'COL-COLOR'
     print("Hello World, it works!")
