@@ -34,10 +34,39 @@ def run():
 
 
 
-    t = 3250
-    #lm.run_timed(time_sp=t, speed_sp=100, stop_action="coast")
-    #rm.run_timed(time_sp=t, speed_sp=-100, stop_action="coast")
-    #time.sleep(t/1000)
+    t = 200
+    dist = 0
+    pl = lm.position
+    pr = rm.position
+
+    print(f"position right: {rm.position}")
+
+    '''
+    for i in range(1):
+        lm.run_timed(time_sp=t, speed_sp=100, stop_action="coast")
+        rm.run_timed(time_sp=t, speed_sp=100, stop_action="coast")
+        time.sleep(t/1000)
+        print(f"position left: {lm.position}")
+        print(f"position right: {rm.position}")
+
+        dist += rm.position - pr
+
+        pr = rm.position
+
+    print(f"dist: {dist}")
+    print(f"dist: {0.038 * dist}")
+    
+
+    lm.command = 'run-direct'
+    rm.command = 'run-direct'
+
+    lm.duty_cycle_sp = 50
+    rm.duty_cycle_sp = 50
+
+    time.sleep(1)
+    lm.stop()
+    rm.stop()
+    '''
 
     robot = LineFollower()
     robot.drive()

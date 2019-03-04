@@ -34,5 +34,8 @@ class Odometry:
         Xe = Xs + self.dX
         Ye = Ys + self.dY
 
+        print(f"x: {Xe}")
+        print(f"y: {Ye}")
+
         # take list of [dl, dr]s, start position and
         # return calculated position and direction

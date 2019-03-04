@@ -22,6 +22,10 @@ class LineFollower:
     # variables (n=0, e=90,...)
     direction = 0   # start direction always NORTH
 
+    integral = 0
+    lastError = 0
+    derivative = 0
+
     listDistances = list()
 
     red = (135, 60, 15)
@@ -34,15 +38,28 @@ class LineFollower:
 
         dist = self.ultrasonicSensor.value() // 10
 
-        if dist < 15:
+        if dist < 8:
             # ev3.Sound.speak("found an obstacle")
+            self.lastError = 0
+            self.integral = 0
+            self.derivative = 0
+
             self.leftMotor.run_timed(time_sp=1000, speed_sp=100, stop_action="coast")
             self.rightMotor.run_timed(time_sp=1000, speed_sp=-100, stop_action="coast")
             time.sleep(0.9)
+            self.leftMotor.run_timed(time_sp=500, speed_sp=100, stop_action="coast")
+            self.rightMotor.run_timed(time_sp=500, speed_sp=100, stop_action="coast")
+            time.sleep(0.4)
+            self.leftMotor.command = 'run-direct'
+            self.rightMotor.command = 'run-direct'
             while self.colorSensor.value() not in range(30, 44):
-                self.leftMotor.run_timed(time_sp=300, speed_sp=100, stop_action="coast")
-                self.rightMotor.run_timed(time_sp=300, speed_sp=-100, stop_action="coast")
-                time.sleep(0.1)
+                self.leftMotor.duty_cycle_sp = 20
+                self.rightMotor.duty_cycle_sp = -20
+            self.leftMotor.stop()
+            self.rightMotor.stop()
+            self.leftMotor.duty_cycle_sp = 0
+            self.rightMotor.duty_cycle_sp = 0
+            print("turned")
 
     # vertex detection
     def vertex(self):
@@ -62,33 +79,37 @@ class LineFollower:
     # vertex exploration
 
     def drive(self):
-        kp = 100  # kp*100 -> 10
-        ki = 10  # ki*100 -> 1
-        kd = 100  # kd*100 -> 100
+        kp = 30  # kp*100 -> 10
+        ki = 1  # ki*100 -> 1
+        kd = 10  # kd*100 -> 100
         offset = 37
-        tp = 90
-        integral = 0
-        lastError = 0
-        derivative = 0
+        tp = 30
+
+
+        positionLeft = self.leftMotor.position
+        positionRight = self.rightMotor.position
 
         t = 500
 
         while not self.vertex():
+            self.leftMotor.command = 'run-direct'
+            self.rightMotor.command = 'run-direct'
+
             print(f"position left: {self.leftMotor.position}")
             print(f"position right: {self.rightMotor.position}")
 
             self.colorSensor.mode = 'COL-REFLECT'
             lightValue = self.colorSensor.value()
-            print(f"lightValue: {lightValue}")
+            #print(f"lightValue: {lightValue}")
             error = lightValue - offset
-            print(f"error: {error}")
-            integral += error
-            print(f"integral: {integral}")
-            derivative = error - lastError
-            print(f"derivative: {derivative}")
-            turn = (kp * error) + (ki * integral) + (kd * derivative)
+            #print(f"error: {error}")
+            self.integral += error
+            #print(f"integral: {integral}")
+            derivative = error - self.lastError
+            #print(f"derivative: {derivative}")
+            turn = (kp * error) + (ki * self.integral) + (kd * self.derivative)
             turn /= 100
-            print(f"turn: {turn}")
+            #print(f"turn: {turn}")
             powerLeft = tp + turn
             powerRight = tp - turn
 
@@ -105,15 +126,24 @@ class LineFollower:
             print(f"powerLeft: {powerLeft}")
             print(f"powerRight: {powerRight}")
 
-            self.leftMotor.run_timed(time_sp=500, speed_sp=powerLeft, stop_action="coast")
-            self.rightMotor.run_timed(time_sp=500, speed_sp=powerRight, stop_action="coast")
-            time.sleep(0.3)
+            self.leftMotor.duty_cycle_sp = powerLeft
+            self.rightMotor.duty_cycle_sp = powerRight
+
+            #self.leftMotor.run_timed(time_sp=500, speed_sp=powerLeft, stop_action="coast")
+            #self.rightMotor.run_timed(time_sp=500, speed_sp=powerRight, stop_action="coast")
+            #time.sleep(0.1)
 
             lastError = error
 
-            dl = 0
-            dr = 0
+            dl = 0.13 * (self.leftMotor.position - positionLeft)
+            dr = 0.13 * (self.rightMotor.position - positionRight)
+
+            positionLeft = self.leftMotor.position
+            positionRight = self.rightMotor.position
+
             self.listDistances.append((dl, dr))
             self.obstacle()
 
+        self.leftMotor.stop()
+        self.rightMotor.stop()
         return self.listDistances
