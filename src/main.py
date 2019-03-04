@@ -21,6 +21,9 @@ def run():
 
     # the execution of all code shall be started from within this function
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER
+    gs = ev3.GyroSensor()
+    gs.mode = "GYRO-RATE"
+    gs.mode = "GYRO-ANG"
 
     rm = ev3.LargeMotor('outC')
     lm = ev3.LargeMotor('outB')
@@ -54,6 +57,15 @@ def run():
     lm.stop()
     rm.stop()
     '''
+    lm.command = 'run-direct'
+    rm.command = 'run-direct'
+
+
+
+    lm.stop()
+    rm.stop()
+
+    print(gs.value())
 
     robot = LineFollower()
     robot.drive()

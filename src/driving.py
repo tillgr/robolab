@@ -34,15 +34,20 @@ class LineFollower:
     blue = (30, 150, 100)
 
     # turn
-    def turn(self, deg):
+    def turn(self, deg, direction):
         self.gyroSensor.mode = 'GYRO-RATE'
         self.gyroSensor.mode = 'GYRO-ANG'
         self.leftMotor.command = 'run-direct'
         self.rightMotor.command = 'run-direct'
 
-        while self.gyroSensor.value() < deg:
-            self.leftMotor.duty_cycle_sp = 20
-            self.rightMotor.duty_cycle_sp = -20
+        if direction == "right":
+            while self.gyroSensor.value() < deg:
+                self.leftMotor.duty_cycle_sp = 20
+                self.rightMotor.duty_cycle_sp = -20
+        else:
+            while abs(self.gyroSensor.value()) < deg:
+                self.leftMotor.duty_cycle_sp = -20
+                self.rightMotor.duty_cycle_sp = 20
 
         self.leftMotor.stop()
         self.rightMotor.stop()
@@ -60,7 +65,7 @@ class LineFollower:
             self.integral = 0
             self.derivative = 0
 
-            self.turn(90)
+            self.turn(90, "right")
             self.leftMotor.command = 'run-direct'
             self.rightMotor.command = 'run-direct'
 
@@ -93,6 +98,28 @@ class LineFollower:
             return False
 
     # vertex exploration
+    def explore(self, direction):
+        self.leftMotor.command = 'run-direct'
+        self.rightMotor.command = 'run-direct'
+
+        self.leftMotor.duty_cycle_sp = 20
+        self.rightMotor.duty_cycle_sp = 20
+        time.sleep(1.1)
+
+        self.leftMotor.stop()
+        self.rightMotor.stop()
+
+        self.turn(90, "left")
+        if self.colorSensor.value() > 37:
+            print(f"path, direction: {(direction - 90)%360}")
+
+        self.turn(90, "right")
+        if self.colorSensor.value() > 37:
+            print(f"path, direction: {direction % 360}")
+
+        self.turn(90, "right")
+        if self.colorSensor.value() > 37:
+            print(f"path, direction: {(direction + 90) % 360}")
 
     def drive(self):
         kp = 30  # kp*100 -> 10
@@ -157,4 +184,5 @@ class LineFollower:
 
         self.leftMotor.stop()
         self.rightMotor.stop()
+        self.explore(90)
         return self.listDistances
