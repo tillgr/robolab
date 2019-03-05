@@ -32,7 +32,7 @@ def run():
     pl = lm.position
     pr = rm.position
 
-    print(f"position right: {rm.position}")
+
 
     '''
     for i in range(1):
@@ -57,15 +57,14 @@ def run():
     lm.stop()
     rm.stop()
     '''
-    lm.command = 'run-direct'
-    rm.command = 'run-direct'
+    print(f"position right: {rm.position}")
 
+    #lm.run_to_rel_pos(position_sp=360, speed_sp=40, stop_action="hold")
+    #rm.run_to_rel_pos(position_sp=360, speed_sp=40, stop_action="hold")
 
+    #time.sleep(10)
 
-    lm.stop()
-    rm.stop()
-
-
+    print(f"position right: {rm.position}")
 
     robot = LineFollower()
     robot.drive()

@@ -16,20 +16,43 @@ class Odometry:
     gamma = 0       # Blickrichtung
 
     def position(self, gamma, Xs, Ys, listDistances):
-        self.gamma = gamma
+        self.gamma = (gamma/180)*math.pi
+        print(self.gamma)
 
-        for i in listDistances:
-            #self.dl = list(i)[0]
-            #self.dr = list(i)[1]
+        i=0
 
-            #alpha = (self.dl + self.dr)/self.a
-            alpha = listDistances(i)
-            s = (self.dr + self.dl)/alpha * math.sin(alpha/2)
+        for dist in listDistances:
+            self.dl = dist[0]
+            self.dr = dist[1]
 
-            self.dX += - math.sin(gamma + (alpha/2)) * s
-            self.dY += math.cos(gamma + (alpha/2)) * s
+            alpha = (self.dl - self.dr)/self.a
 
-            gamma += alpha
+            #print(f"alpha: {alpha}")
+            #s = 2 * self.r * math.sin(alpha/2)
+
+            if self.gamma < 0:
+                self.gamma = 2*math.pi + self.gamma
+            elif self.gamma > 2*math.pi:
+                self.gamma -= 2*math.pi
+
+            if alpha == 0.0:
+                if (0 < self.gamma < (45 / 180) * math.pi) or ((315 / 180) * math.pi < self.gamma < (359 / 180) * math.pi):
+                    self.dY += self.dr/40
+                elif (45 / 180)*math.pi < self.gamma < (135 / 180)*math.pi:
+                    self.dX += self.dr/40
+                elif (135/180)*math.pi < self.gamma < (225/180)*math.pi:
+                    self.dY -= self.dr/40
+                elif (225/180)*math.pi < self.gamma < (315/180)*math.pi:
+                    self.dX -= self.dr/40
+            else:
+
+                #s = 2 * self.r * math.sin(alpha / 2)
+                s = ((self.dr + self.dl) / alpha) * math.sin(alpha / 2)
+
+                self.dX -= math.sin(self.gamma + (alpha/2)) * s
+                self.dY += math.cos(self.gamma + (alpha/2)) * s
+
+            self.gamma += alpha
 
 
         Xe = Xs + self.dX
@@ -37,6 +60,6 @@ class Odometry:
 
         print(f"x: {Xe}")
         print(f"y: {Ye}")
+        print(f"direction: {(self.gamma*180)/math.pi}")
 
-        # take list of [dl, dr]s, start position and
         # return calculated position and direction

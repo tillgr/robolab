@@ -3,6 +3,7 @@
 import ev3dev.ev3 as ev3
 import time
 import odometry
+import math
 
 class LineFollower:
     # sensors
@@ -28,7 +29,7 @@ class LineFollower:
     lastError = 0
     derivative = 0
 
-    listDistances = list()
+    listDistances = []
 
     red = (135, 60, 15)
     blue = (30, 150, 100)
@@ -71,7 +72,7 @@ class LineFollower:
 
             self.leftMotor.duty_cycle_sp = 20
             self.rightMotor.duty_cycle_sp = 20
-            time.sleep(0.8)
+            time.sleep(0.5)
 
             while self.colorSensor.value() not in range(30, 44):
                 self.leftMotor.duty_cycle_sp = 20
@@ -137,18 +138,20 @@ class LineFollower:
         self.gyroSensor.mode = 'GYRO-RATE'
         self.gyroSensor.mode = 'GYRO-ANG'
 
+        self.listDistances.clear()
+
         while not self.vertex():
 
 
             self.leftMotor.command = 'run-direct'
             self.rightMotor.command = 'run-direct'
 
-            print(f"position left: {self.leftMotor.position}")
-            print(f"position right: {self.rightMotor.position}")
+            #print(f"position left: {self.leftMotor.position}")
+            #print(f"position right: {self.rightMotor.position}")
 
             self.colorSensor.mode = 'COL-REFLECT'
             lightValue = self.colorSensor.value()
-            print(f"lightValue: {lightValue}")
+            #print(f"lightValue: {lightValue}")
             error = lightValue - offset
             #print(f"error: {error}")
             self.integral += error
@@ -179,24 +182,25 @@ class LineFollower:
 
             lastError = error
 
-            dl = 0.13 * (self.leftMotor.position - positionLeft)
-            dr = 0.13 * (self.rightMotor.position - positionRight)
+            dl = 0.048 * (self.leftMotor.position - positionLeft)
+            dr = 0.048 * (self.rightMotor.position - positionRight)
 
             positionLeft = self.leftMotor.position
             positionRight = self.rightMotor.position
 
-            #self.listDistances.append((dl, dr))
-            if i % 5 == 0:
-                self.listDistances.append(self.gyroSensor.value())
-                self.gyroSensor.mode = 'GYRO-RATE'
-                self.gyroSensor.mode = 'GYRO-ANG'
+            self.listDistances.append([dl, dr])
+
+            #self.listDistances.append((self.gyroSensor.value()/180)*math.pi)
+            #self.gyroSensor.mode = 'GYRO-RATE'
+            #self.gyroSensor.mode = 'GYRO-ANG'
 
             self.obstacle()
-            i += 1
 
         self.leftMotor.stop()
         self.rightMotor.stop()
 
+        print(self.listDistances)
+
         calc = odometry.Odometry()
-        calc.position(0, 11, 4, self.listDistances)
+        calc.position(0, 0, 0, self.listDistances)
         return self.listDistances
