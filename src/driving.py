@@ -100,27 +100,47 @@ class LineFollower:
 
     # vertex exploration
     def explore(self, direction):
+        #self.turn(1, "right")
         self.leftMotor.command = 'run-direct'
         self.rightMotor.command = 'run-direct'
 
         self.leftMotor.duty_cycle_sp = 20
         self.rightMotor.duty_cycle_sp = 20
         time.sleep(1.1)
+        if self.colorSensor.value() in range(30, 44):
+            print(f"path, direction: {direction % 360}")
+        self.leftMotor.duty_cycle_sp = -20
+        self.rightMotor.duty_cycle_sp = -20
+        time.sleep(1.1)
 
-        self.leftMotor.stop()
+        self.leftMotor.duty_cycle_sp = 0
+
+        #self.leftMotor.stop()
+        #self.rightMotor.stop()
+
+        self.gyroSensor.mode = 'GYRO-RATE'
+        self.gyroSensor.mode = 'GYRO-ANG'
+        print(f"gyro: {self.gyroSensor.value()}")
+        while abs(self.gyroSensor.value()) < 100:
+            self.rightMotor.duty_cycle_sp = 20
+            if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
+                print(f"path, direction: {(direction + 90) % 360}")
+                break
+        while self.gyroSensor.value() is not 0:
+            self.rightMotor.duty_cycle_sp = -20
         self.rightMotor.stop()
 
-        self.turn(90, "left")
-        if self.colorSensor.value() > 37:
-            print(f"path, direction: {(direction - 90)%360}")
+        self.gyroSensor.mode = 'GYRO-RATE'
+        self.gyroSensor.mode = 'GYRO-ANG'
+        while abs(self.gyroSensor.value()) < 100:
+            self.leftMotor.duty_cycle_sp = 20
+            if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
+                print(f"path, direction: {(direction - 90) % 360}")
+                break
+        while self.gyroSensor.value() is not 0:
+            self.leftMotor.duty_cycle_sp = -20
+        self.leftMotor.stop()
 
-        self.turn(90, "right")
-        if self.colorSensor.value() > 37:
-            print(f"path, direction: {direction % 360}")
-
-        self.turn(90, "right")
-        if self.colorSensor.value() > 37:
-            print(f"path, direction: {(direction + 90) % 360}")
 
     def drive(self):
         kp = 30  # kp*100 -> 10
@@ -201,6 +221,7 @@ class LineFollower:
 
         print(self.listDistances)
 
+        self.explore(0)
         calc = odometry.Odometry()
         calc.position(0, 0, 0, self.listDistances)
         return self.listDistances

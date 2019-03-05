@@ -23,9 +23,6 @@ def run():
 
     # the execution of all code shall be started from within this function
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER
-    gs = ev3.GyroSensor()
-    gs.mode = "GYRO-RATE"
-    gs.mode = "GYRO-ANG"
 
     rm = ev3.LargeMotor('outC')
     lm = ev3.LargeMotor('outB')
@@ -43,10 +40,10 @@ def run():
     print(f"position right: {rm.position}")
 
     robot = LineFollower()
-    #robot.drive()
+    robot.drive()
 
     t = test.Test()
-    t.firstVertex(client)
+    #t.firstVertex(client)
 
 
 # DO NOT EDIT

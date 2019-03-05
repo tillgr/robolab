@@ -37,13 +37,13 @@ class Odometry:
 
             if alpha == 0.0:
                 if (0 < self.gamma < (45 / 180) * math.pi) or ((315 / 180) * math.pi < self.gamma < (359 / 180) * math.pi):
-                    self.dY += self.dr/40
+                    self.dY += self.dr/50
                 elif (45 / 180)*math.pi < self.gamma < (135 / 180)*math.pi:
-                    self.dX += self.dr/40
+                    self.dX += self.dr/50
                 elif (135/180)*math.pi < self.gamma < (225/180)*math.pi:
-                    self.dY -= self.dr/40
+                    self.dY -= self.dr/50
                 elif (225/180)*math.pi < self.gamma < (315/180)*math.pi:
-                    self.dX -= self.dr/40
+                    self.dX -= self.dr/50
             else:
 
                 #s = 2 * self.r * math.sin(alpha / 2)
