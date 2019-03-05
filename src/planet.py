@@ -110,21 +110,26 @@ class Planet:  # Karte
         s = start
         t = target
         gewaehlt = []
-        self.dijk = {s: self.planetPaths.get(s)}
+        rkm = self.planetPaths.get(s)    # randknotenmenge aus planetPaths
+
+        self.dijk = {s: rkm}    # eintrag in dijk s: rkm
+        rkm_d = self.dijk.get(s)    # randknotenmenge aus Dijkstra
         i = 0
 
         def update_dijkstra():
             gewaehlt.append(s)  # in gewählt hinzufügen
+            if self.dijk.get(s)[i-1][1][0] in self.dijk.keys():     # TODO wenn in vorgängerzeile key der
+                del self.dijk[]
+            self.dijk[s] = (rkm, rkm_d[i-1])  # TODO nächste zeile anlegen randknoten übernehmen plus neue hinzufügen
             if i > 0:
-                self.planetPaths.get(s)[i][1][3] = self.planetPaths.get(s)[i - 1][1][3] + self.planetPaths.get(s)[i][1][3]      # weight updaten
-            self.dijk[s] = self.planetPaths.get(s)  # in dijk hizufügen
+                self.dijk.get(s)[i][1][2] = self.dijk.get(s)[i - 1][1][2] + self.dijk.get(s)[i][1][2]   # in dijk weight updaten
 
         while not len(self.planetPaths) == len(self.dijk):      # solange länge von planetPaths ungleich länge dijk
                 update_dijkstra()
-                for i in range(0, len(self.planetPaths.get(s))):    # für richtungen von jeweiligen knoten aus
-                    if min(self.planetPaths.get(s)[i][1][3]) and s not in gewaehlt: # wenn minimum an weight in einem eintrag gefunden
-                        s = self.planetPaths.get(s)[i]                  # s neu wählen
-
+                for i in range(0, len(rkm_d)):    # für richtungen von jeweiligen knoten aus
+                    if min(rkm_d[i][1][2]) and s not in gewaehlt: # wenn minimum an weight in einem eintrag gefunden
+                        s = rkm_d[i]                  # s neu wählen
+                        update_dijkstra()
 
 
 
