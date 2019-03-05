@@ -2,6 +2,7 @@
 
 from enum import IntEnum, unique
 from typing import List, Optional, Tuple, Dict
+from collections import defaultdict
 
 
 # IMPORTANT NOTE: DO NOT IMPORT THE ev3dev.ev3 MODULE IN THIS FILE
@@ -62,10 +63,12 @@ class Planet:  # Karte
         for i in range(0, len(self.planetKarte)-1):  # vergleicht Elemente (Knoten) der Liste planetPaths (a, b)
             a = self.planetKarte[i][0][0]
             c = self.planetKarte[i][1][0]
-            for j in range(1, len(self.planetKarte)):
+            for j in range(1, len(self.planetKarte)-1): # TODO: wie funktioniert range in kombination mit len
                 b = self.planetKarte[j][0][0]
                 d = self.planetKarte[j][1][0]
                 w = self.planetKarte[j][2]  # w ist wichtung der kanten
+
+                # TODO mehrere sachen hinzufügen möglich? neuer eintrag erzeugt, wenn key nicht vorhand?
 
                 if a == b:  # bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
                     self.planetPaths[a] = self.paths
@@ -83,7 +86,7 @@ class Planet:  # Karte
                     self.planetPaths[c] = self.paths
                     self.paths[self.planetKarte[i][0][1]] = [b, self.planetKarte[j][1][1], w]
 
-        """
+                """
         Returns all paths
         example:
             get_paths() returns:
@@ -104,50 +107,52 @@ class Planet:  # Karte
 
         pass
 
-    def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Optional[
-        List[Tuple[Tuple[int, int], Direction]]]:  # ausgabewert
+    def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Optional[List[Tuple[Tuple[int, int], Direction]]]:  # ausgabewert
 
         s = start
         t = target
         gewaehlt = []
-        rkm = self.planetPaths.get(s)    # randknotenmenge aus planetPaths
-
-        self.dijk = {s: rkm}    # eintrag in dijk s: rkm
-        rkm_d = self.dijk.get(s)    # randknotenmenge aus Dijkstra
         i = 0
+
+        rkm = self.planetPaths.get(s)  # randknotenmenge aus planetPaths
+        self.dijk = {s: rkm.items()}  # eintrag in dijk s: rkm.items(), value ist typ liste # TODO welches format returnt .items?
+        self.dijk = defaultdict(list)     # default datentyp für values von dijk ist list
 
         def update_dijkstra():
             gewaehlt.append(s)  # in gewählt hinzufügen
-            if self.dijk.get(s)[i-1][1][0] in self.dijk.keys():     # TODO wenn in vorgängerzeile key der
-                del self.dijk[]
-            self.dijk[s] = (rkm, rkm_d[i-1])  # TODO nächste zeile anlegen randknoten übernehmen plus neue hinzufügen
+
+            last_key = sorted(self.dijk.keys())[-1]  # letzter key vor dem update aus dijk
+            last_value = self.dijk[last_key]  # letzter wert des dijk vor update
+
+            self.dijk[s] = rkm.items()  # nächste zeile anlegen mit neue nachbarknoten
+            self.dijk[s].append(last_value)  # randknoten übernehmen
+
             if i > 0:
-                self.dijk.get(s)[i][1][2] = self.dijk.get(s)[i - 1][1][2] + self.dijk.get(s)[i][1][2]   # in dijk weight updaten
+                self.dijk.get(s)[i][1][2] = self.dijk.get(s)[i - 1][1][2] + self.dijk.get(s)[i][1][2]  # in dijk weight updaten
 
-        while not len(self.planetPaths) == len(self.dijk):      # solange länge von planetPaths ungleich länge dijk
+            for k in range(0, len(self.dijk.get(s))-1):   # aktualisierung der knoten # TODO geht es um die anzahl oder die indizes? sonst endrange fixen
+                a = self.dijk[s][k]    # element in s wählen
+                a_w = self.dijk[s][k][0]    # width parameter von diesem element
+                for l in range (1, len(self.dijk.get(s))-1):
+                    b = self.dijk[s][l][0]
+                    b_w = self.dijk[s][l][0]    # wird verglichen, zum aktualisieren
+                    if a_w >= b_w:      # falls width größer/gleich, gelöscht
+                        del a   # TODO aussage valide?
+                    elif a_w < b_w:     # falls width kleiner gelöscht
+                        del b
+                    elif a_w < 0:       # falls broken: gelöscht
+                        del a
+                    elif b_w < 0:       # same here
+                        del b
+
+        while not len(self.planetPaths) == len(self.dijk):  # solange länge von planetPaths ungleich länge dijk
+            for value in rkm.items():  # für richtungen von jeweiligen knoten aus
+                if min(value[1][2]) and s not in gewaehlt:  # wenn minimum an weight in einem eintrag gefunden
+                    # TODO, wie bestimmt man das minimum?
+                    s = value  # s neu wählen # TODO wie läuft das mit dem scope?
                 update_dijkstra()
-                for i in range(0, len(rkm_d)):    # für richtungen von jeweiligen knoten aus
-                    if min(rkm_d[i][1][2]) and s not in gewaehlt: # wenn minimum an weight in einem eintrag gefunden
-                        s = rkm_d[i]                  # s neu wählen
-                        update_dijkstra()
 
-
-
-
-        '''#rk = []  # liste randknoten
-
-        # TODO nochmal konzept, wie man dijkstra manuell macht, wir brauchen auch noch direction
-        while not len(self.shp_tab) == len(self.planetPaths):   # solange länge der tabelle ungleich anzahl aller punkte ist
-            for i in range(0, len(self.planetPaths.get(s))):
-                p = self.planetPaths.get(s)[i][1][0]  # knoten
-                w = self.planetPaths.get(s)[i][1][3]  # wichtung
-                rk.append([p, w, s])  # liste mit knoten, wichtung, startknoten
-
-            self.shp_tab = {s, rk}
-            s = min(rk[1])  # minimum der liste rk vom zweiten element des tupels #TODO stimmt das so [1]?
-        '''
-
-
+        
 
         """
         Returns a shortest path between two nodes
