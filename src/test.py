@@ -6,6 +6,6 @@ import communication
 
 class Test:
     def firstVertex(self, c):
-        robot = driving.LineFollower
+        robot = driving.LineFollower()
         robot.drive()
         com = communication.Communication(c)

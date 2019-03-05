@@ -44,10 +44,9 @@ def run():
 
     robot = LineFollower()
     #robot.drive()
-    com = communication.Communication(client)
 
-    t = test.Test
-    #t.firstVertex(c = client)
+    t = test.Test()
+    t.firstVertex(client)
 
 
 # DO NOT EDIT
