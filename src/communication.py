@@ -15,9 +15,14 @@ class Communication:
         self.client.subscribe('explorer/039', qos=1) # Subscribe to topic explorer/xxx
         self.client.loop_start()
         self.send_message("","")
+
+
+
+        '''
         while True:
             self.send_message1("","")
             input('Press Enter to continue...\n')
+        '''
 
 
 
@@ -27,6 +32,7 @@ class Communication:
         self.client = mqtt_client
         self.client.on_message = self.on_message
         self.on_connect()
+        time.sleep(2)
         self.quit_connection()
 
         # ADD YOUR VARIABLES HERE

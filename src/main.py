@@ -8,6 +8,8 @@ from communication import Communication
 from driving import LineFollower
 import time
 import odometry
+import test
+import communication
 
 client = None  # DO NOT EDIT
 
@@ -28,35 +30,9 @@ def run():
     rm = ev3.LargeMotor('outC')
     lm = ev3.LargeMotor('outB')
 
-    dist = 0
     pl = lm.position
     pr = rm.position
 
-
-
-    '''
-    for i in range(1):
-        print(f"position left: {lm.position}")
-        print(f"position right: {rm.position}")
-
-        dist += rm.position - pr
-
-        pr = rm.position
-
-    print(f"dist: {dist}")
-    print(f"dist: {0.038 * dist}")
-    
-
-    lm.command = 'run-direct'
-    rm.command = 'run-direct'
-
-    lm.duty_cycle_sp = 30
-    rm.duty_cycle_sp = -30
-
-    time.sleep(1.6)
-    lm.stop()
-    rm.stop()
-    '''
     print(f"position right: {rm.position}")
 
     #lm.run_to_rel_pos(position_sp=360, speed_sp=40, stop_action="hold")
@@ -67,7 +43,11 @@ def run():
     print(f"position right: {rm.position}")
 
     robot = LineFollower()
-    robot.drive()
+    #robot.drive()
+    com = communication.Communication(client)
+
+    t = test.Test
+    #t.firstVertex(c = client)
 
 
 # DO NOT EDIT
