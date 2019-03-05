@@ -109,13 +109,24 @@ class Planet:  # Karte
 
         s = start
         t = target
+        gewaehlt = []
         self.dijk = {s: self.planetPaths.get(s)}
+        i = 0
 
-        while not len(self.planetPaths) == len(self.dijk):          # solange länge von planetPaths ungleich länge dijk
-            for i in range(0, len(self.planetPaths.get(s))):        # für richtungen von jeweiligen knoten aus
-                if min(self.planetPaths.get(s)[i][1][3]):           # wenn minimum an weight in einem eintrag gefunden
-                    s = self.planetPaths.get(s)[i]                  # s neu wählen
-                    self.dijk.append[s] = self.planetPaths.get(s)   # in dijk hizufügen
+        def update_dijkstra():
+            gewaehlt.append(s)  # in gewählt hinzufügen
+            if i > 0:
+                self.planetPaths.get(s)[i][1][3] = self.planetPaths.get(s)[i - 1][1][3] + self.planetPaths.get(s)[i][1][3]      # weight updaten
+            self.dijk[s] = self.planetPaths.get(s)  # in dijk hizufügen
+
+        while not len(self.planetPaths) == len(self.dijk):      # solange länge von planetPaths ungleich länge dijk
+                update_dijkstra()
+                for i in range(0, len(self.planetPaths.get(s))):    # für richtungen von jeweiligen knoten aus
+                    if min(self.planetPaths.get(s)[i][1][3]) and s not in gewaehlt: # wenn minimum an weight in einem eintrag gefunden
+                        s = self.planetPaths.get(s)[i]                  # s neu wählen
+
+
+
 
 
         '''#rk = []  # liste randknoten
