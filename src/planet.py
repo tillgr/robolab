@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from enum import IntEnum, unique
-from typing import List, Optional, Tuple, Dict, Any
+from typing import List, Optional, Tuple, Dict
 
 
 # IMPORTANT NOTE: DO NOT IMPORT THE ev3dev.ev3 MODULE IN THIS FILE
@@ -35,7 +35,7 @@ class Planet:  # Karte
         self.planetKarte = []
         self.planetPaths = {}
         self.paths = {}
-        self.shp_tab = {}  # shortest path tabelle dict
+        self.dijk = {}  # dictionary für den dijkstra
         self.target = None
 
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
@@ -109,7 +109,16 @@ class Planet:  # Karte
 
         s = start
         t = target
-        rk = []  # liste randknoten
+        self.dijk = {s: self.planetPaths.get(s)}
+
+        while not len(self.planetPaths) == len(self.dijk):          # solange länge von planetPaths ungleich länge dijk
+            for i in range(0, len(self.planetPaths.get(s))):        # für richtungen von jeweiligen knoten aus
+                if min(self.planetPaths.get(s)[i][1][3]):           # wenn minimum an weight in einem eintrag gefunden
+                    s = self.planetPaths.get(s)[i]                  # s neu wählen
+                    self.dijk.append[s] = self.planetPaths.get(s)   # in dijk hizufügen
+
+
+        '''#rk = []  # liste randknoten
 
         # TODO nochmal konzept, wie man dijkstra manuell macht, wir brauchen auch noch direction
         while not len(self.shp_tab) == len(self.planetPaths):   # solange länge der tabelle ungleich anzahl aller punkte ist
@@ -120,6 +129,9 @@ class Planet:  # Karte
 
             self.shp_tab = {s, rk}
             s = min(rk[1])  # minimum der liste rk vom zweiten element des tupels #TODO stimmt das so [1]?
+        '''
+
+
 
         """
         Returns a shortest path between two nodes
