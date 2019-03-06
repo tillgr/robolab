@@ -37,6 +37,11 @@ def run():
     print(robot.get_direction())
     robot.explore(robot.get_direction())
 
+    inp = input("dir: ")
+
+    robot.select_path(int(inp))
+    robot.drive()
+
     t = test.Test()
     #t.first_vertex(client)
 
