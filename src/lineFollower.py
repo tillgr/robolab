@@ -38,6 +38,13 @@ class LineFollower:
     def getDistances(self):
         return self.listDistances
 
+    # set & get direction
+    def setDirection(self, direction):
+        self.direction = direction
+
+    def getDirection(self):
+        return self.direction
+
     # turn
     def turn(self, deg, direction):
         self.gyroSensor.mode = 'GYRO-RATE'
