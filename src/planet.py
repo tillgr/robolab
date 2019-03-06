@@ -112,13 +112,12 @@ class Planet:  # Karte
         s = start
         t = target
         gewaehlt = []
-        i = 0
 
         rkm = self.planetPaths.get(s)  # randknotenmenge aus planetPaths
         self.dijk = {s: rkm.items()}  # eintrag in dijk s: rkm.items(), value ist typ liste # TODO welches format returnt .items?
         self.dijk = defaultdict(list)     # default datentyp für values von dijk ist list
 
-        def update_dijkstra():
+        def update_dijkstra():  # makes new line element fot dijkstra
             gewaehlt.append(s)  # in gewählt hinzufügen
 
             last_key = sorted(self.dijk.keys())[-1]  # letzter key vor dem update aus dijk
@@ -127,15 +126,12 @@ class Planet:  # Karte
             self.dijk[s] = rkm.items()  # nächste zeile anlegen mit neue nachbarknoten
             self.dijk[s].append(last_value)  # randknoten übernehmen
 
-            if i > 0:
-                self.dijk.get(s)[i][1][2] = self.dijk.get(s)[i - 1][1][2] + self.dijk.get(s)[i][1][2]  # in dijk weight updaten
-
-            for k in range(0, len(self.dijk.get(s))-1):   # aktualisierung der knoten # TODO geht es um die anzahl oder die indizes? sonst endrange fixen
+            for k in range(0, len(self.dijk[s])-1):   # aktualisierung der knoten # TODO geht es um die anzahl oder die indizes? sonst endrange fixen
                 a = self.dijk[s][k]    # element in s wählen
-                a_w = self.dijk[s][k][0]    # width parameter von diesem element
-                for l in range (1, len(self.dijk.get(s))-1):
-                    b = self.dijk[s][l][0]
-                    b_w = self.dijk[s][l][0]    # wird verglichen, zum aktualisieren
+                a_w = self.dijk[s][k][1][2]    # width parameter von diesem element
+                for l in range(1, len(self.dijk[s])-1):
+                    b = self.dijk[s][l]
+                    b_w = self.dijk[s][l][1][2]    # wird verglichen, zum aktualisieren
                     if a_w >= b_w:      # falls width größer/gleich, gelöscht
                         del a   # TODO aussage valide?
                     elif a_w < b_w:     # falls width kleiner gelöscht
@@ -144,6 +140,14 @@ class Planet:  # Karte
                         del a
                     elif b_w < 0:       # same here
                         del b
+            for i in range(0, len(last_value)-1):   # geht last value durch
+                a = last_value[i][1][0] # values aus
+                a_w = last_value[i][1][2] # punkt aus last_value
+                for j in range(0, len(self.dijk[s])-1): # geht neue zeile durch
+                    b = last_value[j][1][0]
+                    b_w = self.dijk[s][j][1][2]   # punkt von neuer Zeile
+                    if a == b:
+                        last_value[j][1][0] = b_w + a_w  # in dijk weight updaten
 
         while not len(self.planetPaths) == len(self.dijk):  # solange länge von planetPaths ungleich länge dijk
             for value in rkm.items():  # für richtungen von jeweiligen knoten aus
@@ -151,8 +155,6 @@ class Planet:  # Karte
                     # TODO, wie bestimmt man das minimum?
                     s = value  # s neu wählen # TODO wie läuft das mit dem scope?
                 update_dijkstra()
-
-        
 
         """
         Returns a shortest path between two nodes
