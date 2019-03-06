@@ -34,6 +34,10 @@ class LineFollower:
     red = (135, 60, 15)
     blue = (30, 150, 100)
 
+    # get listDistances
+    def getDistances(self):
+        return self.listDistances
+
     # turn
     def turn(self, deg, direction):
         self.gyroSensor.mode = 'GYRO-RATE'
@@ -89,10 +93,12 @@ class LineFollower:
 
         color = self.colorSensor.bin_data('hhh')
 
-        if (color[0] in range(self.red[0]-30, self.red[0]+30)) and (color[1] in range(self.red[1]-30, self.red[1]+30)) and (color[2] in range(self.red[2]-30, self.red[2]+30)):
+        if (color[0] in range(self.red[0]-30, self.red[0]+30)) and (color[1] in range(self.red[1]-30, self.red[1]+30)) \
+                and (color[2] in range(self.red[2]-30, self.red[2]+30)):
             print(f"color: {self.colorSensor.bin_data('hhh')}")
             return True
-        elif (color[0] in range(self.blue[0]-30, self.blue[0]+30)) and (color[1] in range(self.blue[1]-30, self.blue[1]+30)) and (color[2] in range(self.blue[2]-30, self.blue[2]+30)):
+        elif (color[0] in range(self.blue[0]-30, self.blue[0]+30)) and (color[1] in range(self.blue[1]-30, self.blue[1]+30)) \
+                and (color[2] in range(self.blue[2]-30, self.blue[2]+30)):
             print(f"color: {self.colorSensor.bin_data('hhh')}")
             return True
         else:
@@ -100,7 +106,6 @@ class LineFollower:
 
     # vertex exploration
     def explore(self, direction):
-        #self.turn(1, "right")
         self.leftMotor.command = 'run-direct'
         self.rightMotor.command = 'run-direct'
 
@@ -114,9 +119,6 @@ class LineFollower:
         time.sleep(1.1)
 
         self.leftMotor.duty_cycle_sp = 0
-
-        #self.leftMotor.stop()
-        #self.rightMotor.stop()
 
         self.gyroSensor.mode = 'GYRO-RATE'
         self.gyroSensor.mode = 'GYRO-ANG'
@@ -141,7 +143,7 @@ class LineFollower:
             self.leftMotor.duty_cycle_sp = -20
         self.leftMotor.stop()
 
-
+    # follow line
     def drive(self):
         kp = 30  # kp*100 -> 10
         ki = 1  # ki*100 -> 1
@@ -200,7 +202,7 @@ class LineFollower:
             self.leftMotor.duty_cycle_sp = powerLeft
             self.rightMotor.duty_cycle_sp = powerRight
 
-            lastError = error
+            self.lastError = error
 
             dl = 0.048 * (self.leftMotor.position - positionLeft)
             dr = 0.048 * (self.rightMotor.position - positionRight)
@@ -216,8 +218,3 @@ class LineFollower:
         self.rightMotor.stop()
 
         print(self.listDistances)
-
-        #self.explore(0)
-        calc = odometry.Odometry()
-        calc.position(0, 0, 0, self.listDistances)
-        return self.listDistances

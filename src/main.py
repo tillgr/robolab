@@ -41,6 +41,8 @@ def run():
 
     robot = LineFollower()
     robot.drive()
+    calc = odometry.Odometry()
+    calc.position(90, 0, 0, robot.getDistances())
 
     t = test.Test()
     #t.firstVertex(client)

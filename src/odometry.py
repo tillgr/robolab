@@ -29,17 +29,12 @@ class Odometry:
 
             alpha = (self.dr - self.dl)/self.a
 
-            #s = 2 * self.r * math.sin(alpha/2)
-
             if self.gamma < 0:
                 self.gamma += 2*math.pi
             elif self.gamma > 2*math.pi:
                 self.gamma -= 2*math.pi
 
-
-
             if alpha == 0.0:
-
                 if (0 < self.gamma < (45 / 180) * math.pi) or ((315 / 180) * math.pi < self.gamma < (359 / 180) * math.pi):
                     self.dY += self.dr/50
                 elif (45 / 180)*math.pi < self.gamma < (135 / 180)*math.pi:
@@ -49,18 +44,15 @@ class Odometry:
                 elif (225/180)*math.pi < self.gamma < (315/180)*math.pi:
                     self.dX += self.dr/50
             else:
-                #s = 2 * self.r * math.sin(alpha / 2)
                 s = (((self.dr + self.dl) / alpha) * math.sin(alpha / 2)) / 50
 
                 self.dX -= math.sin(self.gamma + (alpha/2)) * s
                 self.dY += math.cos(self.gamma + (alpha/2)) * s
 
             self.gamma += alpha
-            #STOP
 
-
-        Xe = Xs + self.dX
-        Ye = Ys + self.dY
+        Xe = Xs + round(self.dX)
+        Ye = Ys + round(self.dY)
 
         print(f"x: {Xe}")
         print(f"y: {Ye}")
@@ -75,7 +67,3 @@ class Odometry:
             print(f"direction: {180}")
         elif (225 / 180) * math.pi < self.gamma < (315 / 180) * math.pi:
             print(f"direction: {90}")
-
-
-
-        # return calculated position and direction
