@@ -18,7 +18,7 @@ class Odometry:
     gamma = 0       # Blickrichtung
 
     def getPosition(self):
-        return (self.x, self.y)
+        return self.x, self.y
 
     def getDirection(self):
         return self.gamma
@@ -71,10 +71,14 @@ class Odometry:
         print(f"direction_raw: {self.gamma*180/math.pi}")
 
         if (0 < self.gamma < (45 / 180) * math.pi) or ((315 / 180) * math.pi < self.gamma < (359 / 180) * math.pi):
+            self.gamma = 0
             print(f"direction: {0}")
         elif (45 / 180) * math.pi < self.gamma < (135 / 180) * math.pi:
+            self.gamma = 270
             print(f"direction: {270}")
         elif (135 / 180) * math.pi < self.gamma < (225 / 180) * math.pi:
+            self.gamma = 180
             print(f"direction: {180}")
         elif (225 / 180) * math.pi < self.gamma < (315 / 180) * math.pi:
+            self.gamma = 90
             print(f"direction: {90}")

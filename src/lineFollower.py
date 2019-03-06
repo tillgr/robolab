@@ -102,11 +102,9 @@ class LineFollower:
 
         if (color[0] in range(self.red[0]-30, self.red[0]+30)) and (color[1] in range(self.red[1]-30, self.red[1]+30)) \
                 and (color[2] in range(self.red[2]-30, self.red[2]+30)):
-            print(f"color: {self.colorSensor.bin_data('hhh')}")
             return True
         elif (color[0] in range(self.blue[0]-30, self.blue[0]+30)) and (color[1] in range(self.blue[1]-30, self.blue[1]+30)) \
                 and (color[2] in range(self.blue[2]-30, self.blue[2]+30)):
-            print(f"color: {self.colorSensor.bin_data('hhh')}")
             return True
         else:
             return False
@@ -120,7 +118,7 @@ class LineFollower:
         self.rightMotor.duty_cycle_sp = 20
         time.sleep(1.1)
         if self.colorSensor.value() in range(30, 44):
-            print(f"path, direction: {direction % 360}")
+            print(f"path, direction: {direction}")
         self.leftMotor.duty_cycle_sp = -20
         self.rightMotor.duty_cycle_sp = -20
         time.sleep(1.1)
@@ -131,23 +129,23 @@ class LineFollower:
         self.gyroSensor.mode = 'GYRO-ANG'
         print(f"gyro: {self.gyroSensor.value()}")
         while abs(self.gyroSensor.value()) < 100:
-            self.rightMotor.duty_cycle_sp = 20
+            self.rightMotor.duty_cycle_sp = 25
             if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
                 print(f"path, direction: {(direction + 90) % 360}")
                 break
         while self.gyroSensor.value() is not 0:
-            self.rightMotor.duty_cycle_sp = -20
+            self.rightMotor.duty_cycle_sp = -25
         self.rightMotor.stop()
 
         self.gyroSensor.mode = 'GYRO-RATE'
         self.gyroSensor.mode = 'GYRO-ANG'
         while abs(self.gyroSensor.value()) < 100:
-            self.leftMotor.duty_cycle_sp = 20
+            self.leftMotor.duty_cycle_sp = 25
             if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
                 print(f"path, direction: {(direction - 90) % 360}")
                 break
         while self.gyroSensor.value() is not 0:
-            self.leftMotor.duty_cycle_sp = -20
+            self.leftMotor.duty_cycle_sp = -25
         self.leftMotor.stop()
 
     # follow line
@@ -203,8 +201,8 @@ class LineFollower:
             elif powerRight < -100:
                 powerRight = -100
 
-            print(f"powerLeft: {powerLeft}")
-            print(f"powerRight: {powerRight}")
+            #print(f"powerLeft: {powerLeft}")
+            #print(f"powerRight: {powerRight}")
 
             self.leftMotor.duty_cycle_sp = powerLeft
             self.rightMotor.duty_cycle_sp = powerRight
@@ -223,5 +221,3 @@ class LineFollower:
 
         self.leftMotor.stop()
         self.rightMotor.stop()
-
-        print(self.listDistances)

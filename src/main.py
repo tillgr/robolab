@@ -27,24 +27,14 @@ def run():
     rm = ev3.LargeMotor('outC')
     lm = ev3.LargeMotor('outB')
 
-    pl = lm.position
-    pr = rm.position
-
-    print(f"position right: {rm.position}")
-
-    #lm.run_to_rel_pos(position_sp=360, speed_sp=40, stop_action="hold")
-    #rm.run_to_rel_pos(position_sp=360, speed_sp=40, stop_action="hold")
-
-    #time.sleep(10)
-
-    print(f"position right: {rm.position}")
-
     robot = LineFollower()
     robot.drive()
     calc = odometry.Odometry()
-    calc.position(90, 0, 0, robot.getDistances())
+    calc.position(270, 0, 0, robot.getDistances())
     robot.setDirection(calc.getDirection())
     print(calc.getPosition())
+    print(robot.getDirection())
+    robot.explore(robot.getDirection())
 
     t = test.Test()
     #t.firstVertex(client)
