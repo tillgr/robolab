@@ -21,22 +21,45 @@ class Communication:
         so now i have to implement the logic with control structures ;)
         data["payload"]["planetname"] --> this is how to get to a inner dictionary
         """
-        self.planetName = data["payload"]["planetName"]
         self.type = data["type"]
-        self.startX = int(data["startX"])
-        self.startY = int(data["startY"])
-        self.start_punkt = (self.startX,self.startY)
-        self.endY = int(data["endX"])
-        self.endX = int(data["endY"])
-        self.end_punkt = (self.endX,self.endY)
-        self.targetX = data["targetX"]
-        self.targetY = data["targetY"]
-        self.target_punkt = (self.targetX,self.targetY)
-        startDirection = data["startDirection"]
-        endDirection = data["endDirection"]
-        pathStatus = data["pathStatus"]
-        pathWeight = int(data["pathWeight"])
 
+        if self.type == "planet":
+            self.planetName = data["payload"]["planetName"]
+            self.startX = int(data["payload"]["startX"])
+            self.startY = int(data["payload"]["startY"])
+
+        elif self.type == "path":
+            self.startX = int(data["payload"]["startX"])
+            self.startY = int(data["payload"]["startY"])
+            self.startDirection = data["payload"]["startDirection"]
+            self.endY = int(data["payload"]["endX"])
+            self.endX = int(data["payload"]["endY"])
+            self.endDirection = data["payload"]["endDirection"]
+            self.pathStatus = data["payload"]["pathStatus"]
+
+        elif self.type == "pathUnveiled":
+            self.startX = int(data["payload"]["startX"])
+            self.startY = int(data["payload"]["startY"])
+            self.startDirection = data["payload"]["startDirection"]
+            self.endY = int(data["payload"]["endX"])
+            self.endX = int(data["payload"]["endY"])
+            self.endDirection = data["payload"]["endDirection"]
+            self.pathStatus = data["payload"]["pathStatus"]
+            self.pathWeight = int(data["payload"]["pathWeight"])
+
+        elif self.type == "pathSelect":
+            self.startDirection = data["payload"]["startDirection"]
+
+        elif self.type == "target":
+            self.targetX = int(data["payload"]["targetX"])
+            self.targetY = int(data["payload"]["targetY"])
+
+
+        #self.start_punkt = (self.startX,self.startY)
+        #self.end_punkt = (self.endX,self.endY)
+        #self.target_punkt = (self.targetX,self.targetY)
+
+    # посоките също в int ???
     # JSON objects (Templates for messages)
     first_message = '''
         {
@@ -108,7 +131,7 @@ class Communication:
         input('Press Enter to continue...\n')
         print(self.planetName)
         print(self.startY)
-"""
+
     def on_message_catch(self, client, data, message):
         try:
             self.on_message(client, data, message)
@@ -116,7 +139,7 @@ class Communication:
             import traceback
             traceback.print_exc()
             raise
-"""
+
     def __init__(self, mqtt_client):
             #""" Initializes communication module, connect to server, subscribe, etc. """
             # THESE TWO VARIABLES MUST NOT BE CHANGED
