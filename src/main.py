@@ -43,7 +43,8 @@ def run():
     robot.drive()
     calc = odometry.Odometry()
     calc.position(90, 0, 0, robot.getDistances())
-    robot.setDirection(90)
+    robot.setDirection(calc.getDirection())
+    print(calc.getPosition())
 
     t = test.Test()
     #t.firstVertex(client)

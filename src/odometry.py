@@ -6,6 +6,8 @@ import math
 
 
 class Odometry:
+    x = 0
+    y = 0
     r = 2.6         # Radius Räder
     a = 12           # Radabstand
     dX = 0          # Streckendifferenz
@@ -14,6 +16,12 @@ class Odometry:
     dr = 0
     s = 0           # zurückgelegte Strecke
     gamma = 0       # Blickrichtung
+
+    def getPosition(self):
+        return (self.x, self.y)
+
+    def getDirection(self):
+        return self.gamma
 
     def position(self, gamma, Xs, Ys, listDistances):
         if gamma == 90:
@@ -53,6 +61,9 @@ class Odometry:
 
         Xe = Xs + round(self.dX)
         Ye = Ys + round(self.dY)
+
+        self.x = Xe
+        self.y = Ye
 
         print(f"x: {Xe}")
         print(f"y: {Ye}")
