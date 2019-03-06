@@ -26,6 +26,7 @@ class LineFollower:
     direction = 0   # start direction always NORTH
     x = 0
     y = 0
+    offset = 141
 
     integral = 0
     lastError = 0
@@ -46,6 +47,26 @@ class LineFollower:
 
     def get_direction(self):
         return self.direction
+
+    def calibrate(self):
+        self.colorSensor.mode = 'RGB-RAW'
+        valueWhite = 0
+        valueBlack = 0
+        for i in range(3):
+            inp = input("White: ")
+            color = self.colorSensor.bin_data('hhh')
+            valueWhite += (color[0] + color[1] + color[2])/3
+            print(f"white: {valueWhite}")
+        for i in range(3):
+            inp = input("Black: ")
+            color = self.colorSensor.bin_data('hhh')
+            valueWhite += (color[0] + color[1] + color[2])/3
+            print(f"black: {valueBlack}")
+        valueWhite /= 3
+        valueBlack /= 3
+        self.offset = (valueBlack + valueWhite)/2
+        print(f"offset: {self.offset}")
+
 
     # turn
     def turn(self, deg, direction):
@@ -69,7 +90,6 @@ class LineFollower:
     # obstacle detection
     def obstacle(self):
         self.ultrasonicSensor.mode = 'US-DIST-CM'
-        self.colorSensor.mode = 'COL-REFLECT'
 
         dist = self.ultrasonicSensor.value() // 10
 
@@ -170,6 +190,8 @@ class LineFollower:
         self.rightMotor.duty_cycle_sp = 20
         time.sleep(0.5)
 
+        print(f"dir: {self.direction}")
+
         if direction == self.direction:
             self.gyroSensor.mode = 'GYRO-RATE'
             self.gyroSensor.mode = 'GYRO-ANG'
@@ -203,11 +225,10 @@ class LineFollower:
 
     # follow line
     def drive(self):
-        kp = 30  # kp*100 -> 10
+        kp = 8  # kp*100 -> 10
         ki = 1  # ki*100 -> 1
-        kd = 10  # kd*100 -> 100
-        offset = 37
-        tp = 20
+        kd = 2  # kd*100 -> 100
+        tp = 25
 
         positionLeft = self.leftMotor.position
         positionRight = self.rightMotor.position
@@ -229,10 +250,11 @@ class LineFollower:
             #print(f"position left: {self.leftMotor.position}")
             #print(f"position right: {self.rightMotor.position}")
 
-            self.colorSensor.mode = 'COL-REFLECT'
-            lightValue = self.colorSensor.value()
+            self.colorSensor.mode = 'RGB-RAW'
+            color = self.colorSensor.bin_data('hhh')
+            lightValue = int((color[0]+color[1]+color[2])/3)
             #print(f"lightValue: {lightValue}")
-            error = lightValue - offset
+            error = lightValue - self.offset
             #print(f"error: {error}")
             self.integral += error
             #print(f"integral: {integral}")
@@ -254,8 +276,8 @@ class LineFollower:
             elif powerRight < -100:
                 powerRight = -100
 
-            #print(f"powerLeft: {powerLeft}")
-            #print(f"powerRight: {powerRight}")
+            print(f"powerLeft: {powerLeft}")
+            print(f"powerRight: {powerRight}")
 
             self.leftMotor.duty_cycle_sp = powerLeft
             self.rightMotor.duty_cycle_sp = powerRight

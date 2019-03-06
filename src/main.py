@@ -28,20 +28,32 @@ def run():
     rm = ev3.LargeMotor('outC')
     lm = ev3.LargeMotor('outB')
 
+    cs = ev3.ColorSensor()
+
+    cs.mode = 'RGB-RAW'
+
+    col = cs.bin_data('hhh')
+
+    print(col)
+
+
     robot = LineFollower()
+#    robot.calibrate()
+
     robot.drive()
     calc = odometry.Odometry()
     calc.position(0, 0, 0, robot.get_distances())
     robot.set_direction(calc.get_direction())
     print(calc.get_position())
     print(robot.get_direction())
+    '''
     robot.explore(robot.get_direction())
 
     inp = input("dir: ")
 
     robot.select_path(int(inp))
     robot.drive()
-
+    '''
     t = test.Test()
     #t.first_vertex(client)
 
