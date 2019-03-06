@@ -3,6 +3,7 @@
 import ev3dev.ev3 as ev3
 import uuid
 import paho.mqtt.client as mqtt
+import time
 from planet import Direction, Planet
 from communication import Communication
 from lineFollower import LineFollower
@@ -38,7 +39,6 @@ def run():
 
     t = test.Test()
     #t.firstVertex(client)
-
 
 # DO NOT EDIT
 if __name__ == '__main__':
