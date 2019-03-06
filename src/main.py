@@ -31,7 +31,7 @@ def run():
     robot = LineFollower()
     robot.drive()
     calc = odometry.Odometry()
-    calc.position(270, 0, 0, robot.getDistances())
+    calc.position(0, 0, 0, robot.getDistances())
     robot.setDirection(calc.getDirection())
     print(calc.getPosition())
     print(robot.getDirection())
