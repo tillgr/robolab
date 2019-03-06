@@ -33,6 +33,66 @@ class Communication:
     pathStatus="" #receives blocked|free
     pathweight="" #when blocked (-1) ,when free (>0)
 
+    # JSON objects (Templates for messages)
+    first_message = '''
+        {
+        "from": "client",
+        "type": "ready"
+        }
+    '''
+    second_message = '''
+        {
+        "from": "client",
+        "type": "path",
+        "payload": [
+            {
+            "startX": "<Xs>",
+            "startY": "<Ys>",
+            "startDirection": "<Ds>",
+            "endX": "<Xe>",
+            "endY": "<Ye>",
+            "endDirection": "<De>",
+            "pathStatus": "free|blocked"
+            }
+        ]
+        }
+    '''
+    third_message= '''
+        {
+        "from": "client",
+        "type": "pathSelect",
+        "payload": [
+            {
+            "startX": "<Xs>",
+            "startY": "<Ys>",
+            "startDirection": "<Ds>"
+            }
+        ]
+        }
+    '''
+    target_reached = '''
+        {
+            "from": "client",
+            "type": "targetReached",
+            "payload": [
+            {
+            "message": "<TEXT>"
+            }
+        ]
+        }
+    '''
+    exploration_completed = '''
+            {
+                "from": "client",
+                "type": "explorationCompleted",
+                "payload": ]
+                    {
+                    "message": "<TEXT>"
+                    }
+            ]
+            }
+        '''
+
     def on_connect(self):
             #client = mqtt.Client(client_id="039", clean_session=False, protocol=mqtt.MQTTv31)
             #client.on_message = on_message # Assign pre-defined callback function to MQTT client
@@ -73,7 +133,7 @@ class Communication:
     def send_message(self, topic, message):
         """ Sends given message to specified channel """
         #msg = json.loads(self.planet_string)
-        self.client.publish("explorer/039",'{"form":"client","type":"ready"}')
+        self.client.publish("explorer/039",self.first_message)
         pass
 
     def quit_connection(self):
