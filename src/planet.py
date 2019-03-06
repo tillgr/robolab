@@ -112,9 +112,10 @@ class Planet:  # Karte
         s = start
         t = target
         gewaehlt = []
+        vg = None
 
         rkm = self.planetPaths.get(s)  # randknotenmenge aus planetPaths
-        self.dijk = {s: rkm.items()}  # eintrag in dijk s: rkm.items(), value ist typ liste # TODO welches format returnt .items?
+        self.dijk = {s: (rkm.items(), vg)}  # eintrag in dijk s: rkm.items(), value ist typ liste # TODO welches format returnt .items?
         self.dijk = defaultdict(list)     # default datentyp für values von dijk ist list
 
         def update_dijkstra():  # makes new line element fot dijkstra
@@ -123,15 +124,15 @@ class Planet:  # Karte
             last_key = sorted(self.dijk.keys())[-1]  # letzter key vor dem update aus dijk
             last_value = self.dijk[last_key]  # letzter wert des dijk vor update
 
-            self.dijk[s] = rkm.items()  # nächste zeile anlegen mit neue nachbarknoten
+            self.dijk[s] = (rkm.items(), vg)    # nächste zeile anlegen mit neue nachbarknoten
             self.dijk[s].append(last_value)  # randknoten übernehmen
 
-            for k in range(0, len(self.dijk[s])-1):   # aktualisierung der knoten # TODO geht es um die anzahl oder die indizes? sonst endrange fixen
+            for k in range(0, len(self.dijk[s])-1):   # löschen doppelter knoten # TODO geht es um die anzahl oder die indizes? sonst endrange fixen
                 a = self.dijk[s][k]    # element in s wählen
-                a_w = self.dijk[s][k][1][2]    # width parameter von diesem element
+                a_w = self.dijk[s][k][0][1][2]    # width parameter von diesem element
                 for l in range(1, len(self.dijk[s])-1):
                     b = self.dijk[s][l]
-                    b_w = self.dijk[s][l][1][2]    # wird verglichen, zum aktualisieren
+                    b_w = self.dijk[s][l][0][1][2]    # wird verglichen, zum aktualisieren
                     if a_w >= b_w:      # falls width größer/gleich, gelöscht
                         del a   # TODO aussage valide?
                     elif a_w < b_w:     # falls width kleiner gelöscht
@@ -140,21 +141,35 @@ class Planet:  # Karte
                         del a
                     elif b_w < 0:       # same here
                         del b
-            for i in range(0, len(last_value)-1):   # geht last value durch
-                a = last_value[i][1][0] # values aus
-                a_w = last_value[i][1][2] # punkt aus last_value
+            for i in range(0, len(last_value)-1):   # geht last value durch, vergleicht punkte, aktualisiert weight     # TODO rückwirkend updaten
+                a = last_value[i][0][1][0]     # punkt aus last_value
+                a_w = last_value[i][0][1][2]
                 for j in range(0, len(self.dijk[s])-1): # geht neue zeile durch
-                    b = last_value[j][1][0]
-                    b_w = self.dijk[s][j][1][2]   # punkt von neuer Zeile
+                    b = last_value[j][0][1][0]     # punkt von neuer Zeile
+                    b_w = self.dijk[s][j][0][1][2]
                     if a == b:
-                        last_value[j][1][0] = b_w + a_w  # in dijk weight updaten
+                        self.dijk[s][j][0][1][2] = b_w + a_w  # in dijk weight updaten
 
         while not len(self.planetPaths) == len(self.dijk):  # solange länge von planetPaths ungleich länge dijk
-            for value in rkm.items():  # für richtungen von jeweiligen knoten aus
+            for value in rkm.items():  # für richtungen von jeweiligen knoten aus   # TODO immer noch aktuell?
                 if min(value[1][2]) and s not in gewaehlt:  # wenn minimum an weight in einem eintrag gefunden
                     # TODO, wie bestimmt man das minimum?
-                    s = value  # s neu wählen # TODO wie läuft das mit dem scope?
+                    # liste aller minima, anhand vom index value bestimmen?
+                    vg = s
+                    s = (value, vg)  # s neu wählen, als punkt, vorgängerpunkt # TODO richtiges scope?
                 update_dijkstra()
+
+        shp = []        # shortest path list
+        vert = t        # aktueller knoten
+        # TODO shp liste kreieren
+        while vert != s:
+            m = len(gewaehlt)-1
+            if gewaehlt[m][0][1][0] == vert:    # hinzufügen, falls knoten gleich vert
+                shp.append([vert, gewaehlt[m][0][0]])   # aktueller knoten, richtung zu diesem
+                vert = gewaehlt[m][1]   # vorgänger wird zhu neuem vert
+            m = m-1
+
+        return shp
 
         """
         Returns a shortest path between two nodes
