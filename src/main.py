@@ -5,7 +5,7 @@ import uuid
 import paho.mqtt.client as mqtt
 from planet import Direction, Planet
 from communication import Communication
-from driving import LineFollower
+from lineFollower import LineFollower
 import time
 import odometry
 import test
