@@ -9,29 +9,33 @@ class Communication:
     """
 
         # ADD YOUR VARIABLES HERE
-
-    planetName="" #receives planet name
-    type=""  #receives path or planet
-        #Coordinates
-    startX=""  #punkt = f"x:{startX}"
-    startY=""
-    start_punkt=('startX','startY','startDirection')
-    endY=""
-    endX=""
-    end_punkt=('endX','endY')
-    targetX=""
-    targetY=""
-    target_punkt=('targetX','targetY')
-        #Directions in degrees
-        #NORTH = 0
-        #EAST = 90
-        #SOUTH = 180
-        #WEST = 270
-    startDirection=""
-    endDirection=""
-
-    pathStatus="" #receives blocked|free
-    pathweight="" #when blocked (-1) ,when free (>0)
+    def on_message(self, client, data, message):
+        """ Handles the callback if any message arrived """
+        print('Got message with topic "{}":'.format(message.topic))
+        data = json.loads(message.payload.decode('utf-8'))
+        print(json.dumps(data, indent=2))
+        print("\n")
+        pass
+        # Variables
+        """
+        so now i have to implement the logic with control structures ;)
+        data["payload"]["planetname"] --> this is how to get to a inner dictionary
+        """
+        self.planetName = data["payload"]["planetName"]
+        self.type = data["type"]
+        self.startX = int(data["startX"])
+        self.startY = int(data["startY"])
+        self.start_punkt = (self.startX,self.startY)
+        self.endY = int(data["endX"])
+        self.endX = int(data["endY"])
+        self.end_punkt = (self.endX,self.endY)
+        self.targetX = data["targetX"]
+        self.targetY = data["targetY"]
+        self.target_punkt = (self.targetX,self.targetY)
+        startDirection = data["startDirection"]
+        endDirection = data["endDirection"]
+        pathStatus = data["pathStatus"]
+        pathWeight = int(data["pathWeight"])
 
     # JSON objects (Templates for messages)
     first_message = '''
@@ -101,34 +105,27 @@ class Communication:
         self.client.subscribe('explorer/039', qos=1) # Subscribe to topic explorer/xxx
         self.client.loop_start()
         self.send_message("","")
-        while True:
-            self.send_message1("","")
-            input('Press Enter to continue...\n')
-
+        input('Press Enter to continue...\n')
+        print(self.planetName)
+        print(self.startY)
+"""
+    def on_message_catch(self, client, data, message):
+        try:
+            self.on_message(client, data, message)
+        except:
+            import traceback
+            traceback.print_exc()
+            raise
+"""
     def __init__(self, mqtt_client):
             #""" Initializes communication module, connect to server, subscribe, etc. """
             # THESE TWO VARIABLES MUST NOT BE CHANGED
         self.client = mqtt_client
-        self.client.on_message = self.on_message
+        self.client.on_message = self.on_message_catch
         self.on_connect()
         self.quit_connection()
 
     # THIS FUNCTIONS SIGNATURE MUST NOT BE CHANGED
-    def on_message(self, client, data, message):
-        """ Handles the callback if any message arrived """
-        print('Got message with topic "{}":'.format(message.topic))
-        data = json.loads(message.payload.decode('utf-8'))
-        print(json.dumps(data, indent=2))
-        print("\n")
-
-        pass
-
-    def send_message1(self, topic, message):
-        """ Sends given message to specified channel """
-        #msg = json.loads(self.planet_string)
-        self.client.publish("Kashyyyk-039",'{"from": "client","type": "path","payload": {"startX": "<Xs>","startY": "<Ys>","startDirection": "<Ds>","endX": "<Xe>","endY": "<Ye>","endDirection": "<De>","pathStatus": "free|blocked" }}')
-        #'{"from":"client","type":"testplanet","payload":{planetName}')
-        pass
 
     def send_message(self, topic, message):
         """ Sends given message to specified channel """
