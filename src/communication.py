@@ -129,7 +129,7 @@ class Communication:
         self.client.loop_start()
         self.send_message("","")
 
-        input('Press Enter to continue...\n')x
+        input('Press Enter to continue...\n')
 
     def on_message_catch(self, client, data, message):
         try:

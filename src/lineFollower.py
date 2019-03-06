@@ -37,14 +37,14 @@ class LineFollower:
     blue = (30, 150, 100)
 
     # get listDistances
-    def getDistances(self):
+    def get_distances(self):
         return self.listDistances
 
     # set & get direction
-    def setDirection(self, direction):
+    def set_direction(self, direction):
         self.direction = direction
 
-    def getDirection(self):
+    def get_direction(self):
         return self.direction
 
     # turn
@@ -160,6 +160,10 @@ class LineFollower:
         while self.gyroSensor.value() is not 0:
             self.leftMotor.duty_cycle_sp = -20
         self.leftMotor.stop()
+
+    #select path
+    def select_path(self):
+        x = 0
 
     # follow line
     def drive(self):

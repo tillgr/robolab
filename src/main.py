@@ -31,14 +31,14 @@ def run():
     robot = LineFollower()
     robot.drive()
     calc = odometry.Odometry()
-    calc.position(0, 0, 0, robot.getDistances())
-    robot.setDirection(calc.getDirection())
-    print(calc.getPosition())
-    print(robot.getDirection())
-    robot.explore(robot.getDirection())
+    calc.position(0, 0, 0, robot.get_distances())
+    robot.set_direction(calc.get_direction())
+    print(calc.get_position())
+    print(robot.get_direction())
+    robot.explore(robot.get_direction())
 
     t = test.Test()
-    #t.firstVertex(client)
+    #t.first_vertex(client)
 
 # DO NOT EDIT
 if __name__ == '__main__':

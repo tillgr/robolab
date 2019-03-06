@@ -11,11 +11,11 @@ class Test:
     Xe = 0
     Ye = 0
 
-    def firstVertex(self, c):
+    def first_vertex(self, c):
         robot = lineFollower.LineFollower()
         robot.drive()
         com = communication.Communication(c)
         # get start position from server
-        #self.Xs = ...
-        #self.Ys = ...
+        self.Xs = com.startX
+        self.Ys = com.startY
 

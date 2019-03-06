@@ -17,10 +17,10 @@ class Odometry:
     s = 0           # zurückgelegte Strecke
     gamma = 0       # Blickrichtung
 
-    def getPosition(self):
+    def get_position(self):
         return self.x, self.y
 
-    def getDirection(self):
+    def get_direction(self):
         return self.gamma
 
     def position(self, gamma, Xs, Ys, listDistances):
