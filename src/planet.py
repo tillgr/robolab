@@ -144,9 +144,9 @@ class Planet:  # Karte
                 for t, dir_s, weight, s in tupel:
                     if t == start:
                         gewaehlt.append(tupel)
-
+        i = 0
         while rkm_d[i] != rkm_d.clear():
-            i = 0
+
             for line in rkm:        # nachbarknoten in rkm finden
                 #line = []
                 for tupel in line:
@@ -187,7 +187,7 @@ class Planet:  # Karte
         print(rkm)
 
         shp_route = [(shp[-1], None)]  # route für roboter
-        for i in range(len(shp)-1, 0):      # liste rückwerts durchgehen, route bilden
+        for j in range(len(shp)-1, 0):      # liste rückwerts durchgehen, route bilden
             shp_route.append((shp[i][3], shp[i+1][1]))
         return shp_route
         """
