@@ -16,43 +16,47 @@ class Odometry:
     gamma = 0       # Blickrichtung
 
     def position(self, gamma, Xs, Ys, listDistances):
-        self.gamma = (gamma/180)*math.pi
-        print(self.gamma)
-
-        i=0
+        if gamma == 90:
+            self.gamma = (270 / 180) * math.pi
+        elif gamma == 270:
+            self.gamma = (90 / 180) * math.pi
+        else:
+            self.gamma = (gamma/180)*math.pi
 
         for dist in listDistances:
             self.dl = dist[0]
             self.dr = dist[1]
 
-            alpha = (self.dl - self.dr)/self.a
+            alpha = (self.dr - self.dl)/self.a
 
-            #print(f"alpha: {alpha}")
             #s = 2 * self.r * math.sin(alpha/2)
 
             if self.gamma < 0:
-                self.gamma = 2*math.pi + self.gamma
+                self.gamma += 2*math.pi
             elif self.gamma > 2*math.pi:
                 self.gamma -= 2*math.pi
 
+
+
             if alpha == 0.0:
+
                 if (0 < self.gamma < (45 / 180) * math.pi) or ((315 / 180) * math.pi < self.gamma < (359 / 180) * math.pi):
                     self.dY += self.dr/50
                 elif (45 / 180)*math.pi < self.gamma < (135 / 180)*math.pi:
-                    self.dX += self.dr/50
+                    self.dX -= self.dr/50
                 elif (135/180)*math.pi < self.gamma < (225/180)*math.pi:
                     self.dY -= self.dr/50
                 elif (225/180)*math.pi < self.gamma < (315/180)*math.pi:
-                    self.dX -= self.dr/50
+                    self.dX += self.dr/50
             else:
-
                 #s = 2 * self.r * math.sin(alpha / 2)
-                s = ((self.dr + self.dl) / alpha) * math.sin(alpha / 2)
+                s = (((self.dr + self.dl) / alpha) * math.sin(alpha / 2)) / 50
 
                 self.dX -= math.sin(self.gamma + (alpha/2)) * s
                 self.dY += math.cos(self.gamma + (alpha/2)) * s
 
             self.gamma += alpha
+            #STOP
 
 
         Xe = Xs + self.dX
@@ -60,6 +64,18 @@ class Odometry:
 
         print(f"x: {Xe}")
         print(f"y: {Ye}")
-        print(f"direction: {(self.gamma*180)/math.pi}")
+
+        print(f"direction_raw: {self.gamma*180/math.pi}")
+
+        if (0 < self.gamma < (45 / 180) * math.pi) or ((315 / 180) * math.pi < self.gamma < (359 / 180) * math.pi):
+            print(f"direction: {0}")
+        elif (45 / 180) * math.pi < self.gamma < (135 / 180) * math.pi:
+            print(f"direction: {270}")
+        elif (135 / 180) * math.pi < self.gamma < (225 / 180) * math.pi:
+            print(f"direction: {180}")
+        elif (225 / 180) * math.pi < self.gamma < (315 / 180) * math.pi:
+            print(f"direction: {90}")
+
+
 
         # return calculated position and direction

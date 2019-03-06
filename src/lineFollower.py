@@ -147,7 +147,7 @@ class LineFollower:
         ki = 1  # ki*100 -> 1
         kd = 10  # kd*100 -> 100
         offset = 37
-        tp = 20
+        tp = 25
 
         positionLeft = self.leftMotor.position
         positionRight = self.rightMotor.position
@@ -210,10 +210,6 @@ class LineFollower:
 
             self.listDistances.append([dl, dr])
 
-            #self.listDistances.append((self.gyroSensor.value()/180)*math.pi)
-            #self.gyroSensor.mode = 'GYRO-RATE'
-            #self.gyroSensor.mode = 'GYRO-ANG'
-
             self.obstacle()
 
         self.leftMotor.stop()
@@ -221,7 +217,7 @@ class LineFollower:
 
         print(self.listDistances)
 
-        self.explore(0)
+        #self.explore(0)
         calc = odometry.Odometry()
         calc.position(0, 0, 0, self.listDistances)
         return self.listDistances
