@@ -21,45 +21,52 @@ class Communication:
         so now i have to implement the logic with control structures ;)
         data["payload"]["planetname"] --> this is how to get to a inner dictionary
         """
+        # so now I have to turn some variables into arrays because of many messages
         self.type = data["type"]
-
+        #
         if self.type == "planet":
+
             self.planetName = data["payload"]["planetName"]
-            self.startX = int(data["payload"]["startX"])
-            self.startY = int(data["payload"]["startY"])
-
+            #erste Startkoordinaten (add_path)
+            self.startX = float(data["payload"]["startX"])
+            self.startY = float(data["payload"]["startY"])
+            
         elif self.type == "path":
-            self.startX = int(data["payload"]["startX"])
-            self.startY = int(data["payload"]["startY"])
+            self.startX = float(data["payload"]["startX"])
+            self.startY = float(data["payload"]["startY"])
             self.startDirection = data["payload"]["startDirection"]
-            self.endY = int(data["payload"]["endX"])
-            self.endX = int(data["payload"]["endY"])
             self.endDirection = data["payload"]["endDirection"]
+            #korrigierter Endknoten (add_path)
+            self.endY = float(data["payload"]["endX"])
+            self.endX = float(data["payload"]["endY"])
+            #pfadSTATUS und wichtung (add_path)
             self.pathStatus = data["payload"]["pathStatus"]
+            self.pathWeight = float(data["payload"]["pathWeight"])
 
+            # erstellen der Karte (add_path)
         elif self.type == "pathUnveiled":
-            self.startX = int(data["payload"]["startX"])
-            self.startY = int(data["payload"]["startY"])
+            self.startX = float(data["payload"]["startX"])
+            self.startY = float(data["payload"]["startY"])
             self.startDirection = data["payload"]["startDirection"]
-            self.endY = int(data["payload"]["endX"])
-            self.endX = int(data["payload"]["endY"])
+            self.endY = float(data["payload"]["endX"])
+            self.endX = float(data["payload"]["endY"])
             self.endDirection = data["payload"]["endDirection"]
             self.pathStatus = data["payload"]["pathStatus"]
-            self.pathWeight = int(data["payload"]["pathWeight"])
-
+            self.pathWeight = float(data["payload"]["pathWeight"])
+            #pfadauswahl günstigere Richtung (add_path)
         elif self.type == "pathSelect":
             self.startDirection = data["payload"]["startDirection"]
 
+            # target_route
         elif self.type == "target":
-            self.targetX = int(data["payload"]["targetX"])
-            self.targetY = int(data["payload"]["targetY"])
+            self.targetX = float(data["payload"]["targetX"])
+            self.targetY = float(data["payload"]["targetY"])
 
-
+        # тука съшо трябва да добавя за финалните съобщения логиката !!!
         #self.start_punkt = (self.startX,self.startY)
         #self.end_punkt = (self.endX,self.endY)
         #self.target_punkt = (self.targetX,self.targetY)
 
-    # посоките също в int ???
     # JSON objects (Templates for messages)
     first_message = '''
         {
@@ -103,7 +110,7 @@ class Communication:
             "type": "targetReached",
             "payload": [
             {
-            "message": "<TEXT>"
+            "message": "The target was reached successfully "
             }
         ]
         }
@@ -114,7 +121,7 @@ class Communication:
                 "type": "explorationCompleted",
                 "payload": ]
                     {
-                    "message": "<TEXT>"
+                    "message": "The planet was fully explored"
                     }
             ]
             }
@@ -146,7 +153,7 @@ class Communication:
         self.client = mqtt_client
         self.client.on_message = self.on_message_catch
         self.on_connect()
-        self.quit_connection()
+        #self.quit_connection()
 
     # THIS FUNCTIONS SIGNATURE MUST NOT BE CHANGED
 
