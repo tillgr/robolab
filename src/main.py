@@ -38,22 +38,30 @@ def run():
 
 
     robot = LineFollower()
-#    robot.calibrate()
+
+
+    inp = input("calibrate? (yes/no)")
+    if inp == "yes":
+        robot.calibrate()
+        time.sleep(10)
+
 
     robot.drive()
     calc = odometry.Odometry()
     calc.position(0, 0, 0, robot.get_distances())
     robot.set_direction(calc.get_direction())
     print(calc.get_position())
-    print(robot.get_direction())
-    '''
+    print(f"direction: {robot.get_direction()}")
+
     robot.explore(robot.get_direction())
 
     inp = input("dir: ")
 
     robot.select_path(int(inp))
+    robot.set_direction(int(inp))
     robot.drive()
-    '''
+    calc.position(robot.get_direction(), 0, 0, robot.get_distances())
+
     t = test.Test()
     #t.first_vertex(client)
 
