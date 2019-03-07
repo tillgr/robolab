@@ -9,6 +9,7 @@ class Communication:
     planetName = ""
     receivedMessages = []
     debugMessages = []
+    channel = ""
 
     msg_ready = {
         "from": "client",
@@ -29,7 +30,7 @@ class Communication:
         self.planetName = inp
 
         if inp == "":
-            self.send_message("", self.msg_ready)
+            self.send_message("", self.msg_ready, "explorer/039")
         else:
             msg_testplanet = {
                 "from": "client",
@@ -38,8 +39,11 @@ class Communication:
                     "planetName": self.planetName
                 }
             }
-            self.send_message("", msg_testplanet)
-            self.send_message("", self.msg_ready)
+            self.send_message("", msg_testplanet, "explorer/039")
+            self.send_message("", self.msg_ready, "explorer/039")
+            self.channel = f"planet/{self.planetName}-039"
+            # change channel
+            self.client.subscribe(self.channel, qos=1)
 
     # THIS FUNCTIONS SIGNATURE MUST NOT BE CHANGED
     def on_message(self, client, data, message):
@@ -56,9 +60,9 @@ class Communication:
             self.debugMessages.append(data)
 
     # publish a message
-    def send_message(self, topic, message):
+    def send_message(self, topic, message, channel):
         """ Sends given message to specified channel """
-        self.client.publish("explorer/039", json.dumps(message))
+        self.client.publish(channel, json.dumps(message))
 
         time.sleep(2)
 
@@ -87,35 +91,31 @@ class Communication:
         msg_path = {
             "from": "client",
             "type": "path",
-            "payload": [
-                {
-                    "startX": Xs,
-                    "startY": Ys,
-                    "startDirection": Ds,
-                    "endX": Xe,
-                    "endY": Ye,
-                    "endDirection": De,
-                    "pathStatus": status
-                }
-            ]
+            "payload": {
+                "startX": Xs,
+                "startY": Ys,
+                "startDirection": Ds,
+                "endX": Xe,
+                "endY": Ye,
+                "endDirection": De,
+                "pathStatus": status
+            }
         }
 
-        self.send_message("", msg_path)
+        self.send_message("", msg_path, self.channel)
 
     def send_pathselection(self, Xs, Ys, Ds):
         msg_pathselection = {
             "from": "client",
             "type": "pathSelect",
-            "payload": [
-                {
-                    "startX": Xs,
-                    "startY": Ys,
-                    "startDirection": Ds
-                }
-            ]
+            "payload": {
+                "startX": Xs,
+                "startY": Ys,
+                "startDirection": Ds
+            }
         }
 
-        self.send_message("", msg_pathselection)
+        self.send_message("", msg_pathselection, self.channel)
 
         pass
 

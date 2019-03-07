@@ -31,6 +31,12 @@ class Test:
             if i["type"] == "planet":
                 self.Xs = int(i["payload"]["startX"])
                 self.Ys = int(i["payload"]["startY"])
+            elif i["type"] == "unveiledPath":
+                # add to map
+                pass
+            elif i["type"] == "target":
+                self.Xt = int(i["payload"]["targetX"])
+                self.Y,t = int(i["payload"]["targetY"])
 
         robot.explore(0)
 
