@@ -2,8 +2,7 @@
 
 from enum import IntEnum, unique
 from typing import List, Optional, Tuple, Dict
-from collections import defaultdict
-#import communication
+
 
 
 # IMPORTANT NOTE: DO NOT IMPORT THE ev3dev.ev3 MODULE IN THIS FILE
@@ -54,20 +53,42 @@ class Planet:  # Karte
         :param weight: Integer
         :return: void
         """
+        for start, target, weight in self.planetKarte:
+            if start[0] in self.planetPaths:        # wenn knoten in dict, richtung adden
+                self.paths.update({start[0]:(target[0], target[1], weight)})
+            else:
+                self.paths = {start[1] : (target[0], target[1], weight)}        # ansonsten neuen key anlegen
+                self.planetPaths.update({start[0]: self.paths})         # richtung adden
 
-        pass
+            # TODO richtung invertieren, der rückweg
 
-    def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
-        ''' [[((0, 0), < Direction.NORTH: 0 >), ((0, 1), < Direction.SOUTH: 180 >), 1]
-            [((0, 0), <Direction.EAST: 90>), ((1, 0), <Direction.WEST: 270>), 1]'''
 
-        for i in range(0, len(self.planetKarte)-1):  # vergleicht Elemente (Knoten) der Liste planetPaths (a, b)
-            a = self.planetKarte[i][0][0]
+            if target[0] in self.planetPaths:
+                self.paths.update({target[0]:(start[0], start[1], weight)})
+            else:
+                self.paths = {target[1] : (start[0], start[1], weight)}
+                self.planetPaths.update({target[0]: self.paths})
+
+
+
+
+
+
+        """ a = self.planetKarte[i][0][0]
             c = self.planetKarte[i][1][0]
-            for j in range(1, len(self.planetKarte)-1): # TODO: wie funktioniert range in kombination mit len
-                b = self.planetKarte[j][0][0]
+        
+            b = self.planetKarte[j][0][0]
                 d = self.planetKarte[j][1][0]
                 w = self.planetKarte[j][2]  # w ist wichtung der kanten
+        """
+
+        """
+
+                    
+        for i in range(0, len(self.planetKarte)-1):  # vergleicht Elemente (Knoten) der Liste planetPaths (a, b)
+
+            for j in range(1, len(self.planetKarte)-1): # TODO: wie funktioniert range in kombination mit len
+
 
                 # TODO mehrere sachen hinzufügen möglich? neuer eintrag erzeugt, wenn key nicht vorhand?
 
@@ -86,6 +107,14 @@ class Planet:  # Karte
                 if c == b:
                     self.paths[self.planetKarte[i][0][1]] = [b, self.planetKarte[j][1][1], w]
                     self.planetPaths[c] = self.paths
+        """
+        pass
+
+    def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
+        ''' [[((0, 0), < Direction.NORTH: 0 >), ((0, 1), < Direction.SOUTH: 180 >), 1]
+            [((0, 0), <Direction.EAST: 90>), ((1, 0), <Direction.WEST: 270>), 1]'''
+
+
 
         """
         Returns all paths
