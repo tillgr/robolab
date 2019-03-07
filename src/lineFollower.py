@@ -33,6 +33,7 @@ class LineFollower:
     derivative = 0
 
     listDistances = []
+    listPaths = []
 
     red = (135, 60, 15)
     blue = (30, 150, 100)
@@ -94,7 +95,7 @@ class LineFollower:
         dist = self.ultrasonicSensor.value() // 10
 
         if dist < 8:
-            # ev3.Sound.speak("found an obstacle")
+            ev3.Sound.beep()
             self.lastError = 0
             self.integral = 0
             self.derivative = 0
@@ -148,6 +149,7 @@ class LineFollower:
             self.leftMotor.duty_cycle_sp = 20
             if self.colorSensor.value() in range(30, 44):
                 print(f"path, direction: {direction}")
+                self.listPaths.append(direction)
                 break
 
         while self.gyroSensor.value() is not 0:
@@ -168,6 +170,7 @@ class LineFollower:
             self.rightMotor.duty_cycle_sp = 20
             if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
                 print(f"path, direction: {(direction - 90) % 360}")
+                self.listPaths.append((direction - 90) % 360)
                 break
         while self.gyroSensor.value() is not 0:
             self.rightMotor.duty_cycle_sp = -20
@@ -179,10 +182,13 @@ class LineFollower:
             self.leftMotor.duty_cycle_sp = 20
             if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
                 print(f"path, direction: {(direction + 90) % 360}")
+                self.listPaths.append((direction + 90) % 360)
                 break
         while self.gyroSensor.value() is not 0:
             self.leftMotor.duty_cycle_sp = -20
         self.leftMotor.stop()
+
+
 
     #select path
     def select_path(self, direction):

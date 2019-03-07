@@ -1,21 +1,52 @@
 #!/usr/bin/env python3
 
 import lineFollower
-import communication
+import testingCommunication as communication
+import odometry
 
 
 class Test:
-    Xs = 0
+    Xs = 0      # start x,y
     Ys = 0
-    direction = 0
-    Xe = 0
+    Ds = 0      # direction
+    De = 0
+    Xe = 0      # end x,y
     Ye = 0
+    Xt = 0
+    Yt = 0
 
-    def first_vertex(self, c):
+    def __init__(self):
+        pass
+
+    def run(self, c):
         robot = lineFollower.LineFollower()
+        calc = odometry.Odometry()
+
         robot.drive()
+
         com = communication.Communication(c)
-        # get start position from server
-        self.Xs = com.startX
-        self.Ys = com.startY
+
+        for i in com.get_messages():
+            # get start coordinates
+            if i["type"] == "planet":
+                self.Xs = int(i["payload"]["startX"])
+                self.Ys = int(i["payload"]["startY"])
+
+        robot.explore(0)
+
+        inp = input("dir: ")
+
+        com.send_pathselection(str(self.Xs), str(self.Ys), "N")
+
+        robot.select_path(int(inp))
+        robot.set_direction(int(inp))
+        robot.drive()
+        calc.position(robot.get_direction(), self.Xs, self.Ys, robot.get_distances())
+        self.Xe = calc.x
+        self.Ye = calc.y
+        self.De = robot.direction
+
+        com.send_path(str(self.Xs), str(self.Ys), "N", str(self.Xe), str(self.Ye), "N", "free")
+
+
 

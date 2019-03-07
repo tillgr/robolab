@@ -45,7 +45,7 @@ def run():
         robot.calibrate()
         time.sleep(10)
 
-
+    '''
     robot.drive()
     calc = odometry.Odometry()
     calc.position(0, 0, 0, robot.get_distances())
@@ -61,9 +61,10 @@ def run():
     robot.set_direction(int(inp))
     robot.drive()
     calc.position(robot.get_direction(), 0, 0, robot.get_distances())
+    '''
 
     t = test.Test()
-    #t.first_vertex(client)
+    t.run(client)
 
 # DO NOT EDIT
 if __name__ == '__main__':
