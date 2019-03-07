@@ -149,8 +149,9 @@ class YourFirstTestPlanet(unittest.TestCase):
         self.planet.add_path(((0, 3), Direction.NORTH), ((0, 3), Direction.WEST), 2)
         self.planet.add_path(((0, 3), Direction.EAST), ((2, 2), Direction.NORTH), 3)
         self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 3)
+        self.planet.get_paths()
         self.assertEqual(self.planet.shortest_path((0, 0), (2, 2)), [((0, 0), Direction.EAST), ((1, 0), Direction.NORTH)])
-        self.planet.shortest_path((0,1), (1, 0))
+        #self.planet.shortest_path((0, 1), (1, 0))
         print(self.planet.planetPaths.items())
         self.fail('implement me!')
 

@@ -3,6 +3,7 @@
 from enum import IntEnum, unique
 from typing import List, Optional, Tuple, Dict
 from collections import defaultdict
+#import communication
 
 
 # IMPORTANT NOTE: DO NOT IMPORT THE ev3dev.ev3 MODULE IN THIS FILE
@@ -36,13 +37,13 @@ class Planet:  # Karte
         self.planetKarte = []
         self.planetPaths = {}
         self.paths = {}
-        self.dijk = {}  # dictionary für den dijkstra
         self.target = None
 
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
                  weight: int):  # Koordinaten, Hin/Rückrichtung
 
         self.planetKarte.append([start, target, weight])
+        # print(f"Start: {start}")
 
         """
          Adds a bidirectional path defined between the start and end coordinates to the map and assigns the weight to it
@@ -103,57 +104,61 @@ class Planet:  # Karte
             }
         :return: Dict
         """
-
+        print(self.planetPaths.items())
         return self.planetPaths
 
         pass
 
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int])-> Optional[List[Tuple[Tuple[int, int], Direction]]]:
 
-        #waehlbar = sorted(self.planetPaths)
-        #print(waehlbar)
-        #ids = list(range(0, len(gewaehlt)))
-
         """setup-----------------------------------------------------------------------------------------------------"""
         gewaehlt = []
         rkm = []        # randknoten von s allgemein: [line, line, line, ...], nachshlagewerk
+        line = []
 
         # erstellt rkm liste
-        print(self.planetPaths.items()) # TODO liste leer, warum, kein zugriff o.ä?
         for s,v, in self.planetPaths.items():
-            print("!")
-            print(s)    # start
-            # print(v)
-            line = []
             for dir_s, v in self.planetPaths.get(s).items():
-                print(dir_s, v)
                 weight = v[2]
                 t = v[0]    # target
                 line.append((t, dir_s, weight, s))
-            rkm.append(line)
-            # print(v)
+            rkm.append(line.copy())
+            #print("line:")
+            #print(line)
+            line.clear()
+            #print("rkm:")
+            #print(rkm)
 
         """dijkstra--------------------------------------------------------------------------------------------------"""
 
         rkm_d = []    # rkm arbeitsliste
         line = []       #hilfszeile
 
-        for line in rkm:        #startknoten einfügen
-            #line = []
+        # print("rkm:")
+        # print(rkm[1])
+        for line in rkm:        # startknoten einfügen
+            # print(f"test: {line}")
             for tupel in line:
-                for t, dir_s, weight, s in tupel:
-                    if t == start:
-                        gewaehlt.append(tupel)
+                print(f"tupel: {tupel}")
+                print(tupel[0])
+                print("Start: ")
+                # print(start)
+                if tupel[0] == start:       # TODO wählt nicht aus #start
+                    gewaehlt.append(tupel)
+                print("gewaehlt: ")
+                print(gewaehlt)
         i = 0
-        while len(rkm_d[i]) != 0:
+
+        while True:
 
             for line in rkm:        # nachbarknoten in rkm finden
-                #line = []
+                # line = []
                 for tupel in line:
-                    for t, dir_s, weight, s in tupel:
-                        if gewaehlt[i][0] == s:
-                            weight_neu = weight + gewaehlt[i][2]        # weight aktualisieren
-                            line.append((t, dir_s, weight_neu, s))
+                    # print(gewaehlt[i][0])
+                    print(tupel[3])
+                    if gewaehlt[i][0] == tupel[3]:
+                        tupel[2] = tupel[2] + gewaehlt[i][2]        # weight aktualisieren
+                        line.append(tupel)
                     rkm_d.append(line)                  # einfügen in rkm_d
                     line.clear()
             if i>0:
@@ -164,11 +169,16 @@ class Planet:  # Karte
                 rkm_d.append(line)
                 line.clear()
 
-            for i in range(0, len(rkm_d[i])):       #tupel mit kleinster weight finden
+            for i in range(0, len(rkm_d[i])):       #tupel mit kleinster weight finden  # TODO
                 if min(rkm_d[i][2]):
                     gewaehlt.append(rkm_d[i])       # einfügen in gewählt
             i+=1
 
+            if len(rkm_d[i]) is not 0:
+                break
+            print("rkm:")
+            print(rkm_d)
+            print(len(rkm_d[i]))
         """output----------------------------------------------------------------------------------------------------"""
         shp = []        # TODO richtung ist rückwärts
         index: int
@@ -189,71 +199,7 @@ class Planet:  # Karte
         shp_route = [(shp[-1], None)]  # route für roboter
         for j in range(len(shp)-1, 0):      # liste rückwerts durchgehen, route bilden
             shp_route.append((shp[i][3], shp[i+1][1]))
-        return shp_route
-        """
-        s = start
-        t = target
-        # TODO exception wenn t nicht in planet paths
-        gewaehlt = []
-        vg = None
 
-        rkm = self.planetPaths.get(s)  # randknotenmenge aus planetPaths
-        # self.dijk = {s: (rkm.items(), vg)}  # eintrag in dijk s: rkm.items(), value ist typ liste # TODO welches format returnt .items?
-        self.dijk = {s: (sorted(self.dijk), vg)}
-        self.dijk = defaultdict(list)     # default datentyp für values von dijk ist list
-
-        def update_dijkstra():  # makes new line element fot dijkstra
-            gewaehlt.append(s)  # in gewählt hinzufügen
-
-            last_key = sorted(self.dijk.keys())[-1]  # letzter key vor dem update aus dijk
-            last_value = self.dijk[last_key]  # letzter wert des dijk vor update
-
-            self.dijk[s] = (rkm.items(), vg)    # nächste zeile anlegen mit neue nachbarknoten
-            self.dijk[s].append(last_value)  # randknoten übernehmen
-
-            for k in range(0, len(self.dijk[s])-1):   # löschen doppelter knoten # TODO geht es um die anzahl oder die indizes? sonst endrange fixen
-                a = self.dijk[s][k]    # element in s wählen
-                a_w = self.dijk[s][k][0][1][2]    # width parameter von diesem element
-                for l in range(1, len(self.dijk[s])-1):
-                    b = self.dijk[s][l]
-                    b_w = self.dijk[s][l][0][1][2]    # wird verglichen, zum aktualisieren
-                    if a_w >= b_w:      # falls width größer/gleich, gelöscht
-                        del a   # TODO aussage valide?
-                    elif a_w < b_w:     # falls width kleiner gelöscht
-                        del b
-                    elif a_w < 0:       # falls broken: gelöscht
-                        del a
-                    elif b_w < 0:       # same here
-                        del b
-            for i in range(0, len(last_value)-1):   # geht last value durch, vergleicht punkte, aktualisiert weight     # TODO rückwirkend updaten
-                a = last_value[i][0][1][0]     # punkt aus last_value
-                a_w = last_value[i][0][1][2]
-                for j in range(0, len(self.dijk[s])-1):     # geht neue zeile durch
-                    b = last_value[j][0][1][0]     # punkt von neuer Zeile
-                    b_w = self.dijk[s][j][0][1][2]
-                    if a == b:
-                        self.dijk[s][j][0][1][2] = b_w + a_w  # in dijk weight updaten
-
-        while not len(self.planetPaths) == len(self.dijk):  # solange länge von planetPaths ungleich länge dijk
-            for value in rkm.items():  # für richtungen von jeweiligen knoten aus   # TODO immer noch aktuell?
-                if min(value[1][2]) and s not in gewaehlt:  # wenn minimum an weight in einem eintrag gefunden
-                    # TODO, wie bestimmt man das minimum?
-                    # liste aller minima, anhand vom index value bestimmen?
-                    vg = s
-                    s = (value, vg)  # s neu wählen, als punkt, vorgängerpunkt # TODO richtiges scope?
-                update_dijkstra()
-
-        shp = []        # shortest path list
-        vert = t        # aktueller knoten
-        # TODO shp liste kreieren
-
-        while vert != s:
-            m = len(gewaehlt)-1
-            if gewaehlt[m][0][1][0] == vert:    # hinzufügen, falls knoten gleich vert
-                shp.append([vert, gewaehlt[m][0][0]])   # aktueller knoten, richtung zu diesem
-                vert = gewaehlt[m][1]   # vorgänger wird zhu neuem vert
-            m = m-1
-        """
 
 
         """
@@ -266,4 +212,4 @@ class Planet:  # Karte
         :return: List, Direction
         """
 
-
+        return shp_route
