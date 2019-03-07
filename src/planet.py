@@ -13,15 +13,7 @@ class Direction(IntEnum):  # Richtung
     SOUTH = 180
     WEST = 270
 
-    def direction_invert(self, direction):
-        if direction == self.NORTH:
-            return self.SOUTH
-        if direction == self.EAST:
-            return self.WEST
-        if direction == self.SOUTH:
-            return self.NORTH
-        if direction == self.WEST:
-            return self.EAST
+
 
 # simple alias, no magic here
 Weight = int  # gewicht der kanten
@@ -45,12 +37,24 @@ class Planet:  # Karte
         self.paths = {}
         self.target = None
 
+
+    def direction_invert(self, direction):
+        if direction == Direction.NORTH:
+            return Direction.SOUTH
+        if direction == Direction.EAST:
+            return Direction.WEST
+        if direction == Direction.SOUTH:
+            return Direction.NORTH
+        if direction == Direction.WEST:
+            return Direction.EAST
+
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
                  weight: int):  # Koordinaten, Hin/Rückrichtung
 
         self.planetKarte.append([start, target, weight])
         # print(f"Start: {start}")
 
+        #print(self.planetKarte)
         """
          Adds a bidirectional path defined between the start and end coordinates to the map and assigns the weight to it
         example:
@@ -62,22 +66,28 @@ class Planet:  # Karte
         """
         for start, target, weight in self.planetKarte:
             if start[0] in self.planetPaths:        # wenn knoten in dict, richtung adden
-                self.paths.update({start[0]:(target[0], target[1], weight)})
+                self.paths.update({start[1]:(target[0], target[1], weight)})
+                #self.planetPaths.update({start[0] : self.paths})
+
             else:
                 self.paths = {start[1] : (target[0], target[1], weight)}        # ansonsten neuen key anlegen
                 self.planetPaths.update({start[0]: self.paths})         # richtung adden
 
             # TODO richtung invertieren, der rückweg
 
-            d = Direction()     # objekt der klasse direction
+            '''
             if target[0] in self.planetPaths:
-                self.paths.update({target[0]: (start[0], d.direction_invert(start[1]), weight)})
+                self.paths.update({target[1]: (start[0], self.direction_invert(start[1]), weight)})
             else:
-                self.paths = {d.direction_invert(target[1]) : (start[0], d.direction_invert(start[1]), weight)}
+                self.paths = {self.direction_invert(target[1]): (start[0], self.direction_invert(start[1]), weight)}
                 self.planetPaths.update({target[0]: self.paths})
-
+            '''
         pass
-
+        print("keys")
+        print(self.planetPaths.keys())
+        print("values")
+        print(self.planetPaths.values())
+        
     def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
         ''' [[((0, 0), < Direction.NORTH: 0 >), ((0, 1), < Direction.SOUTH: 180 >), 1]
             [((0, 0), <Direction.EAST: 90>), ((1, 0), <Direction.WEST: 270>), 1]'''
@@ -101,7 +111,8 @@ class Planet:  # Karte
             }
         :return: Dict
         """
-        print(self.planetPaths.items())
+        #print(self.planetPaths.items())
+        #print(self.planetPaths)
         return self.planetPaths
 
         pass
@@ -111,80 +122,119 @@ class Planet:  # Karte
         """setup-----------------------------------------------------------------------------------------------------"""
         gewaehlt = []
         rkm = []        # randknoten von s allgemein: [line, line, line, ...], nachshlagewerk
-        line = []
+        line = []       # hilfszeile
+        hilf =[]
 
-        # erstellt rkm liste
+        # erstellt rkm liste        # TODO hier ist der fehler: .items läuft nicht
+
         for s,v, in self.planetPaths.items():
-            for dir_s, v in self.planetPaths.get(s).items():
-                weight = v[2]
-                t = v[0]    # target
-                line.append((t, dir_s, weight, s))
+            #print(f"items:{self.planetPaths.get(s).items()}\n")
+
+            for v in self.planetPaths.get(s).items():        #dir_s
+                #print(f"v:{v}\n")
+
+                weight = v[1][2]
+                t = v[1][0]    # target
+                dir_s = v[0]
+                line.append([t, dir_s, weight, s])          # TODO maybe statt line hilf verwenden
+                #print(f"line: {line}\n")
+
             rkm.append(line.copy())
-            #print("line:")
-            #print(line)
+
             line.clear()
             #print("rkm:")
             #print(rkm)
+            #print("----")
 
         """dijkstra--------------------------------------------------------------------------------------------------"""
 
         rkm_d = []    # rkm arbeitsliste
-        line = []       #hilfszeile
 
         # print("rkm:")
         # print(rkm[1])
         for line in rkm:        # startknoten einfügen
             # print(f"test: {line}")
             for tupel in line:
-                print(f"tupel: {tupel}")
-                print(tupel[0])
-                print("Start: ")
-                # print(start)
-                if tupel[0] == start:       # TODO wählt nicht aus #start
-                    gewaehlt.append(tupel)
-                print("gewaehlt: ")
-                print(gewaehlt)
-        i = 0
+                #print(f"tupel: {tupel}")
+                ##print(tupel[0])
+                ##print("Start: ")
+                ##print(start)
 
+                if tupel[0] == start:
+                    gewaehlt.append(tupel)
+                #print(f"hilf: {tupel}")
+                #print("gewaehlt: ")
+                #print(gewaehlt)
+
+        i = 0
+        #print("\nhier beginnt dijkstra :))\n")
+        #print(rkm)
         while True:
 
-            for line in rkm:        # nachbarknoten in rkm finden
-                # line = []
+            for line in rkm:        # nachbarknoten in rkm finden       # TODO endlosschleife
                 for tupel in line:
                     # print(gewaehlt[i][0])
-                    print(tupel[3])
-                    if gewaehlt[i][0] == tupel[3]:
-                        tupel[2] = tupel[2] + gewaehlt[i][2]        # weight aktualisieren
-                        line.append(tupel)
-                    rkm_d.append(line)                  # einfügen in rkm_d
-                    line.clear()
+                    #print(f"tupel 3: {tupel[3]}")
+                    if gewaehlt[i][0] == tupel[3] and tupel not in gewaehlt:        # t in tupel gewaehlt == s in tupel line rkm
+                        print(f"gew: i: {gewaehlt[i][0]}")
+                        hilf.append(tupel)
+                        hilf[-1][2]= tupel[2] + gewaehlt[i][2]
+                        # tupel[2] = tupel[2] + gewaehlt[i][2]        # weight aktualisieren # TODO unendlich oft einfügen
+                        rkm_d.append(hilf.copy())                  # einfügen in rkm_d
+                        print(f"append: {hilf}")
+                        hilf.clear()
+                print("break")
+                #break
             if i>0:
-                for i in range(0, len(rkm_d[i-1])):     #vorherige tupel übernehmen
-                    if rkm_d[i - 1][i] not in gewaehlt:
-                        line.append(rkm_d[i - 1][i])
-                        line[2] = gewaehlt[i][2]        # weight aktualisieren
-                rkm_d.append(line)
-                line.clear()
+                for v in range(0, len(rkm_d[i-1])):     #vorherige tupel übernehmen
+                    if rkm_d[i - 1][v] not in gewaehlt:
+                        hilf.append(rkm_d[i - 1][v])
+                        hilf[-1][2] = gewaehlt[i][2]        # weight aktualisieren
+                rkm_d.append(hilf.copy())
+                hilf.clear()
 
-            for i in range(0, len(rkm_d[i])):       #tupel mit kleinster weight finden  # TODO
-                if min(rkm_d[i][2]):
-                    gewaehlt.append(rkm_d[i])       # einfügen in gewählt
-            i+=1
 
-            if len(rkm_d[i]) is not 0:
+            #print(f"länge: {len(rkm_d[i])}")
+
+            #print("rkm:")
+            #print(rkm_d)
+
+            if len(rkm_d[i]) is 0:
+
                 break
-            print("rkm:")
-            print(rkm_d)
-            print(len(rkm_d[i]))
+
+            #print(f"rkm_d: {rkm_d}")
+            minimum = rkm_d[i][0][2]
+            for tupel in rkm_d[i]:       #tupel mit kleinster weight finden
+                #print(f"rkm_di: {rkm_d[i]}")
+                #print(f"mini: {minimum}")
+                #print(f"tupel[2]: {tupel[2]}")
+                if tupel[2] < minimum:
+                    minimum = tupel[2]
+                    gewaehlt.append(tupel)       # einfügen in gewählt
+                else:
+                    gewaehlt.append(rkm_d[i][0])
+                    # print("hi")
+            i= i+ 1
+
+            print(i)
+
+
         """output----------------------------------------------------------------------------------------------------"""
         shp = []        # TODO richtung ist rückwärts
         index: int
 
         for tupel in gewaehlt:  # tupel in gewählt suchen
-            for t, dir_s, weight, s in tupel:
-                if t == target:
-                    shp.append(tupel)
-                    index = gewaehlt.index(tupel)       # index merken
+            print(f"gewaehlt: {gewaehlt}")       # TODO komische tupel in gewählt
+            #print("\n")
+            print(tupel)
+
+            if tupel[0] == target:      # TODO target befindet sich nicht in gewaehlt    #target
+                shp.append(tupel)
+                print("hi")
+                index = gewaehlt.index(tupel)       # index merken
+                print(index)
+
         while index is not 0:
             for tupel in rkm_d[index-1]:        # eins zurück gehen
                 for t, dir_s, weight, s in tupel:
