@@ -3,8 +3,6 @@
 from enum import IntEnum, unique
 from typing import List, Optional, Tuple, Dict
 
-
-
 # IMPORTANT NOTE: DO NOT IMPORT THE ev3dev.ev3 MODULE IN THIS FILE
 
 @unique
@@ -15,6 +13,15 @@ class Direction(IntEnum):  # Richtung
     SOUTH = 180
     WEST = 270
 
+    def direction_invert(self, direction):
+        if direction == self.NORTH:
+            return self.SOUTH
+        if direction == self.EAST:
+            return self.WEST
+        if direction == self.SOUTH:
+            return self.NORTH
+        if direction == self.WEST:
+            return self.EAST
 
 # simple alias, no magic here
 Weight = int  # gewicht der kanten
@@ -62,52 +69,13 @@ class Planet:  # Karte
 
             # TODO richtung invertieren, der rückweg
 
-
+            d = Direction()     # objekt der klasse direction
             if target[0] in self.planetPaths:
-                self.paths.update({target[0]:(start[0], start[1], weight)})
+                self.paths.update({target[0]: (start[0], d.direction_invert(start[1]), weight)})
             else:
-                self.paths = {target[1] : (start[0], start[1], weight)}
+                self.paths = {d.direction_invert(target[1]) : (start[0], d.direction_invert(start[1]), weight)}
                 self.planetPaths.update({target[0]: self.paths})
 
-
-
-
-
-
-        """ a = self.planetKarte[i][0][0]
-            c = self.planetKarte[i][1][0]
-        
-            b = self.planetKarte[j][0][0]
-                d = self.planetKarte[j][1][0]
-                w = self.planetKarte[j][2]  # w ist wichtung der kanten
-        """
-
-        """
-
-                    
-        for i in range(0, len(self.planetKarte)-1):  # vergleicht Elemente (Knoten) der Liste planetPaths (a, b)
-
-            for j in range(1, len(self.planetKarte)-1): # TODO: wie funktioniert range in kombination mit len
-
-
-                # TODO mehrere sachen hinzufügen möglich? neuer eintrag erzeugt, wenn key nicht vorhand?
-
-                if a == b:  # bei Pfaden mit gleichen Startknoten: eintragen in Dict: {a: {richtung von a: [b, richtung von b, wichtung]}}
-                    self.paths[self.planetKarte[i][0][1]] = [b, self.planetKarte[j][1][1], w]
-                    self.planetPaths[a] = self.paths
-
-                if c == d:
-                    self.paths[self.planetKarte[i][0][1]] = [d, self.planetKarte[j][1][1], w]
-                    self.planetPaths[c] = self.paths
-
-                if a == d:
-                    self.paths[self.planetKarte[i][0][1]] = [d, self.planetKarte[j][1][1], w]
-                    self.planetPaths[a] = self.paths
-
-                if c == b:
-                    self.paths[self.planetKarte[i][0][1]] = [b, self.planetKarte[j][1][1], w]
-                    self.planetPaths[c] = self.paths
-        """
         pass
 
     def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
