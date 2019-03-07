@@ -145,7 +145,7 @@ class Planet:  # Karte
                     if t == start:
                         gewaehlt.append(tupel)
         i = 0
-        while rkm_d[i] != rkm_d.clear():
+        while len(rkm_d[i]) != 0:
 
             for line in rkm:        # nachbarknoten in rkm finden
                 #line = []
