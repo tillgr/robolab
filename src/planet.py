@@ -2,7 +2,7 @@
 
 from enum import IntEnum, unique
 from typing import List, Optional, Tuple, Dict
-from collections import defaultdict
+
 
 
 # IMPORTANT NOTE: DO NOT IMPORT THE ev3dev.ev3 MODULE IN THIS FILE
