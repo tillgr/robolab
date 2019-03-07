@@ -30,10 +30,11 @@ class Communication:
             #erste Startkoordinaten (add_path)
             self.startX = float(data["payload"]["startX"])
             self.startY = float(data["payload"]["startY"])
-            
+
         elif self.type == "path":
-            self.startX = float(data["payload"]["startX"])
-            self.startY = float(data["payload"]["startY"])
+
+            #self.startX = float(data["payload"]["startX"])
+            #self.startY = float(data["payload"]["startY"])
             self.startDirection = data["payload"]["startDirection"]
             self.endDirection = data["payload"]["endDirection"]
             #korrigierter Endknoten (add_path)
