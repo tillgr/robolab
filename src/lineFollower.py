@@ -136,7 +136,7 @@ class LineFollower:
     def explore(self, direction):
         self.rightMotor.run_to_rel_pos(position_sp=90, speed_sp=80)
         self.leftMotor.run_to_rel_pos(position_sp=90, speed_sp=80)
-        time.sleep(2)
+        time.sleep(1.5)
 
         self.leftMotor.command = 'run-direct'
         self.rightMotor.command = 'run-direct'
@@ -157,7 +157,7 @@ class LineFollower:
 
         self.rightMotor.run_to_rel_pos(position_sp=-90, speed_sp=80)
         self.leftMotor.run_to_rel_pos(position_sp=-90, speed_sp=80)
-        time.sleep(2)
+        time.sleep(1.5)
 
         self.leftMotor.command = 'run-direct'
         self.rightMotor.command = 'run-direct'
@@ -189,7 +189,6 @@ class LineFollower:
         self.leftMotor.stop()
 
 
-
     #select path
     def select_path(self, direction):
         self.leftMotor.command = 'run-direct'
@@ -203,7 +202,7 @@ class LineFollower:
         if direction == self.direction:
             self.rightMotor.run_to_rel_pos(position_sp=90, speed_sp=80)
             self.leftMotor.run_to_rel_pos(position_sp=90, speed_sp=80)
-            time.sleep(2)
+            time.sleep(1.5)
 
             self.leftMotor.command = 'run-direct'
             self.rightMotor.command = 'run-direct'
@@ -246,12 +245,32 @@ class LineFollower:
             time.sleep(0.1)
             self.rightMotor.stop()
 
+        elif direction == (self.direction + 180) % 360:
+            while abs(self.gyroSensor.value()) < 150:
+                self.rightMotor.duty_cycle_sp = -20
+                self.leftMotor.duty_cycle_sp = 20
+                if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
+                    break
+
+            self.leftMotor.command = 'run-direct'
+            self.rightMotor.command = 'run-direct'
+
+            self.rightMotor.duty_cycle_sp = 0
+            self.gyroSensor.mode = 'GYRO-RATE'
+            self.gyroSensor.mode = 'GYRO-ANG'
+            while abs(self.gyroSensor.value()) < 20:
+                self.leftMotor.duty_cycle_sp = 20
+                if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
+                    break
+            self.leftMotor.stop()
+
+
     # follow line
     def drive(self):
         kp = 8  # kp*100 -> 10
         ki = 1  # ki*100 -> 1
-        kd = 2  # kd*100 -> 100
-        tp = 25
+        kd = 5  # kd*100 -> 100
+        tp = 30
 
         positionLeft = self.leftMotor.position
         positionRight = self.rightMotor.position
