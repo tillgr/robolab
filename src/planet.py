@@ -145,11 +145,11 @@ class Planet:  # Karte
         besucht = []
 
         besucht.append(target)
-        #print(besucht)
+        # print(besucht)
         self.dijkstra = copy.deepcopy(self.planetPaths)
         pprint.pprint(self.dijkstra.items())
-        #pprint.pprint(f"v{v}")
-        #pprint.pprint(f"items: {v.items()}")
+        # pprint.pprint(f"v{v}")
+        # pprint.pprint(f"items: {v.items()}")
 
         for tupel in self.dijkstra[target].items():  # weights und tupel extrahieren
             self.tupels.append(tupel)
@@ -158,35 +158,31 @@ class Planet:  # Karte
                 self.update_weight(tupel, 0)
             self.planetPaths[target] = self.tupels    # einfügen in planetPaths
         # TODO bis target gereacht schleife
+
         pprint.pprint(self.dijkstra.items())
-        # TODO v.items  nicht 2 mal benutzen
+        while target is not start:
 
-        for tupel in self.dijkstra[target].items():     # weights und tupel extrahieren
-            self.tupels.append(tupel)
-            if self.sum_weight < self.tupels[-1][1][2]:  # weight aktualisieren, wenn sum kleiner als jede weight des nachbarn
-                self.update_weight(tupel, self.sum_weight)      #weight aktualisieren
+            for tupel in self.dijkstra[target].items():     # weights und tupel extrahieren
+                self.tupels.append(tupel)
+                if self.sum_weight < self.tupels[-1][1][2]:  # weight aktualisieren, wenn sum kleiner als jede weight des nachbarn
+                    self.update_weight(tupel, self.sum_weight)      #weight aktualisieren
 
-            self.weights.append(self.tupels[-1][1][2])
-            self.planetPaths[target] = self.tupels
-            # TODO hier
+                self.weights.append(self.tupels[-1][1][2])
+                self.planetPaths[target] = self.tupels      # einfügen in planetPaths
 
-        for v in self.weights:
+            for v in self.weights:
+                if min(self.weights) == v:       # #kleinste weight finden
+                    self.index = self.weights.index(v)
+                    self.sum_weight = v    # weight in summe einfügen
+                    print(f"index: {self.index}")
+            for tupel in self.tupels:    # betreffendes tupel in besucht hinzufügen
+                if self.tupels.index(tupel) == self.index:
+                    besucht.append(tupel)
+                    self.sum_weight += tupel[1][2]
+                    target = (0,0)       # neuen knoten finden   TODO: tupel[1][0]
 
-            if min(self.weights) == v:       # #kleinste weight finden
-                self.index = self.weights.index(v)
-                self.sum_weight = v    # weight in summe einfügen
-                print(self.index)
-        for tupel in self.tupels:    # betreffendes tupel in besucht hinzufügen
-            if self.tupels.index(tupel) == self.index:
-                besucht.append(tupel)
-                self.sum_weight += tupel[1][2]
-                target = tupel[1][0]        # neuen knoten finden
-
-
-        # TODO in planetPaths weight aktualisieren
-
-        print(f"tupels: {self.tupels}")
-        print(f"weights: {self.weights}")
+            print(f"tupels: {self.tupels}")
+            print(f"weights: {self.weights}")
 
         '''
         """setup-----------------------------------------------------------------------------------------------------"""
