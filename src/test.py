@@ -21,6 +21,24 @@ class Test:
         pass
 
     # convert direction
+    def convert_direction(self, direction):
+        if direction == 90:
+            return "E"
+        elif direction == 0:
+            return "N"
+        elif direction == 270:
+            return "W"
+        elif direction == 180:
+            return "S"
+
+        elif direction == "E":
+            return 90
+        elif direction == "N":
+            return 0
+        elif direction == "S":
+            return 180
+        elif direction == "W":
+            return 270
 
     # handle messages
     def handle_messages(self, messages):
@@ -36,7 +54,12 @@ class Test:
                 self.Xt = int(msg["payload"]["targetX"])
                 self.Yt = int(msg["payload"]["targetY"])
 
-    # main function
+    def target_reached(self):
+        if self.Xe == self.Xt and self.Ye == self.Yt:
+            com.send_targetreached(self)
+            self.finished = True
+
+            # main function
     def run(self, c):
         robot = lineFollower.LineFollower()
         calc = odometry.Odometry()
