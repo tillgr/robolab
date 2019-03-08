@@ -52,7 +52,7 @@ class Test:
             elif msg["type"] == "path":
                 self.Xe = int(msg["payload"]["endX"])
                 self.Ye = int(msg["payload"]["endY"])
-                self.De = int(msg["payload"]["endDirection"])
+                self.De = int(self.convert_direction(msg["payload"]["endDirection"]))
 
                 weight = int(msg["payload"]["pathWeight"])
 
@@ -67,7 +67,7 @@ class Test:
                 self.Yt = int(msg["payload"]["targetY"])
 
             elif msg["type"] == "pathSelect":
-                self.Ds = msg["payload"]["startDirection"]
+                self.Ds = int(self.convert_direction(msg["payload"]["startDirection"]))
 
             elif msg["type"] == "done":
                 self.finished = True
@@ -116,7 +116,7 @@ class Test:
                 self.Ds = int(inp)
 
             com.send_pathselection(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds))
-            self.handle_messages()
+            self.handle_messages(com.get_messages())
             com.clear_messages()
 
             # TODO: make sound because communication finished
@@ -133,7 +133,7 @@ class Test:
             status = "free"
             com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xe), str(self.Ye), self.convert_direction((self.De+180)%360), status)
 
-            self.handle_messages()
+            self.handle_messages(com.get_messages())
             com.clear_messages()
 
             # target reached ?
@@ -149,7 +149,9 @@ class Test:
             # update variables
             self.Xs = self.Xe
             self.Ys = self.Ye
-            self.Ds = self.De
+            self.Ds = (self.De + 180) % 360
+
+            robot.set_direction(self.Ds)
 
             self.Xe = None
             self.Ye = None

@@ -80,30 +80,30 @@ class Communication:
         "from": "client",
         "type": "path",
 
-        "payload": {
+        "payload": [{
 
-            "startX": '{}'.format(self.startX),
-            "startY": '{}'.format(self.startY),
+            #"startX": '{}'.format(self.startX),
+            #"startY": '{}'.format(self.startY),
             "startDirection": "<Ds>",
             "endX": "<Xe>",
             "endY": "<Ye>",
             "endDirection": "<De>",
             "pathStatus": "free"
-            }
+        }]
 
         }
 
-        path_msg_blocked = {
+    path_msg_blocked = {
             "from": "client",
             "type": "path",
 
             "payload": [{
 
-                "startX": '{}'.format(self.startX),
-                "startY": '{}'.format(self.startY),
+                #"startX": '{}'.format(self.startX),
+                #"startY": '{}'.format(self.startY),
                 "startDirection": "<Ds>",
-                "endX": '{}'.format(self.startX),
-                "endY": '{}'.format(self.startY),
+                #"endX": '{}'.format(self.startX),
+                #"endY": '{}'.format(self.startY),
                 "endDirection": "<De>",
                 "pathStatus": "blocked"
                 }]
@@ -116,8 +116,8 @@ class Communication:
         "type": "pathSelect",
         "payload": [
             {
-            "startX": '{}'.format(self.startX),
-            "startY": '{}'.format(self.startY),
+            #"startX": '{}'.format(self.startX),
+            #"startY": '{}'.format(self.startY),
             "startDirection": "<Ds>"
             }
         ]
