@@ -119,7 +119,7 @@ class Test:
             self.handle_messages(com.get_messages())
             com.clear_messages()
 
-            # TODO: make sound because communication finished
+            robot.make_sound()
 
             robot.select_path(self.Ds)
             robot.set_direction(self.Ds)

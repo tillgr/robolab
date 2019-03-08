@@ -68,6 +68,9 @@ class LineFollower:
         self.offset = (valueBlack + valueWhite)/2
         print(f"offset: {self.offset}")
 
+    def make_sound(self):
+        ev3.Sound.beep()
+
 
     # turn
     def turn(self, deg, direction):

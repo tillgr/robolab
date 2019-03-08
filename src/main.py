@@ -25,50 +25,20 @@ def run():
     # the execution of all code shall be started from within this function
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER
 
-    rm = ev3.LargeMotor('outC')
-    lm = ev3.LargeMotor('outB')
-
-    cs = ev3.ColorSensor()
-
-    cs.mode = 'RGB-RAW'
-
-    col = cs.bin_data('hhh')
-
-    print(col)
-
-
     robot = LineFollower()
 
-
-    inp = input("calibrate? (yes/no)")
-    if inp == "yes":
+    inp = input("calibrate? (y/n)")
+    if inp == "y":
         robot.calibrate()
         time.sleep(10)
 
-    robot.drive(int(input("p :")), int(input("i :")), int(input("d :")), int(input("v :")))
+    robot.drive(int(input("p: ")), int(input("i: ")), int(input("d: ")), int(input("v: ")))
 
     '''
-    robot.drive()
-
-    calc = odometry.Odometry()
-    calc.position(0, 0, 0, robot.get_distances())
-    robot.set_direction(calc.get_direction())
-    print(calc.get_position())
-    print(f"direction: {robot.get_direction()}")
-
-    robot.explore(robot.get_direction())
-
-    inp = input("dir: ")
-
-    robot.select_path(int(inp))
-    robot.set_direction(int(inp))
-    robot.drive()
-    calc.position(robot.get_direction(), 0, 0, robot.get_distances())
-    
-
     t = test.Test()
     t.run(client)
     '''
+
 
 # DO NOT EDIT
 if __name__ == '__main__':
