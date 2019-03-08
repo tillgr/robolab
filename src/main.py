@@ -3,6 +3,8 @@
 import ev3dev.ev3 as ev3
 import uuid
 import paho.mqtt.client as mqtt
+
+import planetExplorer
 from lineFollower import LineFollower
 import time
 
@@ -26,13 +28,14 @@ def run():
         robot.calibrate()
         time.sleep(10)
 
-    robot.drive(int(input("p: ")), int(input("i: ")), int(input("d: ")), int(input("v: ")))
+    #robot.drive()
+    robot.drive(float(input("p: ")), float(input("i: ")), float(input("d: ")), float(input("v: ")))
+    #robot.explore(robot.direction)
 
     '''
     pe = planetExplorer.PlanetExplorer()
     pe.run(client)
     '''
-
 
 # DO NOT EDIT
 if __name__ == '__main__':

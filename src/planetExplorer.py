@@ -17,6 +17,8 @@ class PlanetExplorer:
 
     listPath = []
 
+    planetName = ""
+    first = True
     finished = False
 
     def __init__(self):
@@ -46,8 +48,10 @@ class PlanetExplorer:
     def handle_messages(self, messages):
         for msg in messages:
             if msg["type"] == "planet":
+
                 self.Xs = int(msg["payload"]["startX"])
                 self.Ys = int(msg["payload"]["startY"])
+                self.planetName = msg["payload"]["planetName"]
 
             elif msg["type"] == "path":
                 self.Xe = int(msg["payload"]["endX"])
@@ -82,16 +86,21 @@ class PlanetExplorer:
     def run(self, c):
         robot = lineFollower.LineFollower()
         calc = odometry.Odometry()
+        com = communication.Communication(c)
 
         # drive to first vertex
         robot.drive()
 
-        com = communication.Communication(c)
+        com.init_connection()
 
         while not self.finished:
             # deal with received messages
             self.handle_messages(com.get_messages())
             com.clear_messages()
+
+            if self.first:
+                com.sub_to_planet(self.planetName)
+                self.first = False
 
             # find paths and save them
             robot.explore(self.Ds)

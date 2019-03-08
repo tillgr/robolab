@@ -26,7 +26,7 @@ class LineFollower:
     direction = 0   # start direction always NORTH
     x = 0
     y = 0
-    offset = 141
+    offset = 170 #141
 
     integral = 0
     lastError = 0
@@ -102,7 +102,7 @@ class LineFollower:
 
         dist = self.ultrasonicSensor.value() // 10
 
-        if dist < 8:
+        if dist < 12:
             ev3.Sound.beep()
             self.blocked = True
 
@@ -145,9 +145,9 @@ class LineFollower:
     # vertex exploration
     def explore(self, direction):
         self.listPaths.append((direction + 180) % 360)
-        self.rightMotor.run_to_rel_pos(position_sp=90, speed_sp=80)
-        self.leftMotor.run_to_rel_pos(position_sp=90, speed_sp=80)
-        time.sleep(1.5)
+        self.rightMotor.run_to_rel_pos(position_sp=180, speed_sp=80)
+        self.leftMotor.run_to_rel_pos(position_sp=180, speed_sp=80)
+        time.sleep(2.5)
 
         self.leftMotor.command = 'run-direct'
         self.rightMotor.command = 'run-direct'
@@ -155,6 +155,13 @@ class LineFollower:
         self.gyroSensor.mode = 'GYRO-RATE'
         self.gyroSensor.mode = 'GYRO-ANG'
 
+        while abs(self.gyroSensor.value()) < 360:
+            self.leftMotor.duty_cycle_sp = 20
+            self.rightMotor.duty_cycle_sp = -20
+        self.leftMotor.stop()
+        self.rightMotor.stop()
+
+        '''
         self.rightMotor.duty_cycle_sp = 0
         while abs(self.gyroSensor.value()) < 30:
             self.leftMotor.duty_cycle_sp = 20
@@ -198,6 +205,7 @@ class LineFollower:
         while self.gyroSensor.value() is not 0:
             self.leftMotor.duty_cycle_sp = -20
         self.leftMotor.stop()
+        '''
 
     #select path
     def select_path(self, direction):
@@ -265,7 +273,7 @@ class LineFollower:
             self.rightMotor.stop()
 
     # follow line
-    def drive(self, p, i, d, v):
+    def drive(self, p=11, i=0.8, d=8, v=35):
         kp = p       # 8
         ki = i       # 1
         kd = d       # 4
