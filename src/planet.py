@@ -30,6 +30,8 @@ class Planet:  # Karte
     """
     Contains the representation of the map and provides certain functions to manipulate it according to the specifications
     """
+    index = None
+    sum_weight = None
 
     def __init__(self):
         """ Initializes the data structure """
@@ -83,10 +85,10 @@ class Planet:  # Karte
                 self.planetPaths[target[0]].update({target[1]: (start[0], self.direction_invert(start[1]), weight)})
 
         pass
-        print("karte")
-        pprint.pprint(self.planetKarte)
-        print("Paths")
-        pprint.pprint(self.planetPaths)
+        #print("karte")
+        #pprint.pprint(self.planetKarte)
+        #print("Paths")
+        #pprint.pprint(self.planetPaths)
 
     def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
         ''' [[((0, 0), < Direction.NORTH: 0 >), ((0, 1), < Direction.SOUTH: 180 >), 1]
@@ -119,6 +121,48 @@ class Planet:  # Karte
 
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int])-> Optional[List[Tuple[Tuple[int, int], Direction]]]:
 
+        dijkstra = self.planetPaths.copy()
+        besucht = []
+
+        besucht.append(target)
+        #print(besucht)
+        # TODO bis target gereacht schleife
+        v = dijkstra.get(target)
+
+        #print(v)
+
+
+
+        weights = []
+        tupels = []
+        #print(v.items())
+
+        for tupel in v.items():     # weights und tupel extrahieren
+                tupels.append(tupel)
+                weights.append(tupel[1][2])
+                if self.sum_weight < tupel[1][2]:  # weight aktualisieren
+                    # TODO wenn erster knoten
+                    # TODO alle weiteren knoten
+
+        for v in weights:
+
+            if min(weights) == v:       # #kleinste weight finden
+                self.index = weights.index(v)
+                self.sum_weight = v    # weight in summe einfügen
+                print(self.index)
+        for tupel in tupels:    # betreffendes tupel in besucht hinzufügen
+            if tupels.index(tupel) == self.index:
+                besucht.append(tupel)
+                self.sum_weight += tupel[1][2]
+                target = tupel[1][0]
+
+
+        # TODO in planetPaths weight aktualisieren
+
+        print(f"tupels: {tupels}")
+        print(f"weights: {weights}")
+
+        '''
         """setup-----------------------------------------------------------------------------------------------------"""
         gewaehlt = []
         rkm = []        # randknoten von s allgemein: [line, line, line, ...], nachshlagewerk
@@ -248,7 +292,7 @@ class Planet:  # Karte
             shp_route.append((shp[i][3], shp[i+1][1]))
 
 
-
+        '''
         """
         Returns a shortest path between two nodes
         examples:
@@ -259,4 +303,8 @@ class Planet:  # Karte
         :return: List, Direction
         """
 
-        return shp_route
+        #return shp_route
+
+    def possible_directions (punkt: Tuple[int, int], Directions: List[Direction]):
+        # checken, dass alle richtungen eingetragen
+        pass
