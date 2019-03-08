@@ -74,10 +74,7 @@ class Planet:  # Karte
                 self.planetPaths[start[0]].update({start[1]:(target[0], target[1], weight)})
                 #self.planetPaths.update({start[0] : self.paths})
 
-
-
             # TODO richtung invertieren, der rückweg
-
 
             if target[0] not in self.planetPaths.keys():
                 self.paths = {self.direction_invert(target[1]): (start[0], self.direction_invert(start[1]), weight)}
