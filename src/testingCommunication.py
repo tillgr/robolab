@@ -10,6 +10,7 @@ class Communication:
     receivedMessages = []
     debugMessages = []
     channel = ""
+    exploration = "explorer/039"
 
     msg_ready = {
         "from": "client",
@@ -30,7 +31,7 @@ class Communication:
         self.planetName = inp
 
         if inp == "":
-            self.send_message("", self.msg_ready, "explorer/039")
+            self.send_message("", self.msg_ready, self.exploration)
         else:
             msg_testplanet = {
                 "from": "client",
@@ -39,8 +40,8 @@ class Communication:
                     "planetName": self.planetName
                 }
             }
-            self.send_message("", msg_testplanet, "explorer/039")
-            self.send_message("", self.msg_ready, "explorer/039")
+            self.send_message("", msg_testplanet, self.exploration)
+            self.send_message("", self.msg_ready, self.exploration)
             self.channel = f"planet/{self.planetName}-039"
             # change channel
             self.client.subscribe(self.channel, qos=1)
@@ -104,6 +105,7 @@ class Communication:
 
         self.send_message("", msg_path, self.channel)
 
+    # send selected path
     def send_pathselection(self, Xs, Ys, Ds):
         msg_pathselection = {
             "from": "client",
@@ -117,7 +119,29 @@ class Communication:
 
         self.send_message("", msg_pathselection, self.channel)
 
-        pass
+    # send that target was reached
+    def send_targetreached(self):
+        msg_targetreached =  {
+            "from": "client",
+            "type": "targetReached",
+            "payload": {
+                "message": "The target was reached successfully "
+            }
+        }
+
+        self.send_message("", msg_targetreached, self.exploration)
+
+    # send that exploration finished
+    def send_explorationcompleted(self):
+        msg_explorationcompleted =  {
+            "from": "client",
+            "type": "targetReached",
+            "payload": {
+                "message": "The planet was fully explored"
+            }
+        }
+
+        self.send_message("", msg_explorationcompleted, self.exploration)
 
     # deal with received messages
     def get_messages(self):

@@ -30,10 +30,11 @@ class Communication:
             #erste Startkoordinaten (add_path)
             self.startX = float(data["payload"]["startX"])
             self.startY = float(data["payload"]["startY"])
-            
+
         elif self.type == "path":
-            self.startX = float(data["payload"]["startX"])
-            self.startY = float(data["payload"]["startY"])
+
+            #self.startX = float(data["payload"]["startX"])
+            #self.startY = float(data["payload"]["startY"])
             self.startDirection = data["payload"]["startDirection"]
             self.endDirection = data["payload"]["endDirection"]
             #korrigierter Endknoten (add_path)
@@ -62,7 +63,7 @@ class Communication:
             self.targetX = float(data["payload"]["targetX"])
             self.targetY = float(data["payload"]["targetY"])
 
-        # тука съшо трябва да добавя за финалните съобщения логиката !!!
+
         #self.start_punkt = (self.startX,self.startY)
         #self.end_punkt = (self.endX,self.endY)
         #self.target_punkt = (self.targetX,self.targetY)
@@ -74,38 +75,55 @@ class Communication:
         "type": "ready"
         }
     '''
-    second_message = '''
-        {
+    # str(dasdas)
+    path_msg_free = {
         "from": "client",
         "type": "path",
-        "payload": [
-            {
-            "startX": "<Xs>",
-            "startY": "<Ys>",
+
+        "payload": {
+
+            "startX": '{}'.format(self.startX),
+            "startY": '{}'.format(self.startY),
             "startDirection": "<Ds>",
             "endX": "<Xe>",
             "endY": "<Ye>",
             "endDirection": "<De>",
-            "pathStatus": "free|blocked"
+            "pathStatus": "free"
             }
-        ]
+
         }
-    '''
-    third_message= '''
-        {
+
+        path_msg_blocked = {
+            "from": "client",
+            "type": "path",
+
+            "payload": [{
+
+                "startX": '{}'.format(self.startX),
+                "startY": '{}'.format(self.startY),
+                "startDirection": "<Ds>",
+                "endX": '{}'.format(self.startX),
+                "endY": '{}'.format(self.startY),
+                "endDirection": "<De>",
+                "pathStatus": "blocked"
+                }]
+
+            }
+
+
+    pathSelect_msg = {
         "from": "client",
         "type": "pathSelect",
         "payload": [
             {
-            "startX": "<Xs>",
-            "startY": "<Ys>",
+            "startX": '{}'.format(self.startX),
+            "startY": '{}'.format(self.startY),
             "startDirection": "<Ds>"
             }
         ]
         }
-    '''
-    target_reached = '''
-        {
+
+    target_reached = {
             "from": "client",
             "type": "targetReached",
             "payload": [
@@ -114,18 +132,17 @@ class Communication:
             }
         ]
         }
-    '''
-    exploration_completed = '''
-            {
+
+    exploration_completed = {
                 "from": "client",
                 "type": "explorationCompleted",
-                "payload": ]
+                "payload": [
                     {
                     "message": "The planet was fully explored"
                     }
             ]
             }
-        '''
+
 
     def on_connect(self):
             #client = mqtt.Client(client_id="039", clean_session=False, protocol=mqtt.MQTTv31)
@@ -133,8 +150,10 @@ class Communication:
         self.client.username_pw_set('039', password='aEraXzm9Xq') # Your group credentials
         self.client.connect('mothership.inf.tu-dresden.de', port=8883)
         self.client.subscribe('explorer/039', qos=1) # Subscribe to topic explorer/xxx
-        self.client.loop_start()
         self.send_message("","")
+
+        self.client.loop_start()
+        self.send_msg_continue("","")
 
         input('Press Enter to continue...\n')
 
@@ -156,12 +175,24 @@ class Communication:
         #self.quit_connection()
 
     # THIS FUNCTIONS SIGNATURE MUST NOT BE CHANGED
+    def send_msg_continue(self,topic,message):
+        if self.type == "planet":
+            self.client.publish("explorer/039",json.dumps(self.path_msg_free))
+            if self.pathStatus == "blocked":
+                self.client.publish("explorer/039",json.dumps(self.path_msg_blocked))
+        if self.type == "path":
+            self.client.publish("explorer/039",json.dumps(self.pathSelect_msg))
+        if self.endX == self.targetX and self.endY == self.targetY:
+            self.client.publish("explorer/039",json.dumps(self.target_reached))
+
+        self.client.publish("explorer/039",json.dumps(self.exploration_completed))
+        pass
 
     def send_message(self, topic, message):
         """ Sends given message to specified channel """
-        #msg = json.loads(self.planet_string)
-        self.client.publish("explorer/039",self.first_message)
+        self.client.publish("explorer/039",json.dumps(self.first_message))
         pass
+
 
     def quit_connection(self):
         self.client.loop_stop()

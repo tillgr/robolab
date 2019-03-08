@@ -251,18 +251,9 @@ class LineFollower:
                 self.leftMotor.duty_cycle_sp = 20
                 if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
                     break
-
-            self.leftMotor.command = 'run-direct'
-            self.rightMotor.command = 'run-direct'
-
-            self.rightMotor.duty_cycle_sp = 0
-            self.gyroSensor.mode = 'GYRO-RATE'
-            self.gyroSensor.mode = 'GYRO-ANG'
-            while abs(self.gyroSensor.value()) < 20:
-                self.leftMotor.duty_cycle_sp = 20
-                if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
-                    break
             self.leftMotor.stop()
+            self.rightMotor.stop()
+
 
 
     # follow line
