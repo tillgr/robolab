@@ -2,6 +2,7 @@
 
 from enum import IntEnum, unique
 from typing import List, Optional, Tuple, Dict
+import pprint
 
 # IMPORTANT NOTE: DO NOT IMPORT THE ev3dev.ev3 MODULE IN THIS FILE
 
@@ -64,30 +65,32 @@ class Planet:  # Karte
         :param weight: Integer
         :return: void
         """
-        for start, target, weight in self.planetKarte:
-            if start[0] in self.planetPaths:        # wenn knoten in dict, richtung adden
-                self.paths.update({start[1]:(target[0], target[1], weight)})
-                #self.planetPaths.update({start[0] : self.paths})
 
-            else:
+        for start, target, weight in self.planetKarte:
+            if start[0] not in self.planetPaths.keys():
                 self.paths = {start[1] : (target[0], target[1], weight)}        # ansonsten neuen key anlegen
                 self.planetPaths.update({start[0]: self.paths})         # richtung adden
+            else:        # wenn knoten in dict, richtung adden
+                self.planetPaths[start[0]].update({start[1]:(target[0], target[1], weight)})
+                #self.planetPaths.update({start[0] : self.paths})
+
+
 
             # TODO richtung invertieren, der rückweg
 
-            '''
-            if target[0] in self.planetPaths:
-                self.paths.update({target[1]: (start[0], self.direction_invert(start[1]), weight)})
-            else:
+
+            if target[0] not in self.planetPaths.keys():
                 self.paths = {self.direction_invert(target[1]): (start[0], self.direction_invert(start[1]), weight)}
                 self.planetPaths.update({target[0]: self.paths})
-            '''
+            else:
+                self.planetPaths[target[0]].update({target[1]: (start[0], self.direction_invert(start[1]), weight)})
+
         pass
-        print("keys")
-        print(self.planetPaths.keys())
-        print("values")
-        print(self.planetPaths.values())
-        
+        print("karte")
+        pprint.pprint(self.planetKarte)
+        print("Paths")
+        pprint.pprint(self.planetPaths)
+
     def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
         ''' [[((0, 0), < Direction.NORTH: 0 >), ((0, 1), < Direction.SOUTH: 180 >), 1]
             [((0, 0), <Direction.EAST: 90>), ((1, 0), <Direction.WEST: 270>), 1]'''

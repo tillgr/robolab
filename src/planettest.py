@@ -67,12 +67,12 @@ class YourFirstTestPlanet(unittest.TestCase):
         # ADD YOUR PATHS HERE:
         # self.planet.add_path(...)
         self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
-        #self.planet.add_path(((0, 0), Direction.WEST), ((0, 1), Direction.WEST), 2)
+        self.planet.add_path(((0, 0), Direction.WEST), ((0, 1), Direction.WEST), 2)
         self.planet.add_path(((0, 0), Direction.EAST), ((1, 0), Direction.WEST), 1)
         self.planet.add_path(((0, 1), Direction.NORTH), ((0, 2), Direction.SOUTH), 1)
         self.planet.add_path(((0, 2), Direction.NORTH), ((0, 3), Direction.SOUTH), 1)
         self.planet.add_path(((0, 2), Direction.EAST), ((2, 2), Direction.WEST), 2)
-        #self.planet.add_path(((0, 3), Direction.NORTH), ((0, 3), Direction.WEST), 2)
+        self.planet.add_path(((0, 3), Direction.NORTH), ((0, 3), Direction.WEST), 2)
         self.planet.add_path(((0, 3), Direction.EAST), ((2, 2), Direction.NORTH), 3)
         self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 3)
 
@@ -86,7 +86,7 @@ class YourFirstTestPlanet(unittest.TestCase):
         self.planet.add_path(((0, 3), Direction.NORTH), ((0, 3), Direction.WEST), 2)
         self.planet.add_path(((0, 3), Direction.EAST), ((2, 2), Direction.NORTH), 3)
         self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 3)'''
-        print(self.planet.planetKarte)
+        #print(self.planet.planetKarte)
 
     def test_get_paths(self):
         self.planet.get_paths()
