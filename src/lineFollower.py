@@ -35,6 +35,8 @@ class LineFollower:
     listDistances = []
     listPaths = []
 
+    blocked = False
+
     red = (135, 60, 15)
     blue = (30, 150, 100)
 
@@ -48,6 +50,9 @@ class LineFollower:
 
     def get_direction(self):
         return self.direction
+
+    def get_pathstatus(self):
+        return self.pathStatus
 
     def calibrate(self):
         self.colorSensor.mode = 'RGB-RAW'
@@ -99,6 +104,8 @@ class LineFollower:
 
         if dist < 8:
             ev3.Sound.beep()
+            self.blocked = True
+
             self.lastError = 0
             self.integral = 0
             self.derivative = 0
@@ -192,7 +199,6 @@ class LineFollower:
             self.leftMotor.duty_cycle_sp = -20
         self.leftMotor.stop()
 
-
     #select path
     def select_path(self, direction):
         self.leftMotor.command = 'run-direct'
@@ -258,8 +264,6 @@ class LineFollower:
             self.leftMotor.stop()
             self.rightMotor.stop()
 
-
-
     # follow line
     def drive(self, p, i, d, v):
         kp = p       # 8
@@ -267,11 +271,10 @@ class LineFollower:
         kd = d       # 4
         tp = v       # 20
 
+        self.blocked = False
+
         positionLeft = self.leftMotor.position
         positionRight = self.rightMotor.position
-
-        t = 500
-        i = 0
 
         self.gyroSensor.mode = 'GYRO-RATE'
         self.gyroSensor.mode = 'GYRO-ANG'
@@ -279,8 +282,6 @@ class LineFollower:
         self.listDistances.clear()
 
         while not self.vertex():
-
-
             self.leftMotor.command = 'run-direct'
             self.rightMotor.command = 'run-direct'
 

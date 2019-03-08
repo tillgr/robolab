@@ -3,14 +3,8 @@
 import ev3dev.ev3 as ev3
 import uuid
 import paho.mqtt.client as mqtt
-import time
-from planet import Direction, Planet
-from communication import Communication
 from lineFollower import LineFollower
 import time
-import odometry
-import test
-import communication
 
 client = None  # DO NOT EDIT
 
@@ -35,8 +29,8 @@ def run():
     robot.drive(int(input("p: ")), int(input("i: ")), int(input("d: ")), int(input("v: ")))
 
     '''
-    t = test.Test()
-    t.run(client)
+    pe = planetExplorer.PlanetExplorer()
+    pe.run(client)
     '''
 
 
