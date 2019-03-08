@@ -129,7 +129,7 @@ class Planet:  # Karte
         return self.planetPaths
 
         pass
-
+    '''
     def update_weight(self, tupel: Tuple[Direction, Tuple[Tuple[int, int], Direction, Weight]], new_value: int):
         lst = list(tupel)
         lst2 = list(lst[1])
@@ -139,6 +139,7 @@ class Planet:  # Karte
         tupel = tuple(lst)
         # print(tupel)
         return tupel
+    '''
 
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Optional[
         List[Tuple[Tuple[int, int], Direction]]]:
@@ -150,40 +151,47 @@ class Planet:  # Karte
         #p.start = start
         #print(p)
 
-        weights = []
-        directions = []
-        tupels = []
-
-        s = SPath()
+        s = SPath()     #startknoten erzeugen
         s.start = start
         s.target = start
         s.weight = 0
-
+        vorgang = 0     # vorgänger weight für nächsten knoten
         besucht.append(s)  # ersten knoten hinzufügen
 
-        for tupel in self.planetPaths[start].items():  # arbeitliste mit benachbarten knoten füllen
-            p = SPath()
-            p.start = start
-            p.target = tupel[1][0]
-            p.weight = s.weight + tupel[1][2]
+        while True:
 
-            if p not in besucht:
-                aListe.append(p)
+            for tupel in self.planetPaths[start].items():  # arbeitliste mit benachbarten knoten füllen
+                p = SPath()
+                p.start = start
+                p.target = tupel[1][0]
+                p.weight = vorgang + tupel[1][2]   # weight aus vorgänger addieren
 
-            print(f"target: {p.target}")
-        pprint.pprint(aListe)
+                if p not in besucht:
+                    aListe.append(p)
 
+                print(f"p.target: {p.target}")
+            pprint.pprint(aListe)
 
+            for i in range(0, len(aListe)-1):       # minimum in der arbeitsliste finden
+                minimum = aListe[i]
+                print("minimum.weight: ")
+                print(minimum.weight)       # TODO warum unresolved?
+                for j in range(1, len(aListe)):
+                    if aListe[i].weight > aListe[j].weight:
+                        minimum = aListe[j]
+                        besucht.append(minimum)         # minimum wird besucht
+                        # minimum.path.append   # TODO pfad bilden
+                        start = minimum.start           # start des minimums ist der start für nachfolger
+                        print(f"minimum: {minimum}")
 
-        for i in range(0, len(aListe)-1):       # minimum in der arbeitsliste finden
-            minimum = aListe[i]
-            print("liste: ")
-            print(minimum.weight)
-            for j in range(1, len(aListe)):
-                if aListe[i].weight > aListe[j].weight:
-                    minimum = aListe[j]
-                    besucht.append(minimum)
-                    print(f"minimum: {minimum}")
+                vorgang = minimum.weight      # vorgänger weight speichern
+            aListe.clear()
+
+            if start == target:
+                break
+            print(f"start:  {start}")
+            print(f"target: {target}")
+
 
 
 

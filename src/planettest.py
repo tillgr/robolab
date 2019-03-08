@@ -2,6 +2,7 @@
 
 import unittest
 from planet import Direction, Planet
+import pprint
 
 
 class ExampleTestPlanet(unittest.TestCase):
@@ -90,7 +91,7 @@ class YourFirstTestPlanet(unittest.TestCase):
 
     def test_get_paths(self):
         self.planet.get_paths()
-        print(self.planet.planetPaths)
+        pprint.pprint(self.planet.planetPaths)
 
         """
         print(sorted(self.planet.planetPaths))
