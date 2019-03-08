@@ -1,5 +1,5 @@
 def directions(dir):
-    if dir== 90 :
+    if dir==90 :
         return "E"
     elif dir==0:
         return "N"
@@ -16,3 +16,8 @@ def directions(dir):
         return 180
     elif dir=="W":
         return 270
+
+def target_reached():
+    if self.Xe == self.Xt and self.Ye == self.Yt:
+        com.send_targetreached(self)
+        self.finished = True 
