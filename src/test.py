@@ -43,20 +43,30 @@ class Test:
     # handle messages
     def handle_messages(self, messages):
         for msg in messages:
-            if msg["type"] == "path":
-                self.Xe = msg["payload"]["endX"]
-                self.Ye = msg["payload"]["endY"]
-                self.De = msg["payload"]["endDirection"]
+            if msg["type"] == "planet":
+                self.Xs = int(msg["payload"]["startX"])
+                self.Ys = int(msg["payload"]["startY"])
+            elif msg["type"] == "path":
+                self.Xe = int(msg["payload"]["endX"])
+                self.Ye = int(msg["payload"]["endY"])
+                self.De = int(msg["payload"]["endDirection"])
+
+                weight = int(msg["payload"]["pathWeight"])
+
+                # TODO: add to map (((self.Xs, self.Ys), self.Ds), ((Xe, Ye), De)) with weight
+
             elif msg["type"] == "unveiledPath":
                 # add to map
                 pass
             elif msg["type"] == "target":
                 self.Xt = int(msg["payload"]["targetX"])
                 self.Yt = int(msg["payload"]["targetY"])
+            elif msg["type"] == "done":
+                pass
 
     def target_reached(self):
         if self.Xe == self.Xt and self.Ye == self.Yt:
-            com.send_targetreached(self)
+            #com.send_targetreached(self)
             self.finished = True
 
             # main function
@@ -69,26 +79,17 @@ class Test:
 
         com = communication.Communication(c)
 
-        # handle first messages
-        for msg in com.get_messages():
-            # get start coordinates
-            if msg["type"] == "planet":
-                self.Xs = int(msg["payload"]["startX"])
-                self.Ys = int(msg["payload"]["startY"])
-            elif msg["type"] == "unveiledPath":
-                # add to map
-                pass
-            elif msg["type"] == "target":
-                self.Xt = int(msg["payload"]["targetX"])
-                self.Yt = int(msg["payload"]["targetY"])
-        com.clear_messages()
-
         while not self.finished:
+            self.handle_messages(com.get_messages())
+
             robot.explore(self.Xs)
+            # TODO: add possible directions to planet
+
+            # TODO: get direction from planet
 
             inp = input("dir: ")
 
-            com.send_pathselection(str(self.Xs), str(self.Ys), "N")
+            com.send_pathselection(str(self.Xs), str(self.Ys), self.convert_direction(inp))
 
             robot.select_path(int(inp))
             robot.set_direction(int(inp))
