@@ -6,51 +6,74 @@ import odometry
 
 
 class Test:
-    Xs = 0      # start x,y
-    Ys = 0
+    Xs = None      # start x,y
+    Ys = None
     Ds = 0      # direction
-    De = 0
-    Xe = 0      # end x,y
-    Ye = 0
-    Xt = 0
-    Yt = 0
+    De = None
+    Xe = None      # end x,y
+    Ye = None
+    Xt = None
+    Yt = None
+
+    finished = False
 
     def __init__(self):
         pass
 
+    # convert direction
+
+    # handle messages
+    def handle_messages(self, messages):
+        for msg in messages:
+            if msg["type"] == "path":
+                self.Xe = msg["payload"]["endX"]
+                self.Ye = msg["payload"]["endY"]
+                self.De = msg["payload"]["endDirection"]
+            elif msg["type"] == "unveiledPath":
+                # add to map
+                pass
+            elif msg["type"] == "target":
+                self.Xt = int(msg["payload"]["targetX"])
+                self.Yt = int(msg["payload"]["targetY"])
+
+    # main function
     def run(self, c):
         robot = lineFollower.LineFollower()
         calc = odometry.Odometry()
 
+        # drive to first vertex
         robot.drive()
 
         com = communication.Communication(c)
 
-        for i in com.get_messages():
+        # handle first messages
+        for msg in com.get_messages():
             # get start coordinates
-            if i["type"] == "planet":
-                self.Xs = int(i["payload"]["startX"])
-                self.Ys = int(i["payload"]["startY"])
-            elif i["type"] == "unveiledPath":
+            if msg["type"] == "planet":
+                self.Xs = int(msg["payload"]["startX"])
+                self.Ys = int(msg["payload"]["startY"])
+            elif msg["type"] == "unveiledPath":
                 # add to map
                 pass
-            elif i["type"] == "target":
-                self.Xt = int(i["payload"]["targetX"])
-                self.Y,t = int(i["payload"]["targetY"])
+            elif msg["type"] == "target":
+                self.Xt = int(msg["payload"]["targetX"])
+                self.Yt = int(msg["payload"]["targetY"])
+        com.clear_messages()
 
-        robot.explore(0)
+        while not self.finished:
+            robot.explore(self.Xs)
 
-        inp = input("dir: ")
+            inp = input("dir: ")
 
-        com.send_pathselection(str(self.Xs), str(self.Ys), "N")
+            com.send_pathselection(str(self.Xs), str(self.Ys), "N")
 
-        robot.select_path(int(inp))
-        robot.set_direction(int(inp))
-        robot.drive()
-        calc.position(robot.get_direction(), self.Xs, self.Ys, robot.get_distances())
-        self.Xe = calc.x
-        self.Ye = calc.y
-        self.De = robot.direction
+            robot.select_path(int(inp))
+            robot.set_direction(int(inp))
+            robot.drive()
+            calc.position(robot.get_direction(), self.Xs, self.Ys, robot.get_distances())
+            self.Xe = calc.x
+            self.Ye = calc.y
+            self.De = robot.direction
 
         com.send_path(str(self.Xs), str(self.Ys), "N", str(self.Xe), str(self.Ye), "N", "free")
 

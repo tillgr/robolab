@@ -121,7 +121,7 @@ class Communication:
 
     # send that target was reached
     def send_targetreached(self):
-        msg_targetreached =  {
+        msg_targetreached = {
             "from": "client",
             "type": "targetReached",
             "payload": {
@@ -133,7 +133,7 @@ class Communication:
 
     # send that exploration finished
     def send_explorationcompleted(self):
-        msg_explorationcompleted =  {
+        msg_explorationcompleted = {
             "from": "client",
             "type": "targetReached",
             "payload": {

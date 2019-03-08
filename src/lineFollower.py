@@ -260,8 +260,8 @@ class LineFollower:
     def drive(self):
         kp = 8  # kp*100 -> 10
         ki = 1  # ki*100 -> 1
-        kd = 5  # kd*100 -> 100
-        tp = 30
+        kd = 4  # kd*100 -> 100
+        tp = 20
 
         positionLeft = self.leftMotor.position
         positionRight = self.rightMotor.position
