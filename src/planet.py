@@ -120,6 +120,17 @@ class Planet:  # Karte
 
         pass
 
+    def update_weight(self, tupel: Tuple[Direction, Tuple[Tuple[int, int], Direction, Weight]], new_value: int):
+        lst = list(tupel)
+        lst2 = list(lst[1])
+        lst2[2] = new_value
+
+        lst[1] = tuple(lst2)
+        tupel = tuple(lst)
+        return tupel
+
+
+
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int])-> Optional[List[Tuple[Tuple[int, int], Direction]]]:
 
         dijkstra = self.planetPaths.copy()
@@ -131,7 +142,12 @@ class Planet:  # Karte
 
         for tupel in v.items():  # weights und tupel extrahieren
             self.tupels.append(tupel)
-            tupel[1][2] = 0     # weight aktualisieren, wenn sum kleiner als jede weight des nachbarn
+            for v in self.tupels:    # weight aktualisieren, wenn sum kleiner als jede weight des nachbarn
+                #tupel[1][2] = 0
+                #lst = list(v[1])
+                #lst[2] = 0
+                #v[1] = tuple(lst)
+                #print(v[1])
         self.planetPaths[target] = {self.tupels}    # einfügen in planetPaths
         # TODO bis target gereacht schleife
 
