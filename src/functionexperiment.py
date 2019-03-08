@@ -20,4 +20,14 @@ def directions(dir):
 def target_reached():
     if self.Xe == self.Xt and self.Ye == self.Yt:
         com.send_targetreached(self)
-        self.finished = True 
+        self.finished = True
+
+elif i["type"] == "unveiledPath":
+    Xs = int(msg["payload"]["startX"])
+    Ys = int(msg["payload"]["startY"])
+    Xe = int(msg["payload"]["endX"])
+    Ye = int(msg["payload"]["endY"])
+    Ds = msg["payload"]["starDirection"]
+    De = msg["payload"]["endDirection"]
+    status = msg["payload"]["pathStatus"]
+    weight = msg["payload"]["pathWeight"]
