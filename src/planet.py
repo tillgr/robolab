@@ -154,21 +154,23 @@ class Planet:  # Karte
         for tupel in self.dijkstra[target].items():  # weights und tupel extrahieren
             self.tupels.append(tupel)
             print("hello")
-            for v in self.tupels:    # weight aktualisieren, da am anfang 0
-                self.update_weight(tupel, 0)
-            self.planetPaths[target] = self.tupels    # einfügen in planetPaths
+            #for v in self.tupels:    # weight aktualisieren, da am anfang 0
+            #    self.update_weight(tupel, 0)
+            #self.dijkstra[target] = self.tupels    # einfügen in planetPaths
         # TODO bis target gereacht schleife
 
         pprint.pprint(self.dijkstra.items())
-        while target is not start:
+        while target != start:
 
             for tupel in self.dijkstra[target].items():     # weights und tupel extrahieren
-                self.tupels.append(tupel)
                 if self.sum_weight < self.tupels[-1][1][2]:  # weight aktualisieren, wenn sum kleiner als jede weight des nachbarn
                     self.update_weight(tupel, self.sum_weight)      #weight aktualisieren
 
-                self.weights.append(self.tupels[-1][1][2])
-                self.planetPaths[target] = self.tupels      # einfügen in planetPaths
+                self.tupels.append(tupel)       # extrahierte tupel
+
+                self.weights.append(self.tupels[-1][1][2])      # extrahierte weights
+                self.paths = {tupel[0]: (tupel[1][0], tupel[1][1], tupel[1][2])}    # neuen eintrag vorbereiten
+                self.dijkstra[target] = self.paths     # einfügen in dijkstra
 
             for v in self.weights:
                 if min(self.weights) == v:       # #kleinste weight finden
@@ -179,151 +181,11 @@ class Planet:  # Karte
                 if self.tupels.index(tupel) == self.index:
                     besucht.append(tupel)
                     self.sum_weight += tupel[1][2]
-                    target = (0,0)       # neuen knoten finden   TODO: tupel[1][0]
+                    target = tupel[1][0]       # neuen knoten finden   TODO: tupel[1][0]
 
             print(f"tupels: {self.tupels}")
             print(f"weights: {self.weights}")
 
-        '''
-        """setup-----------------------------------------------------------------------------------------------------"""
-        gewaehlt = []
-        rkm = []        # randknoten von s allgemein: [line, line, line, ...], nachshlagewerk
-        line = []       # hilfszeile
-        hilf =[]
-
-        # erstellt rkm liste        # TODO hier ist der fehler: .items läuft nicht
-
-        for s,v, in self.planetPaths.items():
-            #print(f"items:{self.planetPaths.get(s).items()}\n")
-
-            for v in self.planetPaths.get(s).items():        #dir_s
-                #print(f"v:{v}\n")
-
-                weight = v[1][2]
-                t = v[1][0]    # target
-                dir_s = v[0]
-                line.append([t, dir_s, weight, s])          # TODO maybe statt line hilf verwenden
-                #print(f"line: {line}\n")
-
-            rkm.append(line.copy())
-
-            line.clear()
-            #print("rkm:")
-            #print(rkm)
-            #print("----")
-
-        """dijkstra--------------------------------------------------------------------------------------------------"""
-
-        rkm_d = []    # rkm arbeitsliste
-
-        # print("rkm:")
-        # print(rkm[1])
-        for line in rkm:        # startknoten einfügen
-            # print(f"test: {line}")
-            for tupel in line:
-                #print(f"tupel: {tupel}")
-                ##print(tupel[0])
-                ##print("Start: ")
-                ##print(start)
-
-                if tupel[0] == start:
-                    gewaehlt.append(tupel)
-                #print(f"hilf: {tupel}")
-                #print("gewaehlt: ")
-                #print(gewaehlt)
-
-        i = 0
-        #print("\nhier beginnt dijkstra :))\n")
-        #print(rkm)
-        while True:
-
-            for line in rkm:        # nachbarknoten in rkm finden       # TODO endlosschleife
-                for tupel in line:
-                    # print(gewaehlt[i][0])
-                    #print(f"tupel 3: {tupel[3]}")
-                    if gewaehlt[i][0] == tupel[3] and tupel not in gewaehlt:        # t in tupel gewaehlt == s in tupel line rkm
-                        print(f"gew: i: {gewaehlt[i][0]}")
-                        hilf.append(tupel)
-                        hilf[-1][2]= tupel[2] + gewaehlt[i][2]
-                        # tupel[2] = tupel[2] + gewaehlt[i][2]        # weight aktualisieren # TODO unendlich oft einfügen
-                        rkm_d.append(hilf.copy())                  # einfügen in rkm_d
-                        print(f"append: {hilf}")
-                        hilf.clear()
-                print("break")
-                #break
-            if i>0:
-                for v in range(0, len(rkm_d[i-1])):     #vorherige tupel übernehmen
-                    if rkm_d[i - 1][v] not in gewaehlt:
-                        hilf.append(rkm_d[i - 1][v])
-                        hilf[-1][2] = gewaehlt[i][2]        # weight aktualisieren
-                rkm_d.append(hilf.copy())
-                hilf.clear()
-
-
-            #print(f"länge: {len(rkm_d[i])}")
-
-            #print("rkm:")
-            #print(rkm_d)
-
-            if len(rkm_d[i]) is 0:
-
-                break
-
-            #print(f"rkm_d: {rkm_d}")
-            minimum = rkm_d[i][0][2]
-            for tupel in rkm_d[i]:       #tupel mit kleinster weight finden
-                #print(f"rkm_di: {rkm_d[i]}")
-                #print(f"mini: {minimum}")
-                #print(f"tupel[2]: {tupel[2]}")
-                if tupel[2] < minimum:
-                    minimum = tupel[2]
-                    gewaehlt.append(tupel)       # einfügen in gewählt
-                else:
-                    gewaehlt.append(rkm_d[i][0])
-                    # print("hi")
-            i= i+ 1
-
-            print(i)
-
-
-        """output----------------------------------------------------------------------------------------------------"""
-        shp = []        # TODO richtung ist rückwärts
-        index: int
-
-        for tupel in gewaehlt:  # tupel in gewählt suchen
-            print(f"gewaehlt: {gewaehlt}")       # TODO komische tupel in gewählt
-            #print("\n")
-            print(tupel)
-
-            if tupel[0] == target:      # TODO target befindet sich nicht in gewaehlt    #target
-                shp.append(tupel)
-                print("hi")
-                index = gewaehlt.index(tupel)       # index merken
-                print(index)
-
-        while index is not 0:
-            for tupel in rkm_d[index-1]:        # eins zurück gehen
-                for t, dir_s, weight, s in tupel:
-                    if s == gewaehlt[index][3]:     # folgeknoten suchen
-                        shp.append(tupel)
-                        index -= 1
-        print(rkm)
-
-        shp_route = [(shp[-1], None)]  # route für roboter
-        for j in range(len(shp)-1, 0):      # liste rückwerts durchgehen, route bilden
-            shp_route.append((shp[i][3], shp[i+1][1]))
-
-
-        '''
-        """
-        Returns a shortest path between two nodes
-        examples:
-            shortest_path((0,0), (2,2)) returns: [((0, 0), Direction.EAST), ((1, 0), Direction.NORTH)]
-            shortest_path((0,0), (1,2)) returns: None
-        :param start: 2-Tuple
-        :param target: 2-Tuple
-        :return: List, Direction
-        """
 
         #return shp_route
 
