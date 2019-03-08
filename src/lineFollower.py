@@ -134,6 +134,7 @@ class LineFollower:
 
     # vertex exploration
     def explore(self, direction):
+        self.listPaths.append((direction + 180) % 360)
         self.rightMotor.run_to_rel_pos(position_sp=90, speed_sp=80)
         self.leftMotor.run_to_rel_pos(position_sp=90, speed_sp=80)
         time.sleep(1.5)

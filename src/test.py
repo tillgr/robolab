@@ -15,6 +15,8 @@ class Test:
     Xt = None
     Yt = None
 
+    listPath = []
+
     finished = False
 
     def __init__(self):
@@ -46,6 +48,7 @@ class Test:
             if msg["type"] == "planet":
                 self.Xs = int(msg["payload"]["startX"])
                 self.Ys = int(msg["payload"]["startY"])
+
             elif msg["type"] == "path":
                 self.Xe = int(msg["payload"]["endX"])
                 self.Ye = int(msg["payload"]["endY"])
@@ -58,16 +61,22 @@ class Test:
             elif msg["type"] == "unveiledPath":
                 # add to map
                 pass
+
             elif msg["type"] == "target":
                 self.Xt = int(msg["payload"]["targetX"])
                 self.Yt = int(msg["payload"]["targetY"])
+
+            elif msg["type"] == "pathSelect":
+                self.Ds = msg["payload"]["startDirection"]
+
             elif msg["type"] == "done":
-                pass
+                self.finished = True
 
     def target_reached(self):
         if self.Xe == self.Xt and self.Ye == self.Yt:
-            #com.send_targetreached(self)
-            self.finished = True
+            return True
+        else:
+            return False
 
             # main function
     def run(self, c):
@@ -80,26 +89,68 @@ class Test:
         com = communication.Communication(c)
 
         while not self.finished:
+            # deal with received messages
             self.handle_messages(com.get_messages())
+            com.clear_messages()
 
-            robot.explore(self.Xs)
+            # find paths and save them
+            robot.explore(self.Ds)
             # TODO: add possible directions to planet
 
-            # TODO: get direction from planet
+            # map explored ?
+            # TODO: using planet class to check if map is explored
 
-            inp = input("dir: ")
+            if self.Xt is not None and self.Yt is not None:
+                print("Dijkstra")
+                # TODO: run Dijkstra and get list with path, compare with actual list -> new shortest path
+                pass
 
-            com.send_pathselection(str(self.Xs), str(self.Ys), self.convert_direction(inp))
+            # extract direction from list or choose path
+            if len(self.listPath) is not 0:
+                # TODO: use listPath for path selection, remove actual point
+                # self.Ds = DIRECTION
+                pass
+            else:
+                # TODO: get direction from planet
+                inp = input("dir: ")
+                self.Ds = int(inp)
 
-            robot.select_path(int(inp))
-            robot.set_direction(int(inp))
+            com.send_pathselection(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds))
+            self.handle_messages()
+            com.clear_messages()
+
+            # TODO: make sound because communication finished
+
+            robot.select_path(self.Ds)
+            robot.set_direction(self.Ds)
             robot.drive()
             calc.position(robot.get_direction(), self.Xs, self.Ys, robot.get_distances())
             self.Xe = calc.x
             self.Ye = calc.y
             self.De = robot.direction
 
-        com.send_path(str(self.Xs), str(self.Ys), "N", str(self.Xe), str(self.Ye), "N", "free")
+            # communication
+            status = "free"
+            com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xe), str(self.Ye), self.convert_direction((self.De+180)%360), status)
 
+            self.handle_messages()
+            com.clear_messages()
 
+            # target reached ?
+            if self.target_reached():
+                com.send_targetreached()
+                self.handle_messages(com.get_messages())
+                com.clear_messages()
+                if self.finished:
+                    break
+                else:
+                    pass
 
+            # update variables
+            self.Xs = self.Xe
+            self.Ys = self.Ye
+            self.Ds = self.De
+
+            self.Xe = None
+            self.Ye = None
+            self.De = None
