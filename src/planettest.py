@@ -140,7 +140,7 @@ class YourFirstTestPlanet(unittest.TestCase):
 
     def test_shortest_path(self):
         # at least 2 possible paths
-        '''self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
+        self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
         self.planet.add_path(((0, 0), Direction.WEST), ((0, 1), Direction.WEST), 2)
         self.planet.add_path(((0, 0), Direction.EAST), ((1, 0), Direction.WEST), 1)
         self.planet.add_path(((0, 1), Direction.NORTH), ((0, 2), Direction.SOUTH), 1)
@@ -148,12 +148,15 @@ class YourFirstTestPlanet(unittest.TestCase):
         self.planet.add_path(((0, 2), Direction.EAST), ((2, 2), Direction.WEST), 2)
         self.planet.add_path(((0, 3), Direction.NORTH), ((0, 3), Direction.WEST), 2)
         self.planet.add_path(((0, 3), Direction.EAST), ((2, 2), Direction.NORTH), 3)
-        self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 3)'''
+        self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 3)
         self.planet.get_paths()
         self.assertEqual(self.planet.shortest_path((0, 0), (2, 2)), [((0, 0), Direction.EAST), ((1, 0), Direction.NORTH)])
 
         print(self.planet.planetPaths.items())
         self.fail('implement me!')
+
+    def test_update_weight(self):
+        self.planet.update_weight((Direction.EAST, ((0,1), Direction.WEST, 2)), 1)
 
     '''
     def test_same_length(self):

@@ -3,6 +3,7 @@
 from enum import IntEnum, unique
 from typing import List, Optional, Tuple, Dict
 import pprint
+import copy
 
 # IMPORTANT NOTE: DO NOT IMPORT THE ev3dev.ev3 MODULE IN THIS FILE
 
@@ -35,12 +36,13 @@ class Planet:  # Karte
 
     def __init__(self):
         """ Initializes the data structure """
-        self.planetKarte = []
-        self.planetPaths = {}
-        self.paths = {}
-        self.target = None
-        self.weights = []
-        self.tupels = []
+        self.planetKarte = []   # pfadpaare
+        self.planetPaths = {}   # eigentliche karte
+        self.paths = {}         # hile für einfügen in karte
+        self.target = None      # routenziel
+        self.weights = []       # hilfe für auswerten von karte
+        self.tupels = []        # same
+        self.dijkstra = {}     # kopie von karte für shp
 
     def direction_invert(self, direction):
         if direction == Direction.NORTH:
@@ -78,13 +80,18 @@ class Planet:  # Karte
                 #self.planetPaths.update({start[0] : self.paths})
 
             # TODO richtung invertieren, der rückweg
-
+            '''
             if target[0] not in self.planetPaths.keys():
                 self.paths = {self.direction_invert(target[1]): (start[0], self.direction_invert(start[1]), weight)}
                 self.planetPaths.update({target[0]: self.paths})
             else:
                 self.planetPaths[target[0]].update({target[1]: (start[0], self.direction_invert(start[1]), weight)})
-
+            '''
+            if target[0] not in self.planetPaths.keys():
+                self.paths = {target[1]: (start[0], start[1], weight)}
+                self.planetPaths.update({target[0]: self.paths})
+            else:
+                self.planetPaths[target[0]].update({target[1]: (start[0], start[1], weight)})
         pass
         #print("karte")
         #pprint.pprint(self.planetKarte)
@@ -127,43 +134,41 @@ class Planet:  # Karte
 
         lst[1] = tuple(lst2)
         tupel = tuple(lst)
+        #print(tupel)
         return tupel
 
 
 
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int])-> Optional[List[Tuple[Tuple[int, int], Direction]]]:
 
-        dijkstra = self.planetPaths.copy()
+
         besucht = []
 
         besucht.append(target)
         #print(besucht)
-        v = dijkstra.get(target)    # ausgehende pfade
+        self.dijkstra = copy.deepcopy(self.planetPaths)
+        pprint.pprint(self.dijkstra.items())
+        #pprint.pprint(f"v{v}")
+        #pprint.pprint(f"items: {v.items()}")
 
-        for tupel in v.items():  # weights und tupel extrahieren
+        for tupel in self.dijkstra[target].items():  # weights und tupel extrahieren
             self.tupels.append(tupel)
-            for v in self.tupels:    # weight aktualisieren, wenn sum kleiner als jede weight des nachbarn
-                #tupel[1][2] = 0
-                #lst = list(v[1])
-                #lst[2] = 0
-                #v[1] = tuple(lst)
-                #print(v[1])
-        self.planetPaths[target] = {self.tupels}    # einfügen in planetPaths
+            print("hello")
+            for v in self.tupels:    # weight aktualisieren, da am anfang 0
+                self.update_weight(tupel, 0)
+            self.planetPaths[target] = self.tupels    # einfügen in planetPaths
         # TODO bis target gereacht schleife
+        pprint.pprint(self.dijkstra.items())
+        # TODO v.items  nicht 2 mal benutzen
 
+        for tupel in self.dijkstra[target].items():     # weights und tupel extrahieren
+            self.tupels.append(tupel)
+            if self.sum_weight < self.tupels[-1][1][2]:  # weight aktualisieren, wenn sum kleiner als jede weight des nachbarn
+                self.update_weight(tupel, self.sum_weight)      #weight aktualisieren
 
-        #print(v)
-        #print(v.items())
-
-        for tupel in v.items():     # weights und tupel extrahieren
-                self.tupels.append(tupel)
-
-                if self.sum_weight < tupel[1][2]:  # weight aktualisieren, wenn sum kleiner als jede weight des nachbarn
-                    tupel[1][2] = self.sum_weight
-                    # einfügen in planetPaths
-                    # TODO wenn erster knoten
-                    # TODO alle weiteren knoten
-                self.weights.append(tupel[1][2])
+            self.weights.append(self.tupels[-1][1][2])
+            self.planetPaths[target] = self.tupels
+            # TODO hier
 
         for v in self.weights:
 
