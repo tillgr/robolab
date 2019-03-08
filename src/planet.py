@@ -31,7 +31,7 @@ class Planet:  # Karte
     Contains the representation of the map and provides certain functions to manipulate it according to the specifications
     """
     index = None
-    sum_weight = None
+    sum_weight = 0
 
     def __init__(self):
         """ Initializes the data structure """
@@ -39,7 +39,8 @@ class Planet:  # Karte
         self.planetPaths = {}
         self.paths = {}
         self.target = None
-
+        self.weights = []
+        self.tupels = []
 
     def direction_invert(self, direction):
         if direction == Direction.NORTH:
@@ -126,41 +127,45 @@ class Planet:  # Karte
 
         besucht.append(target)
         #print(besucht)
+        v = dijkstra.get(target)    # ausgehende pfade
+
+        for tupel in v.items():  # weights und tupel extrahieren
+            self.tupels.append(tupel)
+            tupel[1][2] = 0     # weight aktualisieren, wenn sum kleiner als jede weight des nachbarn
+        self.planetPaths[target] = {self.tupels}    # einfügen in planetPaths
         # TODO bis target gereacht schleife
-        v = dijkstra.get(target)
+
 
         #print(v)
-
-
-
-        weights = []
-        tupels = []
         #print(v.items())
 
         for tupel in v.items():     # weights und tupel extrahieren
-                tupels.append(tupel)
-                weights.append(tupel[1][2])
-                if self.sum_weight < tupel[1][2]:  # weight aktualisieren
+                self.tupels.append(tupel)
+
+                if self.sum_weight < tupel[1][2]:  # weight aktualisieren, wenn sum kleiner als jede weight des nachbarn
+                    tupel[1][2] = self.sum_weight
+                    # einfügen in planetPaths
                     # TODO wenn erster knoten
                     # TODO alle weiteren knoten
+                self.weights.append(tupel[1][2])
 
-        for v in weights:
+        for v in self.weights:
 
-            if min(weights) == v:       # #kleinste weight finden
-                self.index = weights.index(v)
+            if min(self.weights) == v:       # #kleinste weight finden
+                self.index = self.weights.index(v)
                 self.sum_weight = v    # weight in summe einfügen
                 print(self.index)
-        for tupel in tupels:    # betreffendes tupel in besucht hinzufügen
-            if tupels.index(tupel) == self.index:
+        for tupel in self.tupels:    # betreffendes tupel in besucht hinzufügen
+            if self.tupels.index(tupel) == self.index:
                 besucht.append(tupel)
                 self.sum_weight += tupel[1][2]
-                target = tupel[1][0]
+                target = tupel[1][0]        # neuen knoten finden
 
 
         # TODO in planetPaths weight aktualisieren
 
-        print(f"tupels: {tupels}")
-        print(f"weights: {weights}")
+        print(f"tupels: {self.tupels}")
+        print(f"weights: {self.weights}")
 
         '''
         """setup-----------------------------------------------------------------------------------------------------"""
