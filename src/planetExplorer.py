@@ -5,7 +5,7 @@ import testingCommunication as communication
 import odometry
 
 
-class Test:
+class PlanetExplorer:
     Xs = None      # start x,y
     Ys = None
     Ds = 0      # direction
@@ -17,6 +17,8 @@ class Test:
 
     listPath = []
 
+    planetName = ""
+    first = True
     finished = False
 
     def __init__(self):
@@ -46,8 +48,10 @@ class Test:
     def handle_messages(self, messages):
         for msg in messages:
             if msg["type"] == "planet":
+
                 self.Xs = int(msg["payload"]["startX"])
                 self.Ys = int(msg["payload"]["startY"])
+                self.planetName = msg["payload"]["planetName"]
 
             elif msg["type"] == "path":
                 self.Xe = int(msg["payload"]["endX"])
@@ -82,16 +86,21 @@ class Test:
     def run(self, c):
         robot = lineFollower.LineFollower()
         calc = odometry.Odometry()
+        com = communication.Communication(c)
 
         # drive to first vertex
         robot.drive()
 
-        com = communication.Communication(c)
+        com.init_connection()
 
         while not self.finished:
             # deal with received messages
             self.handle_messages(com.get_messages())
             com.clear_messages()
+
+            if self.first:
+                com.sub_to_planet(self.planetName)
+                self.first = False
 
             # find paths and save them
             robot.explore(self.Ds)
@@ -119,7 +128,7 @@ class Test:
             self.handle_messages(com.get_messages())
             com.clear_messages()
 
-            # TODO: make sound because communication finished
+            robot.make_sound()
 
             robot.select_path(self.Ds)
             robot.set_direction(self.Ds)
@@ -130,8 +139,13 @@ class Test:
             self.De = robot.direction
 
             # communication
-            status = "free"
-            com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xe), str(self.Ye), self.convert_direction((self.De+180)%360), status)
+            if robot.blocked:
+                # TODO: right direction?
+                com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xe), str(self.Ye),
+                              self.convert_direction((self.De + 180) % 360), "blocked")
+            else:
+                com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xe), str(self.Ye),
+                              self.convert_direction((self.De+180)%360), "free")
 
             self.handle_messages(com.get_messages())
             com.clear_messages()

@@ -24,27 +24,6 @@ class Communication:
         self.client.on_message = self.on_message_catch
 
         # ADD YOUR VARIABLES HERE
-        self.on_connect()
-
-        # choose if on test planet:
-        inp = input("planet name: ")
-        self.planetName = inp
-
-        if inp == "":
-            self.send_message("", self.msg_ready, self.exploration)
-        else:
-            msg_testplanet = {
-                "from": "client",
-                "type": "testplanet",
-                "payload": {
-                    "planetName": self.planetName
-                }
-            }
-            self.send_message("", msg_testplanet, self.exploration)
-            self.send_message("", self.msg_ready, self.exploration)
-            self.channel = f"planet/{self.planetName}-039"
-            # change channel
-            self.client.subscribe(self.channel, qos=1)
 
     # THIS FUNCTIONS SIGNATURE MUST NOT BE CHANGED
     def on_message(self, client, data, message):
@@ -142,6 +121,31 @@ class Communication:
         }
 
         self.send_message("", msg_explorationcompleted, self.exploration)
+
+    def init_connection(self):
+        self.on_connect()
+
+        # choose if on test planet:
+        inp = input("planet name: ")
+        self.planetName = inp
+
+        if inp == "":
+            self.send_message("", self.msg_ready, self.exploration)
+        else:
+            msg_testplanet = {
+                "from": "client",
+                "type": "testplanet",
+                "payload": {
+                    "planetName": self.planetName
+                }
+            }
+            self.send_message("", msg_testplanet, self.exploration)
+            self.send_message("", self.msg_ready, self.exploration)
+
+    def sub_to_planet(self, planetName):
+        self.channel = f"planet/{planetName}-039"
+        # change channel
+        self.client.subscribe(self.channel, qos=1)
 
     # deal with received messages
     def get_messages(self):
