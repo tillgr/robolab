@@ -39,7 +39,7 @@ class SPath:
         self.start = None #Tuple[int, int]
         self.target = None #Tuple[int, int]
         self.weight = None #int
-        self.path = None #List[Tuple[Tuple[int, int], Direction]]
+        self.path = [] #List[Tuple[Tuple[int, int], Direction]]
 
 
 class Planet:  # Karte
@@ -159,6 +159,10 @@ class Planet:  # Karte
         s.weight = 0
         vorgang = 0     # vorgänger weight für nächsten knoten
         besucht.append(s)  # ersten knoten hinzufügen
+        vorgang_start = start
+        vorgang_dir: Direction
+
+        shp_route = []
 
         while True:
             print(f"start:  {start}")
@@ -173,15 +177,14 @@ class Planet:  # Karte
                     p.start = start
                     p.target = tupel[1][0]
                     p.weight = vorgang + tupel[1][2]   # weight aus vorgänger addieren
+
+                    #p.path.append((vorgang_start, vorgang_dir))
+
                     besucht.append(p)
                     print(f"p.weight: {p.weight}")
                     print(f"p.start: {p.start}")
                     print(f"p.target: {p.target}")
                     print("------------")
-
-
-                    #print(f"p2.target: {p2.target}")
-
 
                     aListe.append(p)
                 print("aListe: ")
@@ -191,13 +194,20 @@ class Planet:  # Karte
             print(f"!target: {minimum}")
             print("minimum: ")
             print(minimum.weight)
-            vorgang = minimum.weight
+            # speichern und neues setup
             start = minimum.target
+            vorgang = minimum.weight
+            vorgang_start = minimum.start
+            #vorgang_dir: Direction
+
+            for tupel in self.planetPaths[vorgang_start].items():
+                if tupel[1][0] == minimum.target:
+                    vorgang_dir = tupel[0]
+
             print("minimum.target: ")
             print(minimum.target)
-
-
-
+            minimum.path.append((vorgang_start, vorgang_dir))
+            shp_route.append(minimum)
             aListe.clear()
 
             if start == target:
@@ -206,58 +216,7 @@ class Planet:  # Karte
             print(f"target: {target}")
             print("--- new cycle ---")
 
-
-
-
-    '''
-        besucht.append(target)
-        # print(besucht)
-        self.dijkstra = copy.deepcopy(self.planetPaths)
-        pprint.pprint(self.dijkstra.items())
-        # pprint.pprint(f"v{v}")
-        # pprint.pprint(f"items: {v.items()}")
-
-        #for tupel in self.dijkstra[target].items():  # weights und tupel extrahieren
-            #self.tupels.append(tupel)
-            #print("hello")
-            #for v in self.tupels:    # weight aktualisieren, da am anfang 0
-            #    self.update_weight(tupel, 0)
-            #self.dijkstra[target] = self.tupels    # einfügen in planetPaths
-        # TODO bis target gereacht schleife
-        sum_weight = 0
-        pprint.pprint(self.dijkstra.items())
-        while target != start:
-
-            for tupel in self.dijkstra[target].items():     # weights und tupel extrahieren
-                if sum_weight < self.tupels[-1][1][2]:  # weight aktualisieren, wenn sum kleiner als jede weight des nachbarn
-                    self.update_weight(tupel, sum_weight)      # weight aktualisieren
-
-                self.tupels.append(tupel)       # extrahierte tupel
-
-                self.weights.append(self.tupels[-1][1][2])      # extrahierte weights
-                self.paths = {tupel[0]: (tupel[1][0], tupel[1][1], tupel[1][2])}    # neuen eintrag vorbereiten
-                self.dijkstra[target] = self.paths     # einfügen in dijkstra
-
-            for v in self.weights:
-                if min(self.weights) == v:       # #kleinste weight finden
-                    self.index = self.weights.index(v)
-                    sum_weight = v    # weight in summe einfügen
-                    print(f"index: {self.index}")
-            for tupel in self.tupels:    # betreffendes tupel in besucht hinzufügen
-                if self.tupels.index(tupel) == self.index:
-                    besucht.append(tupel)
-                    sum_weight += tupel[1][2]
-                    target = tupel[1][0]      # neuen knoten finden   TODO: tupel[1][0], erzeugt endlosschleife
-                    print(target)
-
-            print(f"tupels: {self.tupels}")
-            print(f"weights: {self.weights}")
-            print(target)
-            print(start)
-
-
-        #return shp_route
-    '''
+        return shp_route
 
     def possible_directions(punkt: Tuple[int, int], Directions: List[Direction]):
         # checken, dass alle richtungen eingetragen
