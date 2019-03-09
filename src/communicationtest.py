@@ -8,5 +8,6 @@ client = mqtt.Client(client_id=str(uuid.uuid4()),  # client_id has to be unique 
                      protocol=mqtt.MQTTv31)
 
 c = communication.Communication(client)
+c.init_connection()
 
 #print(c.foo())

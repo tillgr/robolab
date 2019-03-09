@@ -145,8 +145,8 @@ class LineFollower:
     # vertex exploration
     def explore(self, direction):
         self.listPaths.append((direction + 180) % 360)
-        self.rightMotor.run_to_rel_pos(position_sp=180, speed_sp=80)
-        self.leftMotor.run_to_rel_pos(position_sp=180, speed_sp=80)
+        self.rightMotor.run_to_rel_pos(position_sp=180, speed_sp=150)
+        self.leftMotor.run_to_rel_pos(position_sp=180, speed_sp=150)
         time.sleep(2.5)
 
         self.leftMotor.command = 'run-direct'
@@ -155,57 +155,39 @@ class LineFollower:
         self.gyroSensor.mode = 'GYRO-RATE'
         self.gyroSensor.mode = 'GYRO-ANG'
 
-        while abs(self.gyroSensor.value()) < 360:
+        self.colorSensor.mode = 'RGB-RAW'
+
+        t90 = False
+        t270 = False
+        t360 = False
+
+        self.listPaths.append((direction + 180) % 360)
+
+        while abs(self.gyroSensor.value()) < 380:
             self.leftMotor.duty_cycle_sp = 20
             self.rightMotor.duty_cycle_sp = -20
-        self.leftMotor.stop()
-        self.rightMotor.stop()
+            color = self.colorSensor.bin_data('hhh')
 
-        '''
-        self.rightMotor.duty_cycle_sp = 0
-        while abs(self.gyroSensor.value()) < 30:
-            self.leftMotor.duty_cycle_sp = 20
-            if self.colorSensor.value() in range(30, 44):
-                print(f"path, direction: {direction}")
-                self.listPaths.append(direction)
-                break
-
-        while self.gyroSensor.value() is not 0:
-            self.leftMotor.duty_cycle_sp = -20
-
-        self.rightMotor.run_to_rel_pos(position_sp=-90, speed_sp=80)
-        self.leftMotor.run_to_rel_pos(position_sp=-90, speed_sp=80)
-        time.sleep(1.5)
-
-        self.leftMotor.command = 'run-direct'
-        self.rightMotor.command = 'run-direct'
-
-        self.leftMotor.duty_cycle_sp = 0
-
-        self.gyroSensor.mode = 'GYRO-RATE'
-        self.gyroSensor.mode = 'GYRO-ANG'
-        while abs(self.gyroSensor.value()) < 110:
-            self.rightMotor.duty_cycle_sp = 20
-            if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
-                print(f"path, direction: {(direction - 90) % 360}")
-                self.listPaths.append((direction - 90) % 360)
-                break
-        while self.gyroSensor.value() is not 0:
-            self.rightMotor.duty_cycle_sp = -20
-        self.rightMotor.stop()
-
-        self.gyroSensor.mode = 'GYRO-RATE'
-        self.gyroSensor.mode = 'GYRO-ANG'
-        while abs(self.gyroSensor.value()) < 110:
-            self.leftMotor.duty_cycle_sp = 20
-            if self.colorSensor.value() in range(30, 44) and abs(self.gyroSensor.value()) > 50:
+            if self.gyroSensor.value() in range(70, 110) and int((color[0] + color[1] + color[2]) / 3) in \
+                    range(self.offset-20, self.offset+20) and not t90:
                 print(f"path, direction: {(direction + 90) % 360}")
                 self.listPaths.append((direction + 90) % 360)
-                break
-        while self.gyroSensor.value() is not 0:
-            self.leftMotor.duty_cycle_sp = -20
+                t90 = True
+
+            if self.gyroSensor.value() in range(250, 290) and int((color[0] + color[1] + color[2]) / 3) in \
+                    range(self.offset - 20, self.offset + 20) and not t270:
+                print(f"path, direction: {(direction - 90) % 360}")
+                self.listPaths.append((direction - 90) % 360)
+                t270 = True
+
+            if self.gyroSensor.value() in range(340, 380) and int((color[0] + color[1] + color[2]) / 3) in \
+                    range(self.offset - 20, self.offset + 20) and not t360:
+                print(f"path, direction: {direction}")
+                self.listPaths.append(90)
+                t360 = True
+
         self.leftMotor.stop()
-        '''
+        self.rightMotor.stop()
 
     #select path
     def select_path(self, direction):
