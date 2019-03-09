@@ -28,6 +28,7 @@ def run():
         robot.calibrate()
         time.sleep(10)
 
+
     #robot.drive()
     #robot.drive(float(input("p: ")), float(input("i: ")), float(input("d: ")), float(input("v: ")))
     #robot.explore(robot.direction)
@@ -35,7 +36,6 @@ def run():
 
     pe = planetExplorer.PlanetExplorer()
     pe.run(client)
-
 
 # DO NOT EDIT
 if __name__ == '__main__':
