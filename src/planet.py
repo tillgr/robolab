@@ -91,13 +91,14 @@ class Planet:  # Karte
                 self.planetPaths[start[0]].update({start[1]: (target[0], target[1], weight)})
                 # self.planetPaths.update({start[0] : self.paths})
 
+            # rückrichtung
 
             if target[0] not in self.planetPaths.keys():
                 self.paths = {target[1]: (start[0], start[1], weight)}
                 self.planetPaths.update({target[0]: self.paths})
             else:
                 self.planetPaths[target[0]].update({target[1]: (start[0], start[1], weight)})
-            
+
         pass
         # print("karte")
         # pprint.pprint(self.planetKarte)
@@ -163,26 +164,55 @@ class Planet:  # Karte
             print(f"start:  {start}")
             print(f"target: {target}")
             print("lookup: ")
-            pprint.pprint(self.planetPaths[start])
+
             for tupel in self.planetPaths[start].items():  # arbeitliste mit benachbarten knoten füllen
-                p = SPath()
-                p.start = start
-                p.target = tupel[1][0]
-                p.weight = vorgang + tupel[1][2]   # weight aus vorgänger addieren
-                print(f"p.weight: {p.weight}")
+                pprint.pprint(self.planetPaths[start])
+                if not any(p.start == tupel[1][0] for p in besucht): #target not einer der besuchten p.start
+                    p = SPath()
+                    p.start = start
+                    p.target = tupel[1][0]
+                    p.weight = vorgang + tupel[1][2]   # weight aus vorgänger addieren
+                    print(f"p.weight: {p.weight}")
+                    print(f"p.start: {p.start}")
+                    print(f"p.target: {p.target}")
+                    print("------------")
+                '''
+                print("lookup2: ")
+                pprint.pprint(self.planetPaths[p.target])
+                for tupel in self.planetPaths[p.target].items():
+                    p2 = SPath()
+                    p2.target = p.target
+                    p2.start = tupel[1][0]
+                    p2.weight = vorgang + tupel[1][2]
+                    print(f"p2.weight: {p2.weight}")
+                    print(f"p2.start: {p2.start}")
+                    print(f"p2.target: {p2.target}")
 
-                #p2 = SPath()
-                #p2.target = start
-                #p2.start = tupel[1][0]
-                #p2.weight = vorgang + tupel[1][2]
+                    if p and p2 not in besucht:  # TODO fügt zu viel ein
+                        aListe.append(p)
+                        besucht.append(p)
+                        besucht.append(p2)
+                #print("lookup 2: ")
+                #pprint.pprint(self.planetPaths[p.target])
+                '''
+                '''
+                for tupel in self.planetPaths[p.target].items():
+                    p2 = SPath()
+                    p2.target = start
+                    p2.start = tupel[1][0]
+                    p2.weight = vorgang + tupel[1][2]
+                    print(f"p2.weight: {p2.weight}")
+                    if p and p2 not in besucht:    #TODO fügt zu viel ein
+                        aListe.append(p)
+                        print(f"einfügen p: {p}")
+                        aListe.append(p2)
+                        print(f"einfügen p2: {p2}")
+                '''
 
-                if p not in besucht:    #TODO fügt zu viel ein
-                    aListe.append(p)
-                    #aListe.append(p2)
-
-                print(f"p.target: {p.target}")
+                #print(f"p2.target: {p2.target}")
             print("aListe: ")
             pprint.pprint(aListe)
+            aListe.append(p)
 
             minimum = min(aListe, key=lambda p: p.weight)   # minimum weight in der arbeitsliste finden
             print("minimum: ")
