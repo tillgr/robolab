@@ -145,11 +145,7 @@ class PlanetExplorer:
             if robot.blocked:
                 # TODO: right direction?
                 com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xs), str(self.Ys),
-<<<<<<< HEAD
                               self.convert_direction(self.Ds), "blocked")
-=======
-                              self.convert_direction(self.Ds, "blocked"))
->>>>>>> improved path detection and selection
             else:
                 com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xe), str(self.Ye),
                               self.convert_direction((self.De+180)%360), "free")
