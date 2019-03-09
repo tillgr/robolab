@@ -205,7 +205,7 @@ class Planet:  # Karte
         vorgang = 0     # vorgänger weight für nächsten knoten
         besucht.append(s)  # ersten knoten hinzufügen
         vorgang_start = start
-        vorgang_dir: Direction
+        vorgang_dir = None
         shp_route: Optional[List[Tuple[Tuple[int, int], Direction]]]
         shp_route = []  # Optional[List[Tuple[Tuple[int, int], Direction]]]
 
@@ -247,14 +247,14 @@ class Planet:  # Karte
 
             for tupel in self.planetPaths[vorgang_start].items():
                 if tupel[1][0] == minimum.target:
-                    vorgang_dir = tupel[0]
+                    vorgang_dir = tupel[0].value  #TODO value als grad zahl
 
             if start == target:
                 break
             print("minimum.target: ")
             print(minimum.target)
             minimum.path.append((vorgang_start, vorgang_dir))
-            shp_route.append(minimum)
+
             aListe.clear()
 
             print("shp_route: ")
@@ -263,7 +263,10 @@ class Planet:  # Karte
             print(f"start:  {start}")
             print(f"target: {target}")
             print("--- new cycle ---")
-        return shp_route
+        #shp_route.append(minimum.path)
+        print("return")
+        pprint.pprint(minimum.path)
+        return minimum.path     #TODO warum leer?
 
     def possible_directions(punkt: Tuple[int, int], Directions: List[Direction]):
         # checken, dass alle richtungen eingetragen
