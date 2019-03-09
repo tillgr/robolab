@@ -92,6 +92,7 @@ class PlanetExplorer:
         robot.drive()
 
         com.init_connection()
+        robot.make_sound()
 
         while not self.finished:
             # deal with received messages
@@ -123,6 +124,7 @@ class PlanetExplorer:
                 # TODO: get direction from planet
                 inp = input("dir: ")
                 self.Ds = int(inp)
+                print(f"robot direction: {robot.get_direction()}")
 
             com.send_pathselection(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds))
             self.handle_messages(com.get_messages())
@@ -133,7 +135,7 @@ class PlanetExplorer:
             robot.select_path(self.Ds)
             robot.set_direction(self.Ds)
             robot.drive()
-            calc.position(robot.get_direction(), self.Xs, self.Ys, robot.get_distances())
+            calc.position(self.Ds, self.Xs, self.Ys, robot.get_distances())
             self.Xe = calc.x
             self.Ye = calc.y
             self.De = robot.direction
@@ -141,8 +143,8 @@ class PlanetExplorer:
             # communication
             if robot.blocked:
                 # TODO: right direction?
-                com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xe), str(self.Ye),
-                              self.convert_direction((self.De + 180) % 360), "blocked")
+                com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xs), str(self.Ys),
+                              self.convert_direction(self.Ds, "blocked"))
             else:
                 com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xe), str(self.Ye),
                               self.convert_direction((self.De+180)%360), "free")
