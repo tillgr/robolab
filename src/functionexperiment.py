@@ -1,3 +1,5 @@
+import random
+
 import communication
 
 
@@ -57,16 +59,25 @@ def random_direction(self, x, y, listDirections = []):
 
     if len(listDirectionsCopy) == 0:
         choice = random.choice(listDirections)
-        if choice in self.listUnselectedPaths:
-            self.listUnselectedPaths.remove(choice)
         return choice
 
     else:
         choice = random.choice(listDirectionsCopy)
 
-        if choice in self.listUnselectedPaths:
-            self.listUnselectedPaths.remove(choice)
-
         listDirectionsCopy.remove(choice)
-        self.listUnvisitedPaths.append(listDirectionsCopy)
+
+        for direction in listDirectionsCopy:
+            self.listUnvisitedPaths.append([(x,y),listDirectionsCopy])
         return choice
+
+def shorten_listUnvisitedPaths(self):
+    for path in self.listUnvisitedPaths:
+        for direction in self.planetPaths[path[0]].items():
+            if path[1] == direction[0]:
+                self.listUnvisitedPaths.remove(path)
+
+def exploration_finished(self):
+    if len(self.listUnvisitedPaths) == 0:
+        return True
+    else:
+        return False

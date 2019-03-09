@@ -143,7 +143,7 @@ class PlanetExplorer:
 
             # communication
             if robot.blocked:
-                # TODO: right direction?
+                # TODO: direction?
                 com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xs), str(self.Ys),
                               self.convert_direction(self.Ds), "blocked")
             else:
