@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import time
+from typing import Tuple
 
 import lineFollower
 import testingCommunication as communication
 import odometry
+import planet
 
 
 class PlanetExplorer:
@@ -21,6 +23,8 @@ class PlanetExplorer:
     planetName = ""
     first = True
     finished = False
+
+    plan = planet.Planet()
 
     def __init__(self):
         pass
@@ -46,6 +50,16 @@ class PlanetExplorer:
         elif direction == "W":
             return 270
 
+    def convert_direction2(self, direction):
+        if direction == 90:
+            return planet.Direction.EAST
+        elif direction == 0:
+            return planet.Direction.NORTH
+        elif direction == 270:
+            return planet.Direction.WEST
+        elif direction == 180:
+            return planet.Direction.SOUTH
+
     # handle messages
     def handle_messages(self, messages):
         for msg in messages:
@@ -62,7 +76,8 @@ class PlanetExplorer:
 
                 weight = int(msg["payload"]["pathWeight"])
 
-                # TODO: add to map (((self.Xs, self.Ys), self.Ds), ((Xe, Ye), De)) with weight
+                self.plan.add_path(Tuple[Tuple[self.Xs, self.Ys], self.convert_direction2(self.Ds)], (Tuple[self.Xe, self.Ye], self.convert_direction2(self.De)))
+                print("added path")
 
             elif msg["type"] == "unveiledPath":
                 # add to map
@@ -106,12 +121,15 @@ class PlanetExplorer:
 
             # find paths and save them
             robot.explore(self.Ds)
+            listPaths = robot.listPaths
             if self.first:
                 self.first = False
-            # TODO: add possible directions to planet
+                listPaths.remove((self.Ds + 180) % 360)
 
             # map explored ?
-            # TODO: using planet class to check if map is explored
+            self.plan.shorten_listUnvisitedPaths()
+            if self.plan.exploration_finished():
+                break
 
             if self.Xt is not None and self.Yt is not None:
                 print("Dijkstra")
@@ -124,9 +142,11 @@ class PlanetExplorer:
                 # self.Ds = DIRECTION
                 pass
             else:
-                # TODO: get direction from planet
+                self.Ds = self.plan.random_direction(self.Xs, self.Ys, listPaths)
+                '''                                                
                 inp = input("dir: ")
                 self.Ds = int(inp)
+                '''
                 print(f"robot direction: {robot.get_direction()}")
 
             com.send_pathselection(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds))
