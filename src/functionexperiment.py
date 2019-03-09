@@ -35,6 +35,7 @@ def target_reached():
         status = msg["payload"]["pathStatus"]
         weight = msg["payload"]["pathWeight"]
 
+listUnvisitedPaths = []
 
 def random_direction(self, x, y, listDirections = []):
     listDirectionsCopy = listDirections.copy()
@@ -52,10 +53,20 @@ def random_direction(self, x, y, listDirections = []):
 
         for direction in self.planetPaths[(x,y)].items():
             if direction[0] == d:
-                del d 
+                del d
 
     if len(listDirectionsCopy) == 0:
-         return random.choice(listDirections)
+        choice = random.choice(listDirections)
+        if choice in self.listUnselectedPaths:
+            self.listUnselectedPaths.remove(choice)
+        return choice
 
     else:
-        return random.choice(listDirectionsCopy)
+        choice = random.choice(listDirectionsCopy)
+
+        if choice in self.listUnselectedPaths:
+            self.listUnselectedPaths.remove(choice)
+
+        listDirectionsCopy.remove(choice)
+        self.listUnvisitedPaths.append(listDirectionsCopy)
+        return choice
