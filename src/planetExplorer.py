@@ -103,10 +103,11 @@ class PlanetExplorer:
 
             if self.first:
                 com.sub_to_planet(self.planetName)
-                self.first = False
 
             # find paths and save them
             robot.explore(self.Ds)
+            if self.first:
+                self.first = False
             # TODO: add possible directions to planet
 
             # map explored ?
