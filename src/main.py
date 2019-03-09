@@ -45,7 +45,7 @@ def run():
         robot.calibrate()
         time.sleep(10)
 
-    robot.drive(int(input("p :")), int(input("i :")), int(input("d :")), int(input("v :")))
+    robot.drive(float(input("p :")), float(input("i :")), float(input("d :")), float(input("v :")))
 
     '''
     robot.drive()
@@ -64,7 +64,7 @@ def run():
     robot.set_direction(int(inp))
     robot.drive()
     calc.position(robot.get_direction(), 0, 0, robot.get_distances())
-    
+
 
     t = test.Test()
     t.run(client)
