@@ -161,8 +161,8 @@ class Planet:  # Karte
         besucht.append(s)  # ersten knoten hinzufügen
         vorgang_start = start
         vorgang_dir: Direction
-
-        shp_route = []
+        shp_route: Optional[List[Tuple[Tuple[int, int], Direction]]]
+        shp_route = [] # Optional[List[Tuple[Tuple[int, int], Direction]]]
 
         while True:
             print(f"start:  {start}")
@@ -204,18 +204,20 @@ class Planet:  # Karte
                 if tupel[1][0] == minimum.target:
                     vorgang_dir = tupel[0]
 
+            if start == target:
+                break
             print("minimum.target: ")
             print(minimum.target)
             minimum.path.append((vorgang_start, vorgang_dir))
             shp_route.append(minimum)
             aListe.clear()
 
-            if start == target:
-                break
+            print("shp_route: ")
+            pprint.pprint(shp_route)
+
             print(f"start:  {start}")
             print(f"target: {target}")
             print("--- new cycle ---")
-
         return shp_route
 
     def possible_directions(punkt: Tuple[int, int], Directions: List[Direction]):
