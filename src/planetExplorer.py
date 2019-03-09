@@ -36,6 +36,7 @@ class PlanetExplorer:
         elif direction == 180:
             return "S"
 
+
         elif direction == "E":
             return 90
         elif direction == "N":
