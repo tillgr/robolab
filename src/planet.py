@@ -28,11 +28,18 @@ Weight = int  # gewicht der kanten
 
 
 class SPath:
+    start: Tuple[int, int]
+    target: Tuple[int, int]
+    weight: int
+    path: List[Tuple[Tuple[int, int], Direction]]
+
+
     def __init__(self):
-        self.start: Tuple[int, int]
-        self.target: Tuple[int, int]
-        self.weight: int
-        self.path: List[Tuple[Tuple[int, int], Direction]]
+        self.weight = None
+        self.start = None #Tuple[int, int]
+        self.target = None #Tuple[int, int]
+        self.weight = None #int
+        self.path = None #List[Tuple[Tuple[int, int], Direction]]
 
 
 class Planet:  # Karte
@@ -84,19 +91,13 @@ class Planet:  # Karte
                 self.planetPaths[start[0]].update({start[1]: (target[0], target[1], weight)})
                 # self.planetPaths.update({start[0] : self.paths})
 
-            # TODO richtung invertieren, der rückweg
-            '''
-            if target[0] not in self.planetPaths.keys():
-                self.paths = {self.direction_invert(target[1]): (start[0], self.direction_invert(start[1]), weight)}
-                self.planetPaths.update({target[0]: self.paths})
-            else:
-                self.planetPaths[target[0]].update({target[1]: (start[0], self.direction_invert(start[1]), weight)})
-            '''
+
             if target[0] not in self.planetPaths.keys():
                 self.paths = {target[1]: (start[0], start[1], weight)}
                 self.planetPaths.update({target[0]: self.paths})
             else:
                 self.planetPaths[target[0]].update({target[1]: (start[0], start[1], weight)})
+            
         pass
         # print("karte")
         # pprint.pprint(self.planetKarte)
@@ -145,52 +146,61 @@ class Planet:  # Karte
         List[Tuple[Tuple[int, int], Direction]]]:
 
         besucht = []
-        aListe = []
+        aListe = []     #arbeitsliste
 
         #p = SPath()
         #p.start = start
         #print(p)
 
         s = SPath()     #startknoten erzeugen
-        s.start = start
+        s.start = None
         s.target = start
         s.weight = 0
         vorgang = 0     # vorgänger weight für nächsten knoten
         besucht.append(s)  # ersten knoten hinzufügen
 
         while True:
-
+            print(f"start:  {start}")
+            print(f"target: {target}")
+            print("lookup: ")
+            pprint.pprint(self.planetPaths[start])
             for tupel in self.planetPaths[start].items():  # arbeitliste mit benachbarten knoten füllen
                 p = SPath()
                 p.start = start
                 p.target = tupel[1][0]
                 p.weight = vorgang + tupel[1][2]   # weight aus vorgänger addieren
+                print(f"p.weight: {p.weight}")
 
-                if p not in besucht:
+                #p2 = SPath()
+                #p2.target = start
+                #p2.start = tupel[1][0]
+                #p2.weight = vorgang + tupel[1][2]
+
+                if p not in besucht:    #TODO fügt zu viel ein
                     aListe.append(p)
+                    #aListe.append(p2)
 
                 print(f"p.target: {p.target}")
+            print("aListe: ")
             pprint.pprint(aListe)
 
-            for i in range(0, len(aListe)-1):       # minimum in der arbeitsliste finden
-                minimum = aListe[i]
-                print("minimum.weight: ")
-                print(minimum.weight)       # TODO warum unresolved?
-                for j in range(1, len(aListe)):
-                    if aListe[i].weight > aListe[j].weight:
-                        minimum = aListe[j]
-                        besucht.append(minimum)         # minimum wird besucht
-                        # minimum.path.append   # TODO pfad bilden
-                        start = minimum.start           # start des minimums ist der start für nachfolger
-                        print(f"minimum: {minimum}")
+            minimum = min(aListe, key=lambda p: p.weight)   # minimum weight in der arbeitsliste finden
+            print("minimum: ")
+            print(minimum.weight)
+            vorgang = minimum.weight
+            start = minimum.target
+            print("minimum.target: ")
+            print(minimum.target)
 
-                vorgang = minimum.weight      # vorgänger weight speichern
+
+
             aListe.clear()
 
             if start == target:
                 break
             print(f"start:  {start}")
             print(f"target: {target}")
+            print("--- new cycle ---")
 
 
 
