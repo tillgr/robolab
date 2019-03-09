@@ -22,7 +22,7 @@ def directions(dir):
     elif dir=="W":
         return 270
 
-def target_reached():
+def target_reached(self):
     if self.Xe == self.Xt and self.Ye == self.Yt:
         com.send_targetreached(self)
         self.finished = True
@@ -39,12 +39,12 @@ def target_reached():
 
 listUnvisitedPaths = []
 
-def random_direction(self, x, y, listDirections = []):
+def random_direction(self, x, y, listDirections):
     listDirectionsCopy = listDirections.copy()
 
     for item in listDirectionsCopy:
         d = None
-        if item == 0 :
+        if item == 0:
             d = Direction.NORTH
         elif item == 90:
             d = Direction.EAST

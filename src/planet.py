@@ -3,6 +3,7 @@
 from enum import IntEnum, unique
 from typing import List, Optional, Tuple, Dict
 import pprint
+import random
 
 
 
@@ -54,6 +55,7 @@ class Planet:  # Karte
         self.planetPaths = {}  # eigentliche karte
         self.paths = {}  # hile für einfügen in karte
         self.target = None  # routenziel
+        self.listUnvisitedPaths = []
 
 
     def direction_invert(self, direction):
@@ -65,6 +67,49 @@ class Planet:  # Karte
             return Direction.NORTH
         if direction == Direction.WEST:
             return Direction.EAST
+
+    def random_direction(self, x, y, listDirections):   # wählt neuen pfad für erkundung
+        listDirectionsCopy = listDirections.copy()
+
+        for item in listDirectionsCopy:
+            d = None
+            if item == 0:
+                d = Direction.NORTH
+            elif item == 90:
+                d = Direction.EAST
+            elif item == 180:
+                d = Direction.SOUTH
+            elif item == 270:
+                d = Direction.WEST
+
+            for direction in self.planetPaths[(x, y)].items():
+                if direction[0] == d:
+                    del d
+
+        if len(listDirectionsCopy) == 0:
+            choice = random.choice(listDirections)
+            return choice
+
+        else:
+            choice = random.choice(listDirectionsCopy)
+
+            listDirectionsCopy.remove(choice)
+
+            for direction in listDirectionsCopy:
+                self.listUnvisitedPaths.append([(x, y), listDirectionsCopy])
+            return choice
+
+    def shorten_listUnvisitedPaths(self):   #löscht schon gewählte pfade
+        for path in self.listUnvisitedPaths:
+            for direction in self.planetPaths[path[0]].items():
+                if path[1] == direction[0]:
+                    self.listUnvisitedPaths.remove(path)
+
+    def exploration_finished(self):
+        if len(self.listUnvisitedPaths) == 0:
+            return True
+        else:
+            return False
 
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
                  weight: int):  # Koordinaten, Hin/Rückrichtung
@@ -162,7 +207,7 @@ class Planet:  # Karte
         vorgang_start = start
         vorgang_dir: Direction
         shp_route: Optional[List[Tuple[Tuple[int, int], Direction]]]
-        shp_route = [] # Optional[List[Tuple[Tuple[int, int], Direction]]]
+        shp_route = []  # Optional[List[Tuple[Tuple[int, int], Direction]]]
 
         while True:
             print(f"start:  {start}")
