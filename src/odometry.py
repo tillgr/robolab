@@ -12,10 +12,6 @@ class Odometry:
     a = 12           # Radabstand
     dX = 0          # Streckendifferenz
     dY = 0
-    dl = 0          # zurückgelegte Strecke des linken Rads
-    dr = 0
-    s = 0           # zurückgelegte Strecke
-    gamma = 0       # Blickrichtung
 
     def get_position(self):
         return self.x, self.y
@@ -24,6 +20,9 @@ class Odometry:
         return self.gamma
 
     def position(self, gamma, Xs, Ys, listDistances):
+        self.dX = 0
+        self.dY = 0
+
         if gamma == 90:
             self.gamma = (270 / 180) * math.pi
         elif gamma == 270:

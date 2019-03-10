@@ -35,9 +35,10 @@ class Communication:
 
         if data["from"] == "server":
             self.receivedMessages.append(data)
-            print(self.receivedMessages)
         elif data["from"] == "debug":
             self.debugMessages.append(data)
+            print(self.debugMessages)
+            self.debugMessages.clear()
 
     # publish a message
     def send_message(self, topic, message, channel):

@@ -74,6 +74,9 @@ class Planet:  # Karte
 
     def random_direction(self, x, y, listDirections):   # wählt neuen pfad für erkundung
         listDirectionsCopy = listDirections.copy()
+        listLoops = []
+
+        print(listDirectionsCopy)
 
         for item in listDirectionsCopy:
             d = None
@@ -86,28 +89,42 @@ class Planet:  # Karte
             elif item == 270:
                 d = Direction.WEST
 
-            for direction in self.planetPaths[(x, y)].items():
-                if direction[0] == d:
-                    del d
+            try:
+                for path in self.planetPaths[(x, y)].items():
+                    if path[0] == d:
+                        listDirectionsCopy.remove(d)
+                        print(f"removed {d}")
+                    if path[1][0] == (x, y):
+                        listLoops.append(item)
+                        print(f"added {item} to list loops")
+            except:
+                pass
 
         if len(listDirectionsCopy) == 0:
+            try:
+                print(f"listloops: {listLoops}")
+                listDirections.remove(listLoops)
+            except:
+                pass
             choice = random.choice(listDirections)
+            print("random choice")
             return choice
 
         else:
+            print(f"chose from {listDirectionsCopy}")
             choice = random.choice(listDirectionsCopy)
-
-            listDirectionsCopy.remove(choice)
-
-            for direction in listDirectionsCopy:
-                self.listUnvisitedPaths.append([(x, y), listDirectionsCopy])
             return choice
 
     def shorten_listUnvisitedPaths(self):   #löscht schon gewählte pfade
         for path in self.listUnvisitedPaths:
-            for direction in self.planetPaths[path[0]].items():
-                if path[1] == direction[0]:
-                    self.listUnvisitedPaths.remove(path)
+            try:
+                for direction in self.planetPaths[path[0]].items():
+                    if path[1] == direction[0]:
+                        self.listUnvisitedPaths.remove(path)
+                        print("shortened path list")
+            except:
+                pass
+
 
     def exploration_finished(self):
         if len(self.listUnvisitedPaths) == 0:

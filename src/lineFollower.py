@@ -22,7 +22,7 @@ class LineFollower:
     assert leftMotor.connected
     assert rightMotor.connected
 
-    # variables (n=0, e=90,...)
+    # variables
     direction = 0   # start direction always NORTH
     x = 0
     y = 0
@@ -102,7 +102,7 @@ class LineFollower:
 
         dist = self.ultrasonicSensor.value() // 10
 
-        if dist < 12:
+        if dist < 14:
             ev3.Sound.beep()
             self.blocked = True
 
@@ -125,7 +125,7 @@ class LineFollower:
             self.rightMotor.stop()
             self.leftMotor.duty_cycle_sp = 0
             self.rightMotor.duty_cycle_sp = 0
-            print("turned")
+            print("Found blocked path")
 
     # vertex detection
     def vertex(self):
@@ -144,6 +144,7 @@ class LineFollower:
 
     # vertex exploration
     def explore(self, direction):
+        self.listPaths.clear()
         self.listPaths.append((direction + 180) % 360)
         self.rightMotor.run_to_rel_pos(position_sp=100, speed_sp=150)
         self.leftMotor.run_to_rel_pos(position_sp=100, speed_sp=150)
@@ -160,8 +161,6 @@ class LineFollower:
         t90 = False
         t270 = False
         t360 = False
-
-        self.listPaths.append((direction + 180) % 360)
 
         while abs(self.gyroSensor.value()) < 380:
             self.rightMotor.run_to_rel_pos(position_sp=-10, speed_sp=150)
@@ -181,7 +180,7 @@ class LineFollower:
 
             if self.gyroSensor.value() in range(340, 380) and int((color[0] + color[1] + color[2]) / 3) < 50 and not t360:
                 print(f"path, direction: {direction}")
-                self.listPaths.append(90)
+                self.listPaths.append(direction)
                 t360 = True
 
         self.leftMotor.stop()
@@ -292,22 +291,14 @@ class LineFollower:
             self.leftMotor.command = 'run-direct'
             self.rightMotor.command = 'run-direct'
 
-            #print(f"position left: {self.leftMotor.position}")
-            #print(f"position right: {self.rightMotor.position}")
-
             self.colorSensor.mode = 'RGB-RAW'
             color = self.colorSensor.bin_data('hhh')
             lightValue = int((color[0]+color[1]+color[2])/3)
-            #print(f"lightValue: {lightValue}")
             error = lightValue - self.offset
-            #print(f"error: {error}")
             self.integral += error
-            #print(f"integral: {integral}")
-            derivative = error - self.lastError
-            #print(f"derivative: {derivative}")
+            self.derivative = error - self.lastError
             turn = (kp * error) + (ki * self.integral) + (kd * self.derivative)
             turn /= 100
-            #print(f"turn: {turn}")
             powerLeft = tp + turn
             powerRight = tp - turn
 
@@ -320,9 +311,6 @@ class LineFollower:
                 powerRight = 100
             elif powerRight < -100:
                 powerRight = -100
-
-#            print(f"powerLeft: {powerLeft}")
-#            print(f"powerRight: {powerRight}")
 
             self.leftMotor.duty_cycle_sp = powerLeft
             self.rightMotor.duty_cycle_sp = powerRight

@@ -73,22 +73,36 @@ class PlanetExplorer:
                 self.Xe = int(msg["payload"]["endX"])
                 self.Ye = int(msg["payload"]["endY"])
                 self.De = int(self.convert_direction(msg["payload"]["endDirection"]))
-
+                print(f"corrected coords: {self.Xs}, {self.Ys} | {self.Xe}, {self.Ye}")
                 weight = int(msg["payload"]["pathWeight"])
 
-                self.plan.add_path(Tuple[Tuple[self.Xs, self.Ys], self.convert_direction2(self.Ds)], (Tuple[self.Xe, self.Ye], self.convert_direction2(self.De)))
+                self.plan.add_path(((self.Xs, self.Ys), self.convert_direction2(self.Ds)), ((self.Xe, self.Ye), self.convert_direction2(self.De)), weight)
                 print("added path")
 
             elif msg["type"] == "unveiledPath":
-                # add to map
+                Xs = int(msg["payload"]["startX"])
+                Ys = int(msg["payload"]["startY"])
+                Ds = int(self.convert_direction(msg["payload"]["starDirection"]))
+
+                Xe = int(msg["payload"]["endX"])
+                Ye = int(msg["payload"]["endY"])
+                De = int(self.convert_direction(msg["payload"]["endDirection"]))
+
+                weight = int(msg["payload"]["pathWeight"])
+
+                self.plan.add_path(((Xs, Ys), self.convert_direction2(Ds)),
+                                   ((Xe, Ye), self.convert_direction2(De)), weight)
+                print("added path")
                 pass
 
             elif msg["type"] == "target":
                 self.Xt = int(msg["payload"]["targetX"])
                 self.Yt = int(msg["payload"]["targetY"])
+                print("received target")
 
             elif msg["type"] == "pathSelect":
                 self.Ds = int(self.convert_direction(msg["payload"]["startDirection"]))
+                print("direction changed by server")
 
             elif msg["type"] == "done":
                 self.finished = True
@@ -116,6 +130,7 @@ class PlanetExplorer:
             self.handle_messages(com.get_messages())
             com.clear_messages()
 
+            # subscribe to planet channel the first time
             if self.first:
                 com.sub_to_planet(self.planetName)
 
@@ -123,18 +138,12 @@ class PlanetExplorer:
             robot.explore(self.Ds)
             listPaths = robot.listPaths
             if self.first:
-                self.first = False
                 listPaths.remove((self.Ds + 180) % 360)
-
-            # map explored ?
-            self.plan.shorten_listUnvisitedPaths()
-            if self.plan.exploration_finished():
-                break
 
             if self.Xt is not None and self.Yt is not None:
                 print("Dijkstra")
                 # TODO: run Dijkstra and get list with path, compare with actual list -> new shortest path
-                pass
+                self.Ds = int(input("Richtung, weil Dijkstra: "))
 
             # extract direction from list or choose path
             if len(self.listPath) is not 0:
@@ -143,11 +152,10 @@ class PlanetExplorer:
                 pass
             else:
                 self.Ds = self.plan.random_direction(self.Xs, self.Ys, listPaths)
-                '''                                                
-                inp = input("dir: ")
-                self.Ds = int(inp)
-                '''
-                print(f"robot direction: {robot.get_direction()}")
+                # map explored ?
+                self.plan.shorten_listUnvisitedPaths()
+                if self.plan.exploration_finished() and not self.first:
+                    break
 
             com.send_pathselection(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds))
             self.handle_messages(com.get_messages())
@@ -156,12 +164,13 @@ class PlanetExplorer:
             robot.make_sound()
 
             robot.select_path(self.Ds)
-            robot.set_direction(self.Ds)
             robot.drive()
+            print(f"x: {self.Xs} y: {self.Ys}, d: {self.Ds}")
             calc.position(self.Ds, self.Xs, self.Ys, robot.get_distances())
             self.Xe = calc.x
             self.Ye = calc.y
-            self.De = robot.direction
+            self.De = (robot.direction + 180) % 360
+            print(f"direction End: {self.De}")
 
             # communication
             if robot.blocked:
@@ -170,7 +179,7 @@ class PlanetExplorer:
                               self.convert_direction(self.Ds), "blocked")
             else:
                 com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xe), str(self.Ye),
-                              self.convert_direction((self.De+180)%360), "free")
+                              self.convert_direction(self.De), "free")
 
             self.handle_messages(com.get_messages())
             com.clear_messages()
@@ -190,11 +199,15 @@ class PlanetExplorer:
             self.Ys = self.Ye
             self.Ds = (self.De + 180) % 360
 
-            robot.set_direction(self.Ds)
+            print(f"facing: {self.Ds}")
 
             self.Xe = None
             self.Ye = None
             self.De = None
+
+            self.first = False
+
+            robot.set_direction(self.Ds)
 
         for i in range(3):
             robot.make_sound()
