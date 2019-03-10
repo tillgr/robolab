@@ -302,7 +302,6 @@ class Planet:  # Karte
                     #break
             '''
 
-
             print("__completed direction check__")
             print("minimum.target: ")
             print(minimum.target)
@@ -319,8 +318,6 @@ class Planet:  # Karte
             vorgang_weight = minimum.weight
             vorgang_start = minimum.start
             # vorgang_dir: Direction
-
-
 
             print("route: ")
             pprint.pprint(route)
@@ -341,7 +338,6 @@ class Planet:  # Karte
         # shp_list
         print("ROUTE")
         for v in route:
-
             print(v.start, v.direction, v.target, v.weight)
 
         while True:
