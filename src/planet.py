@@ -310,7 +310,7 @@ class Planet:  # Karte
             # route bilden
             r = SPath()
             r.start = minimum.start
-            r.direction = minimum.direction     #TODO falsch
+            r.direction = minimum.direction
             r.target = minimum.target
             r.weight = minimum.weight
             route.append(r)

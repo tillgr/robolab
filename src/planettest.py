@@ -4,7 +4,7 @@ import unittest
 from planet import Direction, Planet
 import pprint
 
-
+'''
 class ExampleTestPlanet(unittest.TestCase):
     def setUp(self):
         """
@@ -37,7 +37,7 @@ class ExampleTestPlanet(unittest.TestCase):
         # does the shortest path algorithm loop infinitely?
         # there is no shortest path
      #   self.assertIsNone(self.planet.shortest_path((0, 0), (1, 2)))
-
+    '''
 
 class YourFirstTestPlanet(unittest.TestCase):
     def setUp(self):
@@ -156,8 +156,6 @@ class YourFirstTestPlanet(unittest.TestCase):
         #print(self.planet.planetPaths.items())
         #self.fail('implement me!')
 
-    def test_update_weight(self):
-        self.planet.update_weight((Direction.EAST, ((0,1), Direction.WEST, 2)), 1)
 
     '''
     def test_same_length(self):
