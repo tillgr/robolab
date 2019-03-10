@@ -251,22 +251,26 @@ class Planet:  # Karte
             print(minimum.weight)
             # speichern und neues setup
 
+            print("route: ")
+            pprint.pprint(self.planetPaths[vorgang_start])
+            for tupel in self.planetPaths[
+                vorgang_start].items():  # direction des vorgängers       #TODO finden der pfades, der als target minimum start hat
+                if tupel[1][0] == minimum.target and tupel[1][2] == minimum.weight:
+                    vorgang_dir = tupel[0]  # .value  #TODO value als grad zahl
+            print(vorgang_dir)
+
+
             vorgang_weight = minimum.weight
             vorgang_start = minimum.start
             #vorgang_dir: Direction
             print("=========================")
-            print("route: ")
-            pprint.pprint(self.planetPaths[vorgang_start])
-            for tupel in self.planetPaths[vorgang_start].items():   #direction des vorgängers
-                if tupel[1][0] == minimum.target and tupel[1][2] == minimum.weight:
-                    vorgang_dir = tupel[0]  #.value  #TODO value als grad zahl
-            print(vorgang_dir)
+
             print("minimum.target: ")
             print(minimum.target)
             # route bilden
             r = SPath()
             r.start = minimum.start
-            r.direction = vorgang_dir
+            r.direction = vorgang_dir #TODO falsche direction
             r.target = minimum.target
             r.weight = minimum.weight
             route.append(r)
@@ -288,26 +292,37 @@ class Planet:  # Karte
         # shp_list
         for v in route:
             print(v.start, v.direction, v.target, v.weight)
+
         while True:
             print("true")
             #print(route)
             print(f"target: {target}")
+
+            #next((r for r in route if r.target == target), None)
+            #path = next(filter(lambda r: r.target == target, route))
+            #shp_list.append((r.start, r.direction))
+            #target = r.start
+            print(shp_list)
+
             for path in route:      #TODO for schleife hört einfach auf, muss aber die ganze zeit durchlaufen, wie findet man sachen in listen?
                 print(f"pathstart: {path.start}")
                 if path.target == target:
-                    print("blyat")
+                    print("append: ")
+
                     shp_list.append((path.start, path.direction))
 
                     target = path.start
                     print(shp_list)
-                    #print(target)
+                    print(target)
+                    break
+
             print(start_save)
             if target == start_save:
                 break
 
         print("return")
-        pprint.pprint(shp_list)
-        return shp_list    #TODO warum leer?
+        pprint.pprint(shp_list[::-1])   #reversed list
+        return shp_list[::-1]
 
     def possible_directions(punkt: Tuple[int, int], Directions: List[Direction]):
         # checken, dass alle richtungen eingetragen
