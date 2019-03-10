@@ -12,6 +12,7 @@ class Odometry:
     a = 12           # Radabstand
     dX = 0          # Streckendifferenz
     dY = 0
+    gamma = 0
 
     def get_position(self):
         return self.x, self.y

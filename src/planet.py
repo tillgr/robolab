@@ -95,23 +95,22 @@ class Planet:  # Karte
                         listDirectionsCopy.remove(d)
                         print(f"removed {d}")
                     if path[1][0] == (x, y):
-                        listLoops.append(item)
-                        print(f"added {item} to list loops")
+                        listLoops.append(path[0].value)
+                        print(f"added {path[0].value} to list loops")
             except:
                 pass
 
         if len(listDirectionsCopy) == 0:
-            try:
-                print(f"listloops: {listLoops}")
-                listDirections.remove(listLoops)
-            except:
-                pass
+            for i in listLoops:
+                listDirections.remove(i)
+
             choice = random.choice(listDirections)
             print("random choice")
             return choice
 
         else:
             print(f"chose from {listDirectionsCopy}")
+            self.listUnvisitedPaths.append(listDirectionsCopy)
             choice = random.choice(listDirectionsCopy)
             return choice
 
@@ -121,7 +120,7 @@ class Planet:  # Karte
                 for direction in self.planetPaths[path[0]].items():
                     if path[1] == direction[0]:
                         self.listUnvisitedPaths.remove(path)
-                        print("shortened path list")
+                        print(f"shortened path list, removed {path}")
             except:
                 pass
 
@@ -237,143 +236,147 @@ class Planet:  # Karte
         shp_list = []
         start_shp = None
         i = 1
-        while True:
-            print(f"start:  {start}")
-            print(f"target: {target}")
+        try:
+            while True:
+                print(f"start:  {start}")
+                print(f"target: {target}")
+
+                for tupel in self.planetPaths[start].items():  # arbeitliste mit benachbarten knoten füllen
+                    print("lookup: ")
+                    pprint.pprint(self.planetPaths[start])
+
+                    if not (any(p.start == tupel[1][0] for p in besucht) and (vorgang_weight + tupel[1][2] > tupel[1][2])) and tupel[1][2] >= 0: #not(target einer der besuchten p.start and weight.route grösser als weight knoten)
+                        p = SPath()
+                        p.start = start
+                        p.target = tupel[1][0]
+                        p.direction = tupel[0]
+                        print(f"prev weight: {vorgang_weight}")
+                        print(f"current weight: {tupel[1][2]}")
+                        p.weight = vorgang_weight + tupel[1][2]   # weight aus vorgänger addieren
+
+                        #p.path.append((vorgang_start, vorgang_dir))
+
+                        besucht.append(p)
+                        print(f"p.weight: {p.weight}")
+                        print(f"p.start: {p.start}")
+                        print(f"p.target: {p.target}")
 
 
-            for tupel in self.planetPaths[start].items():  # arbeitliste mit benachbarten knoten füllen
-                print("lookup: ")
-                pprint.pprint(self.planetPaths[start])
+                        aListe.append(p)
+                        print(f"appended: {p}")     #TODO fügt möglichweise gleiches element 2 mal hinzu
+                        print("-----------")
 
-                if not (any(p.start == tupel[1][0] for p in besucht) and (vorgang_weight + tupel[1][2] > tupel[1][2])): #not(target einer der besuchten p.start and weight.route grösser als weight knoten)
-                    p = SPath()
-                    p.start = start
-                    p.target = tupel[1][0]
-                    p.direction = tupel[0]
-                    print(f"prev weight: {vorgang_weight}")
-                    print(f"current weight: {tupel[1][2]}")
-                    p.weight = vorgang_weight + tupel[1][2]   # weight aus vorgänger addieren
+                    print("aListe: ")
+                    pprint.pprint(aListe)
 
-                    #p.path.append((vorgang_start, vorgang_dir))
+                minimum = min(aListe, key=lambda p: p.weight)   # minimum weight in der arbeitsliste finden
+                print(f"!target: {minimum}")
+                print("minimum: ")
+                print(minimum.weight)
+                # speichern und neues setup
 
-                    besucht.append(p)
-                    print(f"p.weight: {p.weight}")
-                    print(f"p.start: {p.start}")
-                    print(f"p.target: {p.target}")
+                print(f"route from: {minimum.start}")
 
-
-                    aListe.append(p)
-                    print(f"appended: {p}")     #TODO fügt möglichweise gleiches element 2 mal hinzu
-                    print("-----------")
-
-                print("aListe: ")
-                pprint.pprint(aListe)
-
-            minimum = min(aListe, key=lambda p: p.weight)   # minimum weight in der arbeitsliste finden
-            print(f"!target: {minimum}")
-            print("minimum: ")
-            print(minimum.weight)
-            # speichern und neues setup
-
-            print(f"route from: {minimum.start}")
-
-            pprint.pprint(self.planetPaths[minimum.start])
-            print(minimum.target)
-            # TODO fehler in diesem block
-            '''
-            for tupel in self.planetPaths[minimum.start].items():  # direction des minimums finden      #TODO finden der pfades, der als start minimum.start hat
-                print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-                print(f"tupel prüfen: {tupel}")
-                if tupel[1][0] == minimum.target:   # wenn target im eintrag gefunden
-                    kleinstes = min(self.planetPaths[minimum.start].items(), key=lambda tupel: tupel[1][2])
-                    print("__target stimmt__")
-                    print(tupel)
-                    print(f"kleinstes[1][2]: {kleinstes[1][2]}")
-                    print(f"tupel[1][2]: {tupel[1][2]}")
-                    if tupel[1][2] == kleinstes[1][2]:    # wenn auch kleinstes weight ist  #TODO hie ist der fehler: ist das richtige aber nicht kleinstes weight
-                        minimum.direction = tupel[0]  # .value  #TODO value als grad zahl
-                        print("set direction...")
-                        print(f"minimum.direction: {minimum.direction}")
+                pprint.pprint(self.planetPaths[minimum.start])
+                print(minimum.target)
+                # TODO fehler in diesem block
+                '''
+                for tupel in self.planetPaths[minimum.start].items():  # direction des minimums finden      #TODO finden der pfades, der als start minimum.start hat
+                    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+                    print(f"tupel prüfen: {tupel}")
+                    if tupel[1][0] == minimum.target:   # wenn target im eintrag gefunden
+                        kleinstes = min(self.planetPaths[minimum.start].items(), key=lambda tupel: tupel[1][2])
+                        print("__target stimmt__")
+                        print(tupel)
+                        print(f"kleinstes[1][2]: {kleinstes[1][2]}")
+                        print(f"tupel[1][2]: {tupel[1][2]}")
+                        if tupel[1][2] == kleinstes[1][2]:    # wenn auch kleinstes weight ist  #TODO hie ist der fehler: ist das richtige aber nicht kleinstes weight
+                            minimum.direction = tupel[0]  # .value  #TODO value als grad zahl
+                            print("set direction...")
+                            print(f"minimum.direction: {minimum.direction}")
+                        else:
+                            print("keine direction hinzugefügt")
                     else:
-                        print("keine direction hinzugefügt")
-                else:
-                    print("target falsch")
-                    #break
-            '''
+                        print("target falsch")
+                        #break
+                '''
 
 
-            print("__completed direction check__")
-            print("minimum.target: ")
-            print(minimum.target)
-            print(f"!minimum.weight: {minimum.weight}")
-            # route bilden
-            r = SPath()
-            r.start = minimum.start
-            r.direction = minimum.direction     #TODO falsch
-            r.target = minimum.target
-            r.weight = minimum.weight
-            route.append(r)
-            #route.append((vorgang_start, vorgang_dir, minimum.target, minimum.weight))
+                print("__completed direction check__")
+                print("minimum.target: ")
+                print(minimum.target)
+                print(f"!minimum.weight: {minimum.weight}")
+                # route bilden
+                r = SPath()
+                r.start = minimum.start
+                r.direction = minimum.direction     #TODO falsch
+                r.target = minimum.target
+                r.weight = minimum.weight
+                route.append(r)
+                #route.append((vorgang_start, vorgang_dir, minimum.target, minimum.weight))
 
-            vorgang_weight = minimum.weight
-            vorgang_start = minimum.start
-            # vorgang_dir: Direction
+                vorgang_weight = minimum.weight
+                vorgang_start = minimum.start
+                # vorgang_dir: Direction
 
 
 
-            print("route: ")
-            pprint.pprint(route)
+                print("route: ")
+                pprint.pprint(route)
+                for v in route:
+                    print(v.start, v.direction, v.target, v.weight)
+                print("=========================")
+                #aListe.clear()
+                aListe.remove(minimum)
+
+                start = minimum.target
+                print(f"start:  {start}")
+                print(f"target: {target}")
+                print(f"--- new cycle ---{i}")
+                i += 1
+                if start == target:     # TODO: unittest
+                    break
+                if len(aListe) == 0:
+                    return []
+
+            # shp_list
+            print("ROUTE")
             for v in route:
+
                 print(v.start, v.direction, v.target, v.weight)
-            print("=========================")
-            #aListe.clear()
-            aListe.remove(minimum)
 
-            start = minimum.target
-            print(f"start:  {start}")
-            print(f"target: {target}")
-            print(f"--- new cycle ---{i}")
-            i +=1
-            if start == target:
-                break
+            while True:
+                print("true")
+                #print(route)
+                print(f"target: {target}")
 
-        # shp_list
-        print("ROUTE")
-        for v in route:
+                #next((r for r in route if r.target == target), None)
+                #path = next(filter(lambda r: r.target == target, route))
+                #shp_list.append((r.start, r.direction))
+                #target = r.start
+                print(shp_list)
 
-            print(v.start, v.direction, v.target, v.weight)
+                for path in route:
+                    print(f"pathstart: {path.start}")
+                    if path.target == target:
+                        print("append: ")
 
-        while True:
-            print("true")
-            #print(route)
-            print(f"target: {target}")
+                        shp_list.append((path.start, path.direction.value))
 
-            #next((r for r in route if r.target == target), None)
-            #path = next(filter(lambda r: r.target == target, route))
-            #shp_list.append((r.start, r.direction))
-            #target = r.start
-            print(shp_list)
+                        target = path.start
+                        print(shp_list)
+                        print(target)
+                        break
 
-            for path in route:
-                print(f"pathstart: {path.start}")
-                if path.target == target:
-                    print("append: ")
-
-                    shp_list.append((path.start, path.direction))
-
-                    target = path.start
-                    print(shp_list)
-                    print(target)
+                print(start_save)
+                if target == start_save:
                     break
 
-            print(start_save)
-            if target == start_save:
-                break
-
-        print("return")
-        pprint.pprint(shp_list[::-1])   #reversed list
-        return shp_list[::-1]
+            print("return")
+            pprint.pprint(shp_list[::-1])   #reversed list
+            return shp_list[::-1]
+        except:
+            return []
 
     def possible_directions(punkt: Tuple[int, int], Directions: List[Direction]):
         # checken, dass alle richtungen eingetragen

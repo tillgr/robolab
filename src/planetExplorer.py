@@ -108,7 +108,8 @@ class PlanetExplorer:
                 self.finished = True
 
     def target_reached(self):
-        if self.Xe == self.Xt and self.Ye == self.Yt:
+        if self.Xs == self.Xt and self.Ys == self.Yt:
+            print("reached the target")
             return True
         else:
             return False
@@ -126,6 +127,16 @@ class PlanetExplorer:
         robot.make_sound()
 
         while not self.finished:
+            # target reached ?
+            if self.target_reached():
+                com.send_targetreached()
+                self.handle_messages(com.get_messages())
+                com.clear_messages()
+                if self.finished:
+                    break
+                else:
+                    pass
+
             # deal with received messages
             self.handle_messages(com.get_messages())
             com.clear_messages()
@@ -140,21 +151,25 @@ class PlanetExplorer:
             if self.first:
                 listPaths.remove((self.Ds + 180) % 360)
 
+            # run Dijkstra if target given
             if self.Xt is not None and self.Yt is not None:
                 print("Dijkstra")
-                # TODO: run Dijkstra and get list with path, compare with actual list -> new shortest path
-                self.Ds = int(input("Richtung, weil Dijkstra: "))
+                shortestPath = self.plan.shortest_path((self.Xs, self.Ys), (self.Xt, self.Yt))
+                if shortestPath is not self.listPath:
+                    self.listPath = shortestPath
 
             # extract direction from list or choose path
-            if len(self.listPath) is not 0:
-                # TODO: use listPath for path selection, remove actual point
-                # self.Ds = DIRECTION
-                pass
+            if len(self.listPath) != 0:
+                self.Ds = self.listPath[0][1]
+                print(f"d according to Dijkstra: {self.Ds}")
+                self.listPath = self.listPath[1:]
+
             else:
                 self.Ds = self.plan.random_direction(self.Xs, self.Ys, listPaths)
                 # map explored ?
                 self.plan.shorten_listUnvisitedPaths()
                 if self.plan.exploration_finished() and not self.first:
+                    print ("exploration completed")
                     break
 
             com.send_pathselection(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds))
@@ -169,7 +184,8 @@ class PlanetExplorer:
             calc.position(self.Ds, self.Xs, self.Ys, robot.get_distances())
             self.Xe = calc.x
             self.Ye = calc.y
-            self.De = (robot.direction + 180) % 360
+            print(f"robo dir: {calc.get_direction()}")
+            self.De = (calc.get_direction() + 180) % 360
             print(f"direction End: {self.De}")
 
             # communication
@@ -183,16 +199,6 @@ class PlanetExplorer:
 
             self.handle_messages(com.get_messages())
             com.clear_messages()
-
-            # target reached ?
-            if self.target_reached():
-                com.send_targetreached()
-                self.handle_messages(com.get_messages())
-                com.clear_messages()
-                if self.finished:
-                    break
-                else:
-                    pass
 
             # update variables
             self.Xs = self.Xe
