@@ -9,7 +9,7 @@ class Odometry:
     x = 0
     y = 0
     r = 2.6         # Radius Räder
-    a = 12           # Radabstand
+    a = 12          # Radabstand
     dX = 0          # Streckendifferenz
     dY = 0
     gamma = 0

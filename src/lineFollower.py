@@ -52,8 +52,9 @@ class LineFollower:
         return self.direction
 
     def get_pathstatus(self):
-        return self.pathStatus
+        return self.blocked
 
+    # calculate new offset value
     def calibrate(self):
         self.colorSensor.mode = 'RGB-RAW'
         valueWhite = 0
@@ -75,7 +76,6 @@ class LineFollower:
 
     def make_sound(self):
         ev3.Sound.beep()
-
 
     # turn
     def turn(self, deg, direction):
@@ -183,6 +183,10 @@ class LineFollower:
                 self.listPaths.append(direction)
                 t360 = True
 
+        print(f"Directions: {self.listPaths}")
+
+        self.leftMotor.stop()
+        self.rightMotor.stop()
         self.leftMotor.stop()
         self.rightMotor.stop()
 
@@ -195,7 +199,7 @@ class LineFollower:
         self.gyroSensor.mode = 'GYRO-ANG'
 
         if direction == self.direction:
-            while abs(self.gyroSensor.value()) < 40:
+            while abs(self.gyroSensor.value()) < 50:
                 self.rightMotor.run_to_rel_pos(position_sp=10, speed_sp=150)
                 self.leftMotor.run_to_rel_pos(position_sp=-10, speed_sp=150)
 

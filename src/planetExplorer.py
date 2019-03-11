@@ -17,6 +17,8 @@ class PlanetExplorer:
     Ye = None
     Xt = None
     Yt = None
+    XStartPoint = None
+    YStartPoint = None
 
     listPath = []
 
@@ -69,6 +71,9 @@ class PlanetExplorer:
                 self.Ys = int(msg["payload"]["startY"])
                 self.planetName = msg["payload"]["planetName"]
 
+                self.XStartPoint = int(msg["payload"]["startX"])
+                self.YStartPoint = int(msg["payload"]["startY"])
+
             elif msg["type"] == "path":
                 self.Xe = int(msg["payload"]["endX"])
                 self.Ye = int(msg["payload"]["endY"])
@@ -76,7 +81,9 @@ class PlanetExplorer:
                 print(f"corrected coords: {self.Xs}, {self.Ys} | {self.Xe}, {self.Ye}")
                 weight = int(msg["payload"]["pathWeight"])
 
-                self.plan.add_path(((self.Xs, self.Ys), self.convert_direction2(self.Ds)), ((self.Xe, self.Ye), self.convert_direction2(self.De)), weight)
+                # add path to map
+                self.plan.add_path(((self.Xs, self.Ys), self.convert_direction2(self.Ds)),
+                                   ((self.Xe, self.Ye), self.convert_direction2(self.De)), weight)
                 print("added path")
 
             elif msg["type"] == "unveiledPath":
@@ -90,10 +97,10 @@ class PlanetExplorer:
 
                 weight = int(msg["payload"]["pathWeight"])
 
+                # add path to map
                 self.plan.add_path(((Xs, Ys), self.convert_direction2(Ds)),
                                    ((Xe, Ye), self.convert_direction2(De)), weight)
                 print("added path")
-                pass
 
             elif msg["type"] == "target":
                 self.Xt = int(msg["payload"]["targetX"])
@@ -107,14 +114,15 @@ class PlanetExplorer:
             elif msg["type"] == "done":
                 self.finished = True
 
+    # check if target reached
     def target_reached(self):
-        if self.Xs == self.Xt and self.Ys == self.Yt:
+        if self.Xs == self.Xt and self.Ys == self.Yt and self.Xs is not None:
             print("reached the target")
             return True
         else:
             return False
 
-            # main function
+    # main function
     def run(self, c):
         robot = lineFollower.LineFollower()
         calc = odometry.Odometry()
@@ -148,8 +156,8 @@ class PlanetExplorer:
             # find paths and save them
             robot.explore(self.Ds)
             listPaths = robot.listPaths
-            if self.first:
-                listPaths.remove((self.Ds + 180) % 360)
+            if self.Xs == self.XStartPoint and self.Ys == self.YStartPoint:
+                listPaths.remove(180)
 
             # run Dijkstra if target given
             if self.Xt is not None and self.Yt is not None:
@@ -169,9 +177,10 @@ class PlanetExplorer:
                 # map explored ?
                 self.plan.shorten_listUnvisitedPaths()
                 if self.plan.exploration_finished() and not self.first:
-                    print ("exploration completed")
+                    print("exploration completed")
                     break
 
+            # send selected path and get corrected values
             com.send_pathselection(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds))
             self.handle_messages(com.get_messages())
             com.clear_messages()
