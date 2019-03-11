@@ -68,7 +68,7 @@ class Odometry:
         print(f"x: {Xe}")
         print(f"y: {Ye}")
 
-        print(f"direction_raw: {self.gamma*180/math.pi}")
+        #print(f"direction_raw: {self.gamma*180/math.pi}")
 
         if (0 < self.gamma < (45 / 180) * math.pi) or ((315 / 180) * math.pi < self.gamma < (359 / 180) * math.pi):
             self.gamma = 0

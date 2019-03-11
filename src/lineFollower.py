@@ -96,6 +96,25 @@ class LineFollower:
         self.leftMotor.stop()
         self.rightMotor.stop()
 
+    # adjustment for moving along path given by Dijkstra
+    def move_for_dijkstra(self):
+        self.gyroSensor.mode = 'GYRO-RATE'
+        self.gyroSensor.mode = 'GYRO-ANG'
+        self.rightMotor.run_to_rel_pos(position_sp=100, speed_sp=150)
+        self.leftMotor.run_to_rel_pos(position_sp=100, speed_sp=150)
+        time.sleep(1.5)
+
+        self.leftMotor.command = 'run-direct'
+        self.rightMotor.command = 'run-direct'
+
+        while abs(self.gyroSensor.value()) < 40:
+            self.rightMotor.run_to_rel_pos(position_sp=-20, speed_sp=150)
+            self.leftMotor.run_to_rel_pos(position_sp=20, speed_sp=150)
+
+        self.leftMotor.stop()
+        self.rightMotor.stop()
+
+
     # obstacle detection
     def obstacle(self):
         self.ultrasonicSensor.mode = 'US-DIST-CM'
@@ -168,17 +187,17 @@ class LineFollower:
             color = self.colorSensor.bin_data('hhh')
 
             if self.gyroSensor.value() in range(70, 110) and int((color[0] + color[1] + color[2]) / 3) < 50 and not t90:
-                print(f"path, direction: {(direction + 90) % 360}")
+                #print(f"path, direction: {(direction + 90) % 360}")
                 self.listPaths.append((direction + 90) % 360)
                 t90 = True
 
             if self.gyroSensor.value() in range(250, 290) and int((color[0] + color[1] + color[2]) / 3) < 50 and not t270:
-                print(f"path, direction: {(direction - 90) % 360}")
+                #print(f"path, direction: {(direction - 90) % 360}")
                 self.listPaths.append((direction - 90) % 360)
                 t270 = True
 
             if self.gyroSensor.value() in range(340, 400) and int((color[0] + color[1] + color[2]) / 3) < 50 and not t360:
-                print(f"path, direction: {direction}")
+                #print(f"path, direction: {direction}")
                 self.listPaths.append(direction)
                 t360 = True
 

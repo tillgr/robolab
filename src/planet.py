@@ -136,7 +136,8 @@ class Planet:  # Karte
 
         else:
             for direction in listDirectionsCopy:
-                self.listUnvisitedPaths.append(((x, y), direction))
+                if ((x, y), direction) not in self.listUnvisitedPaths:
+                    self.listUnvisitedPaths.append(((x, y), direction))
             print(f"unvisited paths: {self.listUnvisitedPaths}")
             choice = random.choice(listDirectionsCopy)
             print(f"chose from {listDirectionsCopy}, choice: {choice}")

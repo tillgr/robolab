@@ -89,7 +89,7 @@ class PlanetExplorer:
             elif msg["type"] == "pathUnveiled":
                 Xs = int(msg["payload"]["startX"])
                 Ys = int(msg["payload"]["startY"])
-                Ds = int(self.convert_direction(msg["payload"]["starDirection"]))
+                Ds = int(self.convert_direction(msg["payload"]["startDirection"]))
 
                 Xe = int(msg["payload"]["endX"])
                 Ye = int(msg["payload"]["endY"])
@@ -165,6 +165,7 @@ class PlanetExplorer:
 
             # extract direction from list or choose path
             if len(self.listPath) != 0:
+                robot.move_for_dijkstra()
                 self.Ds = self.listPath[0][1]
                 print(f"d according to Dijkstra: {self.Ds}")
                 self.listPath = self.listPath[1:]
@@ -196,9 +197,7 @@ class PlanetExplorer:
             calc.position(self.Ds, self.Xs, self.Ys, robot.get_distances())
             self.Xe = calc.x
             self.Ye = calc.y
-            print(f"robo dir: {calc.get_direction()}")
             self.De = (calc.get_direction() + 180) % 360
-            print(f"direction End: {self.De}")
 
             # communication
             if robot.blocked:

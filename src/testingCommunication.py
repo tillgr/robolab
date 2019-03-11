@@ -31,7 +31,7 @@ class Communication:
         print('Got message with topic "{}":'.format(message.topic))
         data = json.loads(message.payload.decode('utf-8'))
         print(json.dumps(data, indent=2))
-        print("\n")
+        #print("\n")
 
         if data["from"] == "server":
             self.receivedMessages.append(data)
