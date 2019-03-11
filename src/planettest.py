@@ -67,6 +67,7 @@ class YourFirstTestPlanet(unittest.TestCase):
 
         # ADD YOUR PATHS HERE:
         # self.planet.add_path(...)
+
         self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
         self.planet.add_path(((0, 0), Direction.WEST), ((0, 1), Direction.WEST), 2)
         self.planet.add_path(((0, 0), Direction.EAST), ((1, 0), Direction.WEST), 1)
@@ -76,6 +77,7 @@ class YourFirstTestPlanet(unittest.TestCase):
         self.planet.add_path(((0, 3), Direction.NORTH), ((0, 3), Direction.WEST), 2)
         self.planet.add_path(((0, 3), Direction.EAST), ((2, 2), Direction.NORTH), 3)
         self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 3)
+
 
     def test_add_paths(self):
         self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
@@ -87,7 +89,7 @@ class YourFirstTestPlanet(unittest.TestCase):
         self.planet.add_path(((0, 3), Direction.NORTH), ((0, 3), Direction.WEST), 2)
         self.planet.add_path(((0, 3), Direction.EAST), ((2, 2), Direction.NORTH), 3)
         self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 3)
-        #print(self.planet.planetKarte)
+        pprint.pprint(self.planet.planetKarte)
 
     def test_get_paths(self):
         self.planet.get_paths()
@@ -113,17 +115,36 @@ class YourFirstTestPlanet(unittest.TestCase):
         """
 
 
-    '''
+
     def test_integrity(self):
         # were all paths added correctly to the planet
         # check if add_path() works by using get_paths()
-        
-        self.fail('implement me!')
+        self.assertEqual(self.planet.get_paths(),
+        {(0, 0): {  Direction.NORTH : ((0, 1),  Direction.SOUTH , 1),
+                     Direction.EAST : ((1, 0),  Direction.WEST , 1),
+                     Direction.WEST : ((0, 1),  Direction.WEST , 2)},
+        (0, 1): {  Direction.NORTH : ((0, 2),  Direction.SOUTH , 1),
+                     Direction.SOUTH : ((0, 0),  Direction.NORTH , 1),
+                     Direction.WEST : ((0, 0),  Direction.WEST , 2)},
+        (0, 2): {  Direction.NORTH : ((0, 3),  Direction.SOUTH , 1),
+                     Direction.EAST : ((2, 2),  Direction.WEST , 2),
+                     Direction.SOUTH: ((0, 1),  Direction.NORTH, 1)},
+        (0, 3): {  Direction.NORTH : ((0, 3),  Direction.WEST , 2),
+                     Direction.EAST: ((2, 2),  Direction.NORTH , 3),
+                     Direction.SOUTH : ((0, 2),  Direction.NORTH , 1),
+                     Direction.WEST: ((0, 3),  Direction.NORTH , 2)},
+        (1, 0): {  Direction.NORTH: ((2, 2),  Direction.SOUTH , 3),
+                     Direction.WEST : ((0, 0),  Direction.EAST , 1)},
+        (2, 2): {  Direction.NORTH : ((0, 3),  Direction.EAST , 3),
+                     Direction.SOUTH : ((1, 0),  Direction.NORTH , 3),
+                     Direction.WEST : ((0, 2),  Direction.EAST, 2)}})
 
-    
+        #self.fail('implement me!')
+
+
     def test_empty_planet(self):
-        self.assertIsNone(self.planet.shortest_path((0, 0), (1, 2)))
-        self.fail('implement me!')
+        self.assertEqual(self.planet.shortest_path((0, 0), (1, 2)), [])
+
 
     def test_target_not_reachable(self):
         self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
@@ -135,9 +156,9 @@ class YourFirstTestPlanet(unittest.TestCase):
         self.planet.add_path(((0, 3), Direction.NORTH), ((0, 3), Direction.WEST), 2)
         self.planet.add_path(((0, 3), Direction.EAST), ((2, 2), Direction.NORTH), 3)
         self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 3)
-        self.assertIsNone(self.planet.shortest_path((0, 0), (1, 2)))
-        self.fail('implement me!')
-    '''
+        self.assertEqual(self.planet.shortest_path((0, 0), (1, 2)), [])
+        #self.fail('implement me!')
+
 
     def test_shortest_path(self):
         # at least 2 possible paths
@@ -156,25 +177,50 @@ class YourFirstTestPlanet(unittest.TestCase):
         #print(self.planet.planetPaths.items())
         #self.fail('implement me!')
 
-    def test_update_weight(self):
-        self.planet.update_weight((Direction.EAST, ((0,1), Direction.WEST, 2)), 1)
 
-    '''
     def test_same_length(self):
         # at least 2 possible paths with the same weight
-        self.fail('implement me!')
+        self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
+        self.planet.add_path(((0, 0), Direction.WEST), ((0, 1), Direction.WEST), 2)
+        self.planet.add_path(((0, 0), Direction.EAST), ((1, 0), Direction.WEST), 1)
+        self.planet.add_path(((0, 1), Direction.NORTH), ((0, 2), Direction.SOUTH), 1)
+        self.planet.add_path(((0, 2), Direction.NORTH), ((0, 3), Direction.SOUTH), 1)
+        self.planet.add_path(((0, 2), Direction.EAST), ((2, 2), Direction.WEST), 2)
+        self.planet.add_path(((0, 3), Direction.NORTH), ((0, 3), Direction.WEST), 2)
+        self.planet.add_path(((0, 3), Direction.EAST), ((2, 2), Direction.NORTH), 3)
+        self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 4)
+        self.assertEqual(self.planet.shortest_path((0,0),(2,2,)), ([((0,0), 0), ((0,1), 0), ((0,2), 90)] or [((0,0), 90), ((1,0), 0)]))
+        #self.fail('implement me!')
 
     def test_shortest_path_with_loop(self):
         # does the shortest path algorithm loop infinitely?
         # there is a shortest path
-        self.fail('implement me!')
+        self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
+        self.planet.add_path(((0, 0), Direction.WEST), ((0, 1), Direction.WEST), 2)
+        self.planet.add_path(((0, 0), Direction.EAST), ((1, 0), Direction.WEST), 1)
+        self.planet.add_path(((0, 1), Direction.NORTH), ((0, 2), Direction.SOUTH), 1)
+        self.planet.add_path(((0, 2), Direction.NORTH), ((0, 3), Direction.SOUTH), 1)
+        self.planet.add_path(((0, 2), Direction.EAST), ((2, 2), Direction.WEST), 5)
+        self.planet.add_path(((0, 3), Direction.NORTH), ((0, 3), Direction.WEST), 2)
+        self.planet.add_path(((0, 3), Direction.EAST), ((2, 2), Direction.NORTH), 3)
+        self.planet.add_path(((1, 0), Direction.NORTH), ((2, 2), Direction.SOUTH), 3)
+        self.assertEqual(self.planet.shortest_path((0,2),(2,2,)), [((0,2), 0), ((0,3), 90)])
+        #self.fail('implement me!')
 
     def test_target_not_reachable_with_loop(self):
-        # there is no shortest path
-        self.fail('implement me!')
+        #there is no shortest path
+        self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
+        self.planet.add_path(((0, 1), Direction.EAST), ((1, 1), Direction.WEST), 1)
+        self.planet.add_path(((0, 0), Direction.WEST), ((1, 0), Direction.EAST), 1)
+        self.planet.add_path(((1, 0), Direction.NORTH), ((1,1), Direction.SOUTH), 1)
+        self.planet.add_path(((0, 0), Direction.NORTH), ((1,1), Direction.SOUTH), 2)
+        self.planet.add_path(((0, 1), Direction.EAST), ((1, 0), Direction.WEST), 2)
+        self.planet.add_path(((0,0), Direction.WEST), ((0,0), Direction.NORTH), 1)
 
-    '''
+        self.assertEqual(self.planet.shortest_path((0, 0), (5,5)), [])
+        #self.fail('implement me!')
 
+        
 
 if __name__ == "__main__":
     unittest.main()
