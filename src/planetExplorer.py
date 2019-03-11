@@ -86,7 +86,7 @@ class PlanetExplorer:
                                    ((self.Xe, self.Ye), self.convert_direction2(self.De)), weight)
                 print("added path")
 
-            elif msg["type"] == "unveiledPath":
+            elif msg["type"] == "pathUnveiled":
                 Xs = int(msg["payload"]["startX"])
                 Ys = int(msg["payload"]["startY"])
                 Ds = int(self.convert_direction(msg["payload"]["starDirection"]))
@@ -100,7 +100,8 @@ class PlanetExplorer:
                 # add path to map
                 self.plan.add_path(((Xs, Ys), self.convert_direction2(Ds)),
                                    ((Xe, Ye), self.convert_direction2(De)), weight)
-                print("added path")
+                print("added unveiled path")
+                self.plan.shorten_listUnvisitedPaths()
 
             elif msg["type"] == "target":
                 self.Xt = int(msg["payload"]["targetX"])
@@ -153,11 +154,7 @@ class PlanetExplorer:
             if self.first:
                 com.sub_to_planet(self.planetName)
 
-            # find paths and save them
-            robot.explore(self.Ds)
-            listPaths = robot.listPaths
-            if self.Xs == self.XStartPoint and self.Ys == self.YStartPoint:
-                listPaths.remove(180)
+
 
             # run Dijkstra if target given
             if self.Xt is not None and self.Yt is not None:
@@ -173,6 +170,12 @@ class PlanetExplorer:
                 self.listPath = self.listPath[1:]
 
             else:
+                # find paths and save them
+                robot.explore(self.Ds)
+                listPaths = robot.listPaths
+                if self.Xs == self.XStartPoint and self.Ys == self.YStartPoint:
+                    listPaths.remove(180)
+
                 self.Ds = self.plan.random_direction(self.Xs, self.Ys, listPaths)
                 # map explored ?
                 self.plan.shorten_listUnvisitedPaths()
@@ -223,6 +226,8 @@ class PlanetExplorer:
             self.first = False
 
             robot.set_direction(self.Ds)
+
+            self.plan.shorten_listUnvisitedPaths()
 
         for i in range(3):
             robot.make_sound()

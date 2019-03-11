@@ -162,10 +162,9 @@ class LineFollower:
         t270 = False
         t360 = False
 
-        while abs(self.gyroSensor.value()) < 380:
+        while abs(self.gyroSensor.value()) < 400:
             self.rightMotor.run_to_rel_pos(position_sp=-10, speed_sp=150)
             self.leftMotor.run_to_rel_pos(position_sp=10, speed_sp=150)
-            time.sleep(0.01)
             color = self.colorSensor.bin_data('hhh')
 
             if self.gyroSensor.value() in range(70, 110) and int((color[0] + color[1] + color[2]) / 3) < 50 and not t90:
@@ -178,7 +177,7 @@ class LineFollower:
                 self.listPaths.append((direction - 90) % 360)
                 t270 = True
 
-            if self.gyroSensor.value() in range(340, 380) and int((color[0] + color[1] + color[2]) / 3) < 50 and not t360:
+            if self.gyroSensor.value() in range(340, 400) and int((color[0] + color[1] + color[2]) / 3) < 50 and not t360:
                 print(f"path, direction: {direction}")
                 self.listPaths.append(direction)
                 t360 = True
@@ -199,7 +198,7 @@ class LineFollower:
         self.gyroSensor.mode = 'GYRO-ANG'
 
         if direction == self.direction:
-            while abs(self.gyroSensor.value()) < 50:
+            while abs(self.gyroSensor.value()) < 70:
                 self.rightMotor.run_to_rel_pos(position_sp=10, speed_sp=150)
                 self.leftMotor.run_to_rel_pos(position_sp=-10, speed_sp=150)
 
@@ -218,7 +217,7 @@ class LineFollower:
             self.leftMotor.stop()
 
         elif direction == (self.direction + 90) % 360:
-            while abs(self.gyroSensor.value()) < 40:
+            while abs(self.gyroSensor.value()) < 20:
                 self.rightMotor.run_to_rel_pos(position_sp=-10, speed_sp=150)
                 self.leftMotor.run_to_rel_pos(position_sp=10, speed_sp=150)
 
@@ -237,7 +236,7 @@ class LineFollower:
             self.leftMotor.stop()
 
         elif direction == (self.direction - 90) % 360:
-            while abs(self.gyroSensor.value()) < 120:
+            while abs(self.gyroSensor.value()) < 160:
                 self.rightMotor.run_to_rel_pos(position_sp=10, speed_sp=150)
                 self.leftMotor.run_to_rel_pos(position_sp=-10, speed_sp=150)
 
@@ -256,7 +255,7 @@ class LineFollower:
             self.leftMotor.stop()
 
         elif direction == (self.direction + 180) % 360:
-            while abs(self.gyroSensor.value()) < 120:
+            while abs(self.gyroSensor.value()) < 100:
                 self.rightMotor.run_to_rel_pos(position_sp=-10, speed_sp=150)
                 self.leftMotor.run_to_rel_pos(position_sp=10, speed_sp=150)
 
@@ -333,3 +332,6 @@ class LineFollower:
 
         self.leftMotor.stop()
         self.rightMotor.stop()
+        self.leftMotor.stop()
+        self.rightMotor.stop()
+

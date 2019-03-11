@@ -4,7 +4,7 @@ from enum import IntEnum, unique
 from typing import List, Optional, Tuple, Dict
 import pprint
 import random
-import copy
+import planet
 
 
 
@@ -91,34 +91,62 @@ class Planet:  # Karte
 
             try:
                 for path in self.planetPaths[(x, y)].items():
+                    print(f"path: {path}")
                     if path[0] == d:
                         listDirectionsCopy.remove(d)
                         print(f"removed {d}")
-                    if path[1][0] == (x, y):
-                        listLoops.append(path[0].value)
-                        print(f"added {path[0].value} to list loops")
             except:
                 pass
 
-        if len(listDirectionsCopy) == 0:
+        try:
+            for path in self.planetPaths[(x, y)].items():
+                if path[1][0] == (x, y):
+                    if path[0].value not in listLoops:
+                        listLoops.append(path[0].value)
+                    print(f"added {path[0].value} to list loops")
+        except:
+            pass
+
+        if len(listDirections) == 3 and len(listLoops) != 0:
             for i in listLoops:
                 listDirections.remove(i)
-
             choice = random.choice(listDirections)
-            print("random choice")
+            print("forced choice")
             return choice
 
+        elif len(listDirectionsCopy) == 0:
+            try:
+                print("tried Dijkstra for exploration")
+                plan = planet.Planet()
+                shortestPath = plan.shortest_path((x, y),self.listUnvisitedPaths[0][0])
+                for up in self.listUnvisitedPaths:
+                    newPath = plan.shortest_path((x, y), up[0])
+                    if len(newPath) < len(shortestPath):
+                        shortestPath = newPath
+                d = shortestPath[0][1]
+                print(f"Dijkstra chose: {d}")
+
+            except:
+                for i in listLoops:
+                    listDirections.remove(i)
+
+                choice = random.choice(listDirections)
+                print("random choice")
+                return choice
+
         else:
-            print(f"chose from {listDirectionsCopy}")
-            self.listUnvisitedPaths.append(listDirectionsCopy)
+            for direction in listDirectionsCopy:
+                self.listUnvisitedPaths.append(((x, y), direction))
+            print(f"unvisited paths: {self.listUnvisitedPaths}")
             choice = random.choice(listDirectionsCopy)
+            print(f"chose from {listDirectionsCopy}, choice: {choice}")
             return choice
 
     def shorten_listUnvisitedPaths(self):   #löscht schon gewählte pfade
         for path in self.listUnvisitedPaths:
             try:
                 for direction in self.planetPaths[path[0]].items():
-                    if path[1] == direction[0]:
+                    if path[1] == direction[0].value:
                         self.listUnvisitedPaths.remove(path)
                         print(f"shortened path list, removed {path}")
             except:
@@ -170,9 +198,9 @@ class Planet:  # Karte
 
         pass
         # print("karte")
-        # pprint.pprint(self.planetKarte)
+        pprint.pprint(self.planetKarte)
         # print("Paths")
-        # pprint.pprint(self.planetPaths)
+        pprint.pprint(self.planetPaths)
 
     def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
         ''' [[((0, 0), < Direction.NORTH: 0 >), ((0, 1), < Direction.SOUTH: 180 >), 1]
@@ -337,7 +365,8 @@ class Planet:  # Karte
                 if start == target:     # TODO: unittest
                     break
                 if len(aListe) == 0:
-                    return []
+                    # return []
+                    pass
 
             # shp_list
             print("ROUTE")
