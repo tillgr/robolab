@@ -235,7 +235,7 @@ class LineFollower:
             self.leftMotor.stop()
 
         elif direction == (self.direction + 90) % 360:
-            while abs(self.gyroSensor.value()) < 20:
+            while abs(self.gyroSensor.value()) < 10:
                 self.rightMotor.run_to_rel_pos(position_sp=-10, speed_sp=150)
                 self.leftMotor.run_to_rel_pos(position_sp=10, speed_sp=150)
 

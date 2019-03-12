@@ -175,7 +175,10 @@ class PlanetExplorer:
                 robot.explore(self.Ds)
                 listPaths = robot.listPaths
                 if self.Xs == self.XStartPoint and self.Ys == self.YStartPoint:
-                    listPaths.remove(180)
+                    try:
+                        listPaths.remove(180)
+                    except:
+                        pass
 
                 # select next path with function in planet
                 self.Ds = self.plan.random_direction(self.Xs, self.Ys, listPaths)
