@@ -132,6 +132,7 @@ class PlanetExplorer:
         # drive to first vertex
         robot.drive()
 
+        # call function to setup server connection
         com.init_connection()
         robot.make_sound()
 
@@ -155,7 +156,6 @@ class PlanetExplorer:
                 com.sub_to_planet(self.planetName)
 
 
-
             # run Dijkstra if target given
             if self.Xt is not None and self.Yt is not None:
                 print("Dijkstra")
@@ -177,9 +177,11 @@ class PlanetExplorer:
                 if self.Xs == self.XStartPoint and self.Ys == self.YStartPoint:
                     listPaths.remove(180)
 
+                # select next path with function in planet
                 self.Ds = self.plan.random_direction(self.Xs, self.Ys, listPaths)
                 # map explored ?
                 self.plan.shorten_listUnvisitedPaths()
+                # check if exploration finished
                 if self.plan.exploration_finished() and not self.first:
                     print("exploration completed")
                     break
@@ -191,15 +193,17 @@ class PlanetExplorer:
 
             robot.make_sound()
 
+            # turn in selected direction and drive
             robot.select_path(self.Ds)
             robot.drive()
             print(f"x: {self.Xs} y: {self.Ys}, d: {self.Ds}")
+            # calculate new position using odometry
             calc.position(self.Ds, self.Xs, self.Ys, robot.get_distances())
             self.Xe = calc.x
             self.Ye = calc.y
             self.De = (calc.get_direction() + 180) % 360
 
-            # communication
+            # communication, send path
             if robot.blocked:
                 # TODO: direction?
                 com.send_path(str(self.Xs), str(self.Ys), self.convert_direction(self.Ds), str(self.Xs), str(self.Ys),
@@ -228,6 +232,7 @@ class PlanetExplorer:
 
             self.plan.shorten_listUnvisitedPaths()
 
+        # finish
         for i in range(3):
             robot.make_sound()
             time.sleep(1)

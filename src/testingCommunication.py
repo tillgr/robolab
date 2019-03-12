@@ -123,6 +123,7 @@ class Communication:
 
         self.send_message("", msg_explorationcompleted, self.exploration)
 
+    # set up connection
     def init_connection(self):
         self.on_connect()
 
@@ -133,6 +134,7 @@ class Communication:
         if inp == "":
             self.send_message("", self.msg_ready, self.exploration)
         else:
+            '''
             msg_testplanet = {
                 "from": "client",
                 "type": "testplanet",
@@ -141,16 +143,19 @@ class Communication:
                 }
             }
             self.send_message("", msg_testplanet, self.exploration)
+            '''
             self.send_message("", self.msg_ready, self.exploration)
 
+    # subscribe to planet channel
     def sub_to_planet(self, planetName):
         self.channel = f"planet/{planetName}-039"
         # change channel
         self.client.subscribe(self.channel, qos=1)
 
-    # deal with received messages
+    # return received messages as list
     def get_messages(self):
         return self.receivedMessages
 
+    # clear list that contains received messages
     def clear_messages(self):
         self.receivedMessages.clear()

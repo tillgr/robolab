@@ -72,6 +72,7 @@ class Planet:  # Karte
         if direction == Direction.WEST:
             return Direction.EAST
 
+    # select next direction without Dijkstra (not only random)
     def random_direction(self, x, y, listDirections):   # wählt neuen pfad für erkundung
         listDirectionsCopy = listDirections.copy()
         listLoops = []
@@ -90,6 +91,7 @@ class Planet:  # Karte
                 d = Direction.WEST
 
             try:
+                # check if path already known
                 for path in self.planetPaths[(x, y)].items():
                     print(f"path: {path}")
                     if path[0] == d:
@@ -99,6 +101,7 @@ class Planet:  # Karte
                 pass
 
         try:
+            # check for loops
             for path in self.planetPaths[(x, y)].items():
                 if path[1][0] == (x, y):
                     if path[0].value not in listLoops:
@@ -107,6 +110,7 @@ class Planet:  # Karte
         except:
             pass
 
+        # avoid loops
         if len(listDirections) == 3 and len(listLoops) != 0:
             for i in listLoops:
                 listDirections.remove(i)
@@ -114,6 +118,7 @@ class Planet:  # Karte
             print("forced choice")
             return choice
 
+        # use Dijkstra to find path to vertex with unknown path
         elif len(listDirectionsCopy) == 0:
             try:
                 print("tried Dijkstra for exploration")
@@ -125,7 +130,7 @@ class Planet:  # Karte
                         shortestPath = newPath
                 d = shortestPath[0][1]
                 print(f"Dijkstra chose: {d}")
-
+            # if Dijkstra didnt found path decide random
             except:
                 for i in listLoops:
                     listDirections.remove(i)
@@ -133,7 +138,7 @@ class Planet:  # Karte
                 choice = random.choice(listDirections)
                 print("random choice")
                 return choice
-
+        # select an unvisited path random, add not selected paths to list
         else:
             for direction in listDirectionsCopy:
                 if ((x, y), direction) not in self.listUnvisitedPaths:
@@ -143,6 +148,7 @@ class Planet:  # Karte
             print(f"chose from {listDirectionsCopy}, choice: {choice}")
             return choice
 
+    # remove already visited paths from list for unvisited paths
     def shorten_listUnvisitedPaths(self):   #löscht schon gewählte pfade
         for path in self.listUnvisitedPaths:
             try:
@@ -153,7 +159,7 @@ class Planet:  # Karte
             except:
                 pass
 
-
+    # check if no unvisited path is remaining
     def exploration_finished(self):
         if len(self.listUnvisitedPaths) == 0:
             return True

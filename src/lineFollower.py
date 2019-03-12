@@ -114,7 +114,6 @@ class LineFollower:
         self.leftMotor.stop()
         self.rightMotor.stop()
 
-
     # obstacle detection
     def obstacle(self):
         self.ultrasonicSensor.mode = 'US-DIST-CM'

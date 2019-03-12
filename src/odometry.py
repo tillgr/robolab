@@ -20,10 +20,12 @@ class Odometry:
     def get_direction(self):
         return self.gamma
 
+    # calculate new position
     def position(self, gamma, Xs, Ys, listDistances):
         self.dX = 0
         self.dY = 0
 
+        # invert gamma because alpha uses opposite auguries
         if gamma == 90:
             self.gamma = (270 / 180) * math.pi
         elif gamma == 270:
@@ -31,6 +33,7 @@ class Odometry:
         else:
             self.gamma = (gamma/180)*math.pi
 
+        # iterate throug list of wheel distances
         for dist in listDistances:
             self.dl = dist[0]
             self.dr = dist[1]
@@ -42,6 +45,7 @@ class Odometry:
             elif self.gamma > 2*math.pi:
                 self.gamma -= 2*math.pi
 
+            # robot drives straight
             if alpha == 0.0:
                 if (0 < self.gamma < (45 / 180) * math.pi) or ((315 / 180) * math.pi < self.gamma < (359 / 180) * math.pi):
                     self.dY += self.dr/50
@@ -51,6 +55,7 @@ class Odometry:
                     self.dY -= self.dr/50
                 elif (225/180)*math.pi < self.gamma < (315/180)*math.pi:
                     self.dX += self.dr/50
+            # curves
             else:
                 s = (((self.dr + self.dl) / alpha) * math.sin(alpha / 2)) / 50
 
@@ -70,6 +75,7 @@ class Odometry:
 
         #print(f"direction_raw: {self.gamma*180/math.pi}")
 
+        # convert gamma back
         if (0 < self.gamma < (45 / 180) * math.pi) or ((315 / 180) * math.pi < self.gamma < (359 / 180) * math.pi):
             self.gamma = 0
             print(f"direction: {0}")
